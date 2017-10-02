@@ -3,7 +3,7 @@
 |   1   | B Connector from Banana  | Video 2, Smoke 3     |
 |   2   | Apps Stairs from Mid     | Video 2, Smoke 4     |
 |   3   | Archway from Mid         | Video 2, Smoke 5     |
-|   4   | Library from Mid         | Video 2, Smoke 7     |
+|   4   | Library from Mid         | Video 2, Smoke 6     |
 |   5   | B Stairs from Well       | Video 2, Smoke 8     |
 |   6   | A Top Ramp from CT       | Video 2, Smoke 10    |
 |   7   | Apps from Archway        | Video 2, Smoke 11    |
