@@ -1,0 +1,165 @@
+The all.json file contains ALL the tactical nade information the app will use to build its maps.
+
+The format is fairly straight forward, each map is defined as an object under its respective name.
+I.E: The information for Dust 2 is in the "dust2" object, and Mirage is in the "mirage" object.
+
+Each map object contains its nade objects named "smokes", "flashes", "fires", etc.
+Nade objects are just a list of specific throw objects, which are a bit complicated.
+
+
+Here's a rough outline of how the file looks:
+
+{
+    "dust2": {
+        "smokes": [
+            { throw object },
+            { throw object }
+        ],
+        "flashes": [
+            { throw object }
+        ]
+    }
+}
+
+
+Throw objects consist of two parts, the END and START of the throw. The END defined the X-Y coordinates
+of the landing point of the nade, and the START can be a list of multiple starting points or a list of
+more throw objects!
+
+
+Here's how it works with real examples:
+
+{
+    "dust2": {
+        "smokes": [
+            {
+                "end":[45, 38.5],
+                "start":[
+                    [1, 46.7, 90.7]
+                ]
+            },
+            {
+                "end":[47.5, 43.2],
+                "start":[
+                    [2, 46.9, 89],
+                    [6, 70.5, 63.4],
+                    [7, 61.2, 69.6]
+                ]
+            },
+            {
+                "end":[76.7, 17.9],
+                "start":[
+                    {
+                        "end":[77.1, 15.6],
+                        "start":[
+                            [8, 58.5, 44.1]
+                        ]
+                    },
+                    {
+                        "end":[76.3, 20.2],
+                        "start":[
+                            [9, 60.3, 40.7],
+                            [10, 60, 46.2],    #Example only, not in the Real file (but could easily exist!)
+                            [12, 64, 45],      #Example only, not in the Real file (but could easily exist!)
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+    1) The App looks up the Dust 2 map object, and grabs all the smokes into an indexed array of objects.
+    2) It looks at every object's END point, and draws a hotspot for each.
+    3) The user selects the first hotspot in the list above
+    4) The App sees only one element in the START array, and it's a list (i.e. not an object)
+    5) Because the App knows its in the Dust 2 map and looking at Smokes, it loads the appropriate text and pictures
+       for 'Dust2/Smokes/1/'. It knows to look at smoke #1 because '1' is the first element in the START array.
+
+    6) The user selects the second hotspot in the list above
+    7) The App sees three elements in the START array, and the first one is a list (i.e. not an object)
+       Because the first element is a list, and not an object, the App can safely assume all other elements are lists
+       and that this is a throw with 1 END and 3 STARTS.
+    8) The App zooms into the area defined by the locations of the END and STARTS (min-max of X and Y coords)
+    9) The App draws the END and the 3 STARTS, and creates a Paginated view containing the information from smokes 2, 6 & 7
+
+   10) The user selects the third hotspot in the list above
+   11) The App sees two elements in the START array, and the first one is an object (thus two more Throw objects!)
+   12) The App zooms into the area defined by the locations of the ENDS defined by the two objects in the START array and draws the hotspots of the ENDS
+   13) The user selects the first hotspot in the START array **FROM A LIST BESIDE THE MAP**
+   14) Refer to step 4!
+   15) The user selects the second hotspot in the START array **FROM A LIST BESIDE THE MAP**
+   16) Refer to step 7!
+
+
+For the lolz, here is some fake code that shows how the App will behave.
+
+1) Load Hotspots
+
+    throwObjects = parseJson('all.json');
+    throwObjects = throwObjects[map_name]; // Already selected by user
+    setMapView(map_name);
+    for (int index = 0; index < throwObjects.length(); index++) {
+        addHotSpot(throwObjects, index); // Takes the X-Y coords and puts a circle at that location
+    }
+
+2) Upon clicking a hotspot, which runs a function and passes the index it was created with
+
+    throw = throwObjects[index];
+
+    zoomMapView(throw);      // Centers on coords of terminal and the most extreme start, with a 75% weight on the terminal
+                             // centerXY = [(sx * 0.75) + (tx * 0.25), (sy * 0.75) + (ty * 0.25)]
+
+    openTacticalView(throw); // Loads up the tactical information of the throws below the zoom map, showing a radio selection
+                             // for the different terminals (if multiple), the paginated tabs for screenshots of different
+                             // starts (if multiple), and finally the base information of the smoke.
+
+
+There are some restrictions to this file, however. To help describe them, see the ascii graphic below:
+
+{
+    "dust2": {
+        "smokes": [
+            { primary throw object },
+            { primary throw object
+                "start": [
+                    { secondary throw object },
+                    { secondary throw object }
+                ]
+            }
+        ],
+        "flashes": [
+            { primary throw object }
+        ]
+    }
+}
+
+
+- All throw objects (primary and secondary) must contain ONLY ONE END POINT! Any more is downright stupid.
+- Primary throw objects without secondaries (i.e. the start is an array of lists) are either one throw,
+  or multiple same throws but with different possible starting points.
+- Primary throw object with secondaries (i.e. the start is an array of objects) must contain two or more
+  objects, known as secondary throw objects (one secondary is fucking retarded to say the least)
+- Secondary throw objects CANNOT CONTAIN MORE SECONDARY THROW OBJECTS! Deal with it!
+- Secondary throw objects are otherwise identical to primary throw objects in the way they are treated,
+  with the additional requirement that it basically contains two different throws that have incredibly
+  close END points, and to switch between them will require the user to select from a list instead of the
+  actual hotspots
+- Throw objects with multiple STARTS (as lists, not objects) will display the throw images in a paginated
+  view, but with all other information displayed below, as the resulting smoke is EFFECTIVELY THE SAME
+
+- Throws with an effectively IDENTICAL end point (basically same results with differing steps) should be
+  stored as a single END with multiple STARTS.
+- Throws with effectively different end points, yet very close in proximity, should be stored as a single
+  averaged END with multiple START OBJECTS (secondary throw objects).
+- Throws with one END and one START should be stored as exactly that: one END and one START.
+
+
+There is no definite distance at which smokes should be considered identical or different, this file is to
+be manually created (no shortcuts, please!) with the definition of "too close" and "far enough" to be
+determined by the writer at the time they are compiling the list.
+
+The best way to compile the list is to open up the all.json on one monitor and on another load the individual
+coords.json files with their throw.png files and look at them to visually determine how to build the all.json
+
+Try not to screw up the format! Use the coords_checker.py to run a detailed test on the file.
