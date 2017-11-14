@@ -297,7 +297,7 @@ This would be the ideal Anti-ECO weapon for the Terrorist, if the Counter-Terror
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 2.57s  | 57.5% |  0.40s  |    68.6m     |      6.3m      |        N/A        |
 
-**Gun Stategy**: With only 2.25 seconds of bullets, this gun literally takes longer to reload that the clip will last. This is great for spraying corners, just don't start too soon. Because this gun has the lowest running inaccuracy for the SMGs, you really have no reason to not move while shooting. If you ever find another gun, you should trade it for this, because almost every gun in the game is better than the MAC-10. ***\*Almost\****
+**Gun Stategy**: With only 2.25 seconds of bullets, this gun literally takes longer to reload that the clip will last. This is great for spraying corners, just don't start too soon. Because this gun has the lowest running inaccuracy for the SMGs, you really have no reason to NOT run-and-gun.
 <br/><br/>
 
 ### MP9
@@ -333,7 +333,7 @@ The MP7 has high damage, high accuracy, and is effectively the next best thing t
 <br/><br/>
 
 ### UMP-45
-This SMG used to hold the title of "The $1200 rifle," but now it's high damage falloff has reduced this to highest damaging SMG to a deadly close-range monster. This gun acts just like any rifle at close ranges, and still holds the longest headshot range of all SMGs.
+This SMG used to hold the title of "The $1200 rifle," but now it's high damage falloff has reduced this to a deadly close-range monster. This gun acts just like any rifle at close ranges, and still holds the longest headshot range of all SMGs.
 
 *The misunderstood middle child of the SMG family, the UMP45's small magazine is the only drawback to an otherwise versatile close-quarters automatic.*
 
@@ -345,7 +345,7 @@ This SMG used to hold the title of "The $1200 rifle," but now it's high damage f
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 3.43s  |  65%  |  0.35s  |    70.5m     |     11.1m      |        N/A        |
 
-**Gun Stategy**: Sniping is no longer an option for this weapon. It shines the most when used in close quarters and is aimed for the head. Because it's actually fairly good in close range, you don't need to worry about trading it for a rifle right away. Take your time, and trade it when you're certain the coast is clear.
+**Gun Stategy**: It shines the most when used in close-medium range and is aimed for the head. This is still the best option for cash-strapped players, and the accurate player can still easily go toe-to-toe with rifles.
 <br/><br/>
 
 ### P90
@@ -361,7 +361,7 @@ Despite what you might think, the P90 isn't as effective as it should be for the
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 3.37s  |  69%  |  0.37s  |    70.5m     |      2.5m      |        N/A        |
 
-**Gun Stategy**: Despite CS: GO's outdated description and **\*hilarious\*** grammatical error (they actually say "the P90 a great weapon" in the real in-game description), this SMG has THE WORST running inaccuracy of all SMGs, and the recoil isn't great either. The strategy with this gun is to not buy it and instead buy a Galil AR or FAMAS with a flashbang.
+**Gun Stategy**: Despite CS: GO's outdated description and **\*hilarious\*** grammatical error (they actually say "the P90 a great weapon" in the real in-game description), this SMG has THE WORST running inaccuracy of all SMGs, and the recoil isn't great either. The strategy with this gun is to instead buy a Galil AR or FAMAS with a flashbang.
 <br/><br/>
 
 ### PP-Bizon
@@ -377,7 +377,7 @@ Despite what you might think, the PP-Bizon is a good buy for the player that lik
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 2.43s  | 57.5% |  0.33s  |    68.6m     |      3.3m      |        N/A        |
 
-**Gun Stategy**: Buy any other SMG instead. The two Ps actually stand for "Piss Poor."
+**Gun Stategy**: Buy any other SMG instead.
 <br/><br/>
 
 ## Rifles
@@ -459,11 +459,11 @@ The Counter-Terrorist exclusive M4 series is not easy to describe. Due to the hi
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 3.07s  |  70%  |  0.34s  |    156m      |     263m       |        N/A        |
 
-**Gun Stategy**: Short bursts are most effective with this weapon, aiming at the head and controlling the recoil. Let the enemies run into your crosshair. Don't remove the silencer and keep an eye on your ammo conservation.
+**Gun Stategy**: Short bursts are most effective with this weapon, aiming at the head and controlling the recoil. Let the enemies run into your crosshair. Don't remove the silencer and keep an eye on your ammo.
 <br/><br/>
 
 ### SSG 08
-The SSG 08, or more affectionately named Scout, is great for quick peeks and fast headshots. Due to its quick recovery time and high accuracy, there is no reason to *not* be moving between shots. Mastering this weapon would make it just as deadly as the Desert Eagle would be if it had a scope. It's low price tag makes it purchasable nearly every round. The stats are for when the weapon is and isn't scoped in.
+The SSG 08, or more affectionately named "Scout," is great for quick peeks and fast headshots. Due to its quick recovery time and high accuracy, there is no reason to *not* be moving between shots. Mastering this weapon would make it just as deadly as the Desert Eagle would be if it had a scope. It's low price tag makes it purchasable nearly every round. The accurate range is for when the weapon is and isn't scoped in.
 
 *The SSG 08 bolt-action is a low-damage but very cost-effective sniper rifle, making it a smart choice for early-round long-range marksmanship.*
 
@@ -479,7 +479,7 @@ The SSG 08, or more affectionately named Scout, is great for quick peeks and fas
 <br/><br/>
 
 ### SG 553
-The SG 553 is the second most accurate rifle and the only gun that completely penetrates armor. This makes it ideal for engaging from long range and effortlessly taking out anyone who stands in your way. The stats are for when the weapon is and isn't scoped in.
+The SG 553 is the second most accurate rifle and the only gun that completely penetrates armor. This makes it ideal for engaging from long range and effortlessly taking out anyone who stands in your way. The accurate range and mobility are for when the weapon is and isn't scoped in.
 
 *The terrorist-exclusive SG553 is a premium scoped alternative to the AK47 for effective long-range engagement.*
 
@@ -539,7 +539,7 @@ Being the Terrorist's choice of the Auto-Sniper variant, it is exactly like the 
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 4.67s  | 82.5% |  0.54s  |    156m      |      548m      |        458m       |
 
-**Gun Stategy**: Spray corners, walls, and corridors where enemies may be. Position yourself like you would an AWP, but play much more aggressively. Don't buy this gun, the only time you should possess one is by picking it up from a fallen enemy who DID buy the gun. Please, have honor!
+**Gun Stategy**: Spray corners, walls, and corridors where enemies may be. Position yourself like you would an AWP, but play much more aggressively. Don't buy this gun, the only time you should possess one is by picking it up from a fallen enemy who DID buy the gun. Please, for honor!
 <br/><br/>
 
 ### SCAR-20
@@ -555,13 +555,13 @@ Being the Counter-Terrorist's choice of the Auto-Sniper variant, it is exactly l
 > | :---:  | :---: |  :---:  |    :---:     |     :---:      |       :---:       |
 > | 3.07s  | 82.5% |  0.54s  |    156m      |      548m      |        458m       |
 
-**Gun Stategy**: Spray corners, walls, and corridors where enemies may be. Position yourself like you would an AWP, but play much more aggressively. Don't buy this gun, the only time you should possess one is by picking it up from a fallen enemy who DID buy the gun. Please, have honor!
+**Gun Stategy**: Spray corners, walls, and corridors where enemies may be. Position yourself like you would an AWP, but play much more aggressively. Don't buy this gun, the only time you should possess one is by picking it up from a fallen enemy who DID buy the gun. Please, for honor!
 <br/><br/>
 
 ## Gear
 
 ### Kevlar Vest
-Adds armor to the player, shielding only the chest from some damage. Greatly reduces High Explosive Grenade damage.
+Adds armor to the player, shielding only the chest from some bullet damage. Greatly reduces High Explosive Grenade damage.
 
 *Body protection against projectiles and explosives.*
 
@@ -571,7 +571,7 @@ Adds armor to the player, shielding only the chest from some damage. Greatly red
 <br/><br/>
 
 ### Kevlar + Helmet
-Adds armor and helmet to the player, shielding the chest and head from some damage. Greatly reduces High Explosive Grenade damage.
+Adds armor and helmet to the player, shielding the chest and head from some bullet damage. Greatly reduces High Explosive Grenade damage.
 
 *Body and head protection against projectiles and explosives.*
 

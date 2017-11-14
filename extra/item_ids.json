@@ -32,7 +32,18 @@
         "sawed":29,
         "mag7":30,
         "m249":31,
-        "negev":32
+        "negev":32,
+        "kevlar":33,
+        "helmet":34,
+        "zeus":35,
+        "defusekit":36,
+        "rescuekit":37,
+        "molotov":38,
+        "incend":39,
+        "decoy":40,
+        "flashbang":41,
+        "hegrenade":42,
+        "smokenade":43
     },
     "defined":{
         "glock18":4,
