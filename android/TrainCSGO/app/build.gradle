@@ -1,8 +1,15 @@
+/*
+ * Created by the Dev Team from Flare E-Sports on 11/26/17 8:29 AM
+ * Copyright (c) 2017. All rights reserved
+ *
+ * Last modified 11/25/17 9:02 PM
+ */
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "net.flare_esports.traincsgo"
         minSdkVersion 21
@@ -24,7 +31,8 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.+'
+    apply plugin: 'com.google.gms.google-services'
+    compile 'com.android.support:appcompat-v7:27.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 }

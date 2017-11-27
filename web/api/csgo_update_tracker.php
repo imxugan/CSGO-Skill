@@ -21,14 +21,11 @@ $feed = array_reverse($feed);
 
 // var_dump($feed);
 
-$server = "localhost";
-$username = "flaredevo";
-$password = "LOZ#^%TGoWRd,%ssxI";
-$db = "flare-update";
+require("dbInf.php");
 
-$conn = mysqli_connect($server, $username, $password, $db);
+$conn = mysqli_connect($server, $username, $password, $updatedb);
 if ($conn->connect_error){
-    die("Connection failed: " . $conn->connect_error);
+    die("Connection failed");
 }
 
 foreach ($feed as $item){
