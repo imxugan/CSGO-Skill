@@ -1,7 +1,7 @@
 <?php
 
-// Our server time is based in Denver
-date_default_timezone_set("America/Denver");
+require_once("setup");
+require("dbInf");
 
 // Load the RSS feed into a JSON array-like object;
 $rss = new DOMDocument();
@@ -20,8 +20,6 @@ foreach ($rss->getElementsByTagName("item") as $item){
 $feed = array_reverse($feed);
 
 // var_dump($feed);
-
-require("dbInf.php");
 
 $conn = mysqli_connect($server, $username, $password, $updatedb);
 if ($conn->connect_error){
