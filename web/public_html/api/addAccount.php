@@ -1,7 +1,6 @@
 <?php
 
 require_once("setup");
-require_once("dbInf");
 
 if (count($_POST) !== 4) {
     consoleExit("{\"success\":false,\"error\":\"1414\"}");

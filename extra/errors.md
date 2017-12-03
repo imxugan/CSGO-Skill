@@ -17,6 +17,7 @@ Just count up from 1 for multiple uses of the same general error.
 | `login.php`       | `api.flare-esports.net` |  `12`  |
 | `makeAccount.php` | `web/includes/`         |  `13`  |
 | `addAccount.php`  | `api.flare-esports.net` |  `14`  |
+| `verifyEmail.php` | `flare-esports.net/`    |  `15`  |
 
 ## Web API errors ()
 

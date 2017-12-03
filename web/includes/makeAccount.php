@@ -323,14 +323,14 @@ if (!isset($create)) {
     require_once("data_template");
 
     $query = "UPDATE `Players_01` SET " .
-    "`username`=\"" . $name . "\"" .
-    "`persona`=\"" . $name . "\"" .
-    "`email`=\"" . $email . "\"" .
-    "`secret`=\"" . $secret . "\"" .
+    "`username`=\"" . $name . "\"," .
+    "`persona`=\"" . $name . "\"," .
+    "`email`=\"" . $email . "\"," .
+    "`secret`=\"" . $secret . "\"," .
     "`current`=" . json_encode(json_encode($stats)) . // Double encoding escapes the things
-    "`data`=" . json_encode(json_encode(getDataTemplate())) . // Same here.
-    "`status`=" . json_encode(json_encode($status)) . // And here too.
-    "WHERE `id` = " . $id;
+    ",`data`=" . json_encode(json_encode(getDataTemplate())) . // Same here.
+    ",`status`=" . json_encode(json_encode($status)) . // And here too.
+    " WHERE `id` = " . $id;
 
     if ($conn->query($query)) { // That's a big query
         $conn->close();
