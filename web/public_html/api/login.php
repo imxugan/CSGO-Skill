@@ -27,7 +27,21 @@ try {
 			$ptn = "/^http:\/\/steamcommunity\.com\/openid\/id\/(7[0-9]{15,25}+)$/";
 			preg_match($ptn, $id, $matches);
             $steamID = $mathes[1];
-            require_once("makeAccount"); // This will do the rest for us.
+            $conn = mysqli_connect($server, $username, $password, $flaredb);
+            if ($conn->connect_error) {
+                error_log("1212 - Failed to connect to MySQL Database '" . $flaredb .
+                "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
+                consoleExit("{\"success\":false,\"error\":\"1212\"}");
+            }
+            $query = "SELECT `secret` FROM `Players_01` WHERE `steamid`=\"" . $conn->real_escape_string . "\"";
+            $result = $conn->query($query);
+            if ($result->num_rows === 0) {
+                $conn->close();
+                consoleExit("{\"success\":false,\"error\":\"1227\"}");
+            }
+            $result = $result->fetch_assoc()["secret"];
+            $conn->close();
+            consoleExit("{\"success\":true,\"secret\":\"" . $result . "\"}");
 		} else {
             error_log("1219 - OpenID failed to validate. Reason unknown.");
 			consoleExit("{\"success\":false,\"error\":\"1219\"}");

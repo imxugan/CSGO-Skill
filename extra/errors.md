@@ -34,3 +34,6 @@ Just count up from 1 for multiple uses of the same general error.
 | `BAD_PROFILE`         | `22`  |
 | `BAD_FIELD`           | `23`  |
 | `ALREADY_EXISTS`      | `24`  |
+| `BAD_FORM`            | `25`  |
+| `QUERY_ERROR`         | `26`  |
+| `NO_SUCH_PROFILE`     | `27`  |
