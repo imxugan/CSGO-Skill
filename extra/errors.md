@@ -16,6 +16,7 @@ Just count up from 1 for multiple uses of the same general error.
 | `getGuides.php`   | `api.flare-esports.net` |  `11`  |
 | `login.php`       | `api.flare-esports.net` |  `12`  |
 | `makeAccount.php` | `web/includes/`         |  `13`  |
+| `addAccount.php`  | `api.flare-esports.net` |  `14`  |
 
 ## Web API errors ()
 
@@ -37,3 +38,4 @@ Just count up from 1 for multiple uses of the same general error.
 | `BAD_FORM`            | `25`  |
 | `QUERY_ERROR`         | `26`  |
 | `NO_SUCH_PROFILE`     | `27`  |
+| `TOO_BIG`             | `28`  |

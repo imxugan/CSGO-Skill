@@ -33,11 +33,13 @@ try {
                 "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
                 consoleExit("{\"success\":false,\"error\":\"1212\"}");
             }
-            $query = "SELECT `secret` FROM `Players_01` WHERE `steamid`=\"" . $conn->real_escape_string . "\"";
+            $query = "SELECT `secret` FROM `Players_01` WHERE `steamid`=\"" . $conn->real_escape_string($steamID) .
+                     "\" AND `verified` = 1";
             $result = $conn->query($query);
             if ($result->num_rows === 0) {
                 $conn->close();
-                consoleExit("{\"success\":false,\"error\":\"1227\"}");
+                // This, without anything but the $steamID, will check if the account is valid, reserve the row, and return true.
+                require_once("makeAccount");
             }
             $result = $result->fetch_assoc()["secret"];
             $conn->close();

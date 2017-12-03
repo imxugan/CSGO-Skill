@@ -107,7 +107,7 @@ function check($steamID, $doubleCheck = false) {
     $steamID = $conn->real_escape_string($steamID);
 
     $query = "SELECT `id` FROM `Players_01` WHERE `steamid`=\"" . $steamID .
-    "\" AND (`verified` = 1 OR `secret` != \"empty\")";
+    "\" AND `verified` = 1 AND NOT `secret`=\"empty\"";
     $result = $conn->query($query);
 
     if ($result->num_rows !== 0) {
@@ -116,21 +116,58 @@ function check($steamID, $doubleCheck = false) {
         consoleExit("{\"success\":false,\"error\":\"13241\"}");
     }
 
-    // Only checking if account COULD be made
+    $query = "SELECT `id` FROM `Players_01` WHERE `steamid`=\"" . $steamID .
+    "\" AND `verified` = 0 AND `secret`=\"empty\"";
+    $result = $conn->query($query);
+
+    if ($result->num_rows === 1) {
+        /**
+         * Steam ID is reserved already. Due to logic flow and the possibility
+         * that the user simply lost their verify code, it is safe to assume the
+         * user is legit and we can SAFELY delete the row so that the following
+         * INSERT works correctly.
+         */
+        $query = "DELETE FROM `Players_01` WHERE `steamid`=\"" . $steamID .
+        "\" AND `verified` = 0 AND `secret`=\"empty\"";
+        if (!$conn->query($query)) {
+            error_log("13261 - The SQL query to delete a reserved account row failed. Here's what we got: " . $conn->error_list);
+            $conn->close();
+            consoleExit("{\"success\":false,\"error\":\"13261\"}");
+        }
+    }
+
+    // Only checking if account COULD be made, and it can :)
 
     /**
-     * To make the next call faster, we'll "reserve" the Steam ID in our Players
-     * table, that way we don't have to waste time checking every account twice.
+     * To make the next call faster and more secure, we'll "reserve" the given
+     * Steam ID in our Players table, that way we don't have to waste time
+     * checking every account twice, nor risk account hijacking.
+     *
+     * We'll also set a secret to verify the next call is still the same user.
+     * If they lose it, no big deal, they should still be able to try again.
      */
-    $query = "INSERT INTO `Players_01` (`steamid`) VALUES (\"" . $steamID . "\")";
-    $conn->query($query); // We don't care if this fails. If it does, oh well.
-    $conn->close();
-    consoleExit("{\"success\":true}");
+    $string = substr(hash("sha256", random_bytes(200)), 0, 10);
+    $status = array(
+        "level" => "member",
+        "ban_history" => array(),
+        "verify" => $string
+    );
+    $query = "INSERT INTO `Players_01` (`steamid`, `status`) VALUES (\"" . $steamID .
+             "\", " . json_encode(json_encode($status)) . ")";
+    if ($conn->query($query)) {
+        $conn->close();
+        consoleExit("{\"success\":true,\"verify\":\"" . $string . "\"}");
+    } else {
+        error_log("13262 - The SQL query to reserve user accuont failed. Here's what we got: " . $conn->error_list);
+        $conn->close();
+        consoleExit("{\"success\":false,\"error\":\"13262\"}");
+    }
 }
 
+// Being Main Stuff
 if (!isset($create)) {
     check($steamID);
-} else if (isset($email) && isset($name)){
+} else if (isset($email) && isset($name) && isset($verify)){
 
     $conn = mysqli_connect($server, $username, $password, $flaredb);
     if ($conn->connect_error) {
@@ -159,6 +196,10 @@ if (!isset($create)) {
          * that anyone could create an account with their own email and someone
          * else's Steam account, thus "stealing" an account (hooray for them?)
          *
+         * Technically, a newly reserved account is very fragile. Anyone could
+         * hijack an account if they do it right after it's reserved. But thanks
+         * to the $verify, the possibility of this is slightly reduced.
+         *
          * The reason for the TRY AGAIN error is because this error should
          * technically never be seen if the user was going through the login
          * flow as we designed it. The user would literally have to send a
@@ -175,10 +216,16 @@ if (!isset($create)) {
         consoleExit("{\"success\":false,\"error\":\"TRY AGAIN\"}");
     }
 
-    // Grab `id` and `status` for later
+    // Grab `id` and `status` for things
     $result = $result->fetch_assoc();
     $id = $result["id"];
     $status = json_decode($result["status"], true);
+
+    if ($status["verify"] !== $verify) {
+        // Given $verify doesn't match. Cannot validate request!
+        $conn->close();
+        consoleExit("{\"success\":false,\"error\":\"1323\"}");
+    }
 
     $name = $conn->real_escape_string(substr($name, 0, 30));
 
@@ -314,14 +361,14 @@ if (!isset($create)) {
 
     } else {
         // Query failed, I cri evrytiem ;(
+        error_log("13263 - The SQL query to complete user signup failed. Here's what we got: " . $conn->error_list);
         $conn->close();
-        error_log("1326 - The SQL query to complete user signup failed. Here's what we got: " . $conn->error_list);
-        consoleExit("{\"success\":false,\"error\":\"1326\"}");
+        consoleExit("{\"success\":false,\"error\":\"13263\"}");
     }
 
 } else {
-    error_log("Missing \$email or \$name for included file \"makeAccount\"!");
-    die("Missing email or name!");
+    error_log("Missing \$email, \$name, or \$verify for included file \"makeAccount\"!");
+    die("Missing email, name or verify!");
 }
 
 
