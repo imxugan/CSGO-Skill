@@ -16,6 +16,8 @@ import org.json.JSONObject;
 public class Database extends SQLiteOpenHelper{
 
     private static final int VERSION = 1;
+    private static final int MAJOR = 1;
+    private static final int MINOR = 0;
     private static final String NAME = "traincsgo.db";
 
     private static final String USERTABLE = "Accounts";
