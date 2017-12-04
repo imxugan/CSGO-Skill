@@ -11,7 +11,6 @@ $steamauth['login'] = $steamauth['domain'];
 define("STEAMKEY","585DCDF484116BAEED7DCEB43000A7F4");
 
 // Javascript Console logging
-
 // Prints the provided $output to the console and exits immediately.
 function consoleExit($output){
     ?>

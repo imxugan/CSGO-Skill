@@ -1,6 +1,7 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_URI} \.xml$
+RewriteCond %{REQUEST_URI} \.xml$ [OR]
+RewriteCond %{REQUEST_URI} \.atom$
 RewriteCond %{DOCUMENT_ROOT}/$1.php -f
 RewriteRule ^(.*)?.xml$ $1.php [L]
 
