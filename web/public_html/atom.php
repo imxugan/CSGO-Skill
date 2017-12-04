@@ -1,6 +1,7 @@
 <?php
 
 // Don't touch anything here
+require_once("setup.php");
 header("Content-Type: application/atom+xml");
 function getCategory($category) {
     $l = strpos($category, "[");
@@ -46,7 +47,7 @@ $query = "SELECT `updated` FROM `News` ORDER BY `updated` DESC";
 $result = $conn->query($query);
 if ($result->num_rows !== 0) {
     $result = $result->fetch_assoc();
-    $UPDATED = date(DATE_ATOM, $result["updated"]);
+    $UPDATED = date(DATE_ATOM, strtotime($result["updated"]));
 } else {
     $UPDATED = date(DATE_ATOM);
 }
@@ -54,8 +55,8 @@ if ($result->num_rows !== 0) {
 // Defaults, all are TEXT type!
 $MAXENTRIES = 15; // The maximum number of entries to show. Should be small.
 $TITLE = "Train CSGO News";
-$LINK = "http://flare-esports.net/";
-$SELF = "atom";
+$LINK = "http://flare-esports.net"; // No trailing slash, please.
+$SELF = "/atom"; // Beginning slash, please
 $AUTHOR = "Flare Dev Team";
 $GENERATOR = "Flare.Atom";
 $GEN_VERSION = "1.0";
@@ -98,14 +99,15 @@ $result = $conn->query($query);
 if ($result->num_rows !== 0) {
     while ($entry = $result->fetch_assoc()) {
 ?>
+
     <entry>
         <title><?= $entry["title"] ?></title>
         <rights><?= $RIGHTS ?></rights>
         <id><?= $LINK . $entry["perma_link"] ?></id>
-        <link rel="alternate" href="/<?= $entry["perma_link"] ?>" />
-        <published><?= date(DATE_ATOM, $entry["published"]) ?></published>
-        <updated><?= date(DATE_ATOM, $entry["updated"]) ?></updated>
-        <?= buildAuthors($entry["authors"]) ?>
+        <link rel="alternate" href="<?= $entry["perma_link"] ?>" />
+        <published><?= date(DATE_ATOM, strtotime($entry["published"])) ?></published>
+        <updated><?= date(DATE_ATOM, strtotime($entry["updated"])) ?></updated>
+<?= buildAuthors($entry["authors"]) ?>
 <?php
         $cats = explode(",", $entry["category"]);
         foreach ($cats as $c) {
@@ -118,6 +120,7 @@ if ($result->num_rows !== 0) {
         <content type="xhtml" xml:lang="en">
             <div xmlns="http://www.w3.org/1999/xhtml">
                 <?= $entry["short"] ?>
+
             </div>
         </content>
     </entry>
