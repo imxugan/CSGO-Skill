@@ -1,6 +1,6 @@
 <?php
 
-require_once("setup");
+require_once("setup.php");
 
 if (count($_POST) !== 4) {
     consoleExit("{\"success\":false,\"error\":\"1414\"}");
@@ -21,6 +21,6 @@ $steamID = $_POST["steamid"];
 $verify = $_POST["verify"];
 $create = true;
 
-require_once("makeAccount"); // This will do the rest for us
+require_once("makeAccount.php"); // This will do the rest for us
 
 ?>

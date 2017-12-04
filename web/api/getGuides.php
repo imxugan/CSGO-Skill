@@ -1,9 +1,9 @@
 <?php
 
-require_once("setup");
-require_once("dbInf");
+require_once("setup.php");
+require_once("dbInf.php");
 
-if (!isset($_POST["version"]){
+if (!isset($_POST["version"])) {
     error_log("11141 - Missing POST[version] information, perhaps a direct request?");
     die('{"success":false,"error":"11141"}');
 } else {
@@ -47,7 +47,7 @@ function getLocale($name) {
 // Various selection data for various versions
 // v1.0.X
 if ($major == 1 && $minor == 0) {
-    $query = "SELECT `data` WHERE `version` LIKE 'v1.0.%' ";
+    $query = "SELECT `data`, `name` FROM `AppData` WHERE `version` LIKE 'v1.0.%' ";
     $query .= "AND `name` IN ('" . getLocale("equipment") . "', '" . getLocale("guides") . "', 'nades') ORDER BY `id` DESC";
 } else if ($major > 1 && minor > 0) {
     error_log("1117 - FUTURE version `v" . $major . "." . $minor . "` requested?");
@@ -57,27 +57,27 @@ if ($major == 1 && $minor == 0) {
     die('{"success":false,"error":"1116"}');
 }
 
-$conn = mysqli_connect($server, $username, $password, $flaredb);
+$conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
 if ($conn->connect_error) {
-    error_log("1112 - Failed to connect to MySQL Database '" . $flaredb . "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
+    error_log("1112 - Failed to connect to MySQL Database '" . FLAREDB . "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
     die('{"success":false,"error":"1112"}');
 }
 
 $result = $conn->query($query);
 
 if ($result->num_rows == 0) {
-    error_log("1113 - Failed to find any rows in `" . $flaredb . "`.`AppData`, empty result.")
+    error_log("1113 - Failed to find any rows in `" . FLAREDB . "`.`AppData`, empty result: " . print_r($conn->error_list, true));
     die('{"success":false,"error":"1113"}');
 } else {
     while ($row = $result->fetch_assoc()) {
         // v1.0.X
         if ($major == 1 && $minor == 0) {
             if ($row["name"] == getLocale("equipment") && !isset($equipment)) {
-                $equipment == $row["data"];
+                $equipment = $row["data"];
             } else if ($row["name"] == getLocale("guides") && !isset($guides)) {
-                $guides == $row["data"];
+                $guides = $row["data"];
             } else if ($row["name"] == "nades" && !isset($nades)) {
-                $nades == $row["data"];
+                $nades = $row["data"];
             }
         }
     }

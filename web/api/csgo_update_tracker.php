@@ -1,7 +1,7 @@
 <?php
 
-require_once("setup");
-require("dbInf");
+require_once("setup.php");
+require("dbInf.php");
 
 // Load the RSS feed into a JSON array-like object;
 $rss = new DOMDocument();
@@ -21,7 +21,7 @@ $feed = array_reverse($feed);
 
 // var_dump($feed);
 
-$conn = mysqli_connect($server, $username, $password, $updatedb);
+$conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, UPDATEDB);
 if ($conn->connect_error){
     die("Connection failed");
 }

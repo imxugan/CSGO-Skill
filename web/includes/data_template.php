@@ -1,7 +1,7 @@
 <?php
 
 function getDataTemplate() {
-    
+
     $data = array(
         "recently_changed" => false,
         "kills" => 0,
@@ -43,14 +43,14 @@ function getDataTemplate() {
         $data["g".$g."s"] = 0; $data["g".$g."h"] = 0; $data["g".$g."k"] = 0;
     }
 
-    require_once("main_tasks_template");
+    require_once("main_tasks_template.php");
 
     array_merge($data, array(
         "daily" => 0,
         "weekly" => 0,
         "weekly_req" => 0,
         "main_tasks" => getMainTasks()
-    );
+    ));
 
     return $data;
 

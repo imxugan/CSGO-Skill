@@ -1,22 +1,18 @@
 <?php
 
-require_once('openid');
-require_once('setup');
+require_once('openid.php');
+require_once('setup.php');
+require_once('dbInf.php');
 
 try {
-	$openid = new LightOpenID($steamauth['domain']);
+    if (isset($_GET["app"])) {
+        $openid = new LightOpenID("http://api.flare-esports.net/login?app");
+    } else {
+        $openid = new LightOpenID("http://www.flare-esports.net/login");
+    }
 
 	if(!$openid->mode) {
 		$openid->identity = 'http://steamcommunity.com/openid';
-        /**
-         * Set return URL to the currently executing script, this allows us to
-         * simply require_once() this file when we want the user to login, and
-         * gracefully redirected back to the original calling script.
-         *
-         * The Application will call this script directly, allowing super-dooper
-         * easy redirection and to pull data in a more effective and secure way.
-         */
-        $openid->returnUrl = $_SERVER["PHP_SELF"];
 		header('Location: ' . $openid->authUrl());
 	} elseif ($openid->mode == 'cancel') {
         // No need to log when a user cancels authentication.
@@ -26,10 +22,10 @@ try {
 			$id = $openid->identity;
 			$ptn = "/^http:\/\/steamcommunity\.com\/openid\/id\/(7[0-9]{15,25}+)$/";
 			preg_match($ptn, $id, $matches);
-            $steamID = $mathes[1];
-            $conn = mysqli_connect($server, $username, $password, $flaredb);
+            $steamID = $matches[1];
+            $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
             if ($conn->connect_error) {
-                error_log("1212 - Failed to connect to MySQL Database '" . $flaredb .
+                error_log("1212 - Failed to connect to MySQL Database '" . FLAREDB .
                 "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
                 consoleExit("{\"success\":false,\"error\":\"1212\"}");
             }
@@ -39,7 +35,7 @@ try {
             if ($result->num_rows === 0) {
                 $conn->close();
                 // This, without anything but the $steamID, will check if the account is valid, reserve the row, and return true.
-                require_once("makeAccount");
+                require_once("makeAccount.php");
             }
             $result = $result->fetch_assoc()["secret"];
             $conn->close();

@@ -1,5 +1,8 @@
 <?php
 
+require_once("setup.php");
+require_once("dbInf.php");
+
 /**
  * This file must be included at the time when a new account should be built
  * and only takes two external variables: $steamID, $create [OPTIONAL]
@@ -23,10 +26,10 @@ if (!isset($steamID)) {
 
 function check($steamID, $doubleCheck = false) {
     $url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/" .
-    "v0002/?key=" . $STEAMKEY . "&steamids=" . $steamID;
+    "v0002/?key=" . STEAMKEY . "&steamids=" . $steamID;
     $json= json_decode(file_get_contents($url));
 
-    if (!isset($json->repsonse->players[0]->communityvisibilitystate)) {
+    if (!isset($json->response->players[0]->communityvisibilitystate)) {
         // Non-existent profile
         if ($doubleCheck) { return NULL; }
         consoleExit("{\"success\":false,\"error\":\"1320\"}");
@@ -48,7 +51,7 @@ function check($steamID, $doubleCheck = false) {
     }
 
     $url = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/" .
-           "v2/?appid=730&key=" . $STEAMKEY . "&steamid=" . $steamID;
+           "v2/?appid=730&key=" . STEAMKEY . "&steamid=" . $steamID;
     $json = json_decode(file_get_contents($url));
 
     if (!isset($json->playerstats)) {
@@ -82,7 +85,7 @@ function check($steamID, $doubleCheck = false) {
 
     foreach ($achvs as $a) {
         if ($a->name === "WIN_ROUNDS_LOW") {
-            if ($a->value === 1) {
+            if ($a->achieved === 1) {
                 $goodAchv = true;
                 break;
             }
@@ -97,9 +100,9 @@ function check($steamID, $doubleCheck = false) {
 
     if ($doubleCheck) { return $stats; }
 
-    $conn = mysqli_connect($server, $username, $password, $flaredb);
+    $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
     if ($conn->connect_error) {
-        error_log("1312 - Failed to connect to MySQL Database '" . $flaredb .
+        error_log("1312 - Failed to connect to MySQL Database '" . FLAREDB .
         "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
         consoleExit("{\"success\":false,\"error\":\"1312\"}");
     }
@@ -130,7 +133,7 @@ function check($steamID, $doubleCheck = false) {
         $query = "DELETE FROM `Players_01` WHERE `steamid`=\"" . $steamID .
         "\" AND `verified` = 0 AND `secret`=\"empty\"";
         if (!$conn->query($query)) {
-            error_log("13261 - The SQL query to delete a reserved account row failed. Here's what we got: " . $conn->error_list);
+            error_log("13261 - The SQL query to delete a reserved account row failed. Here's what we got: " . print_r($conn->error_list, true));
             $conn->close();
             consoleExit("{\"success\":false,\"error\":\"13261\"}");
         }
@@ -158,20 +161,23 @@ function check($steamID, $doubleCheck = false) {
         $conn->close();
         consoleExit("{\"success\":true,\"verify\":\"" . $string . "\"}");
     } else {
-        error_log("13262 - The SQL query to reserve user accuont failed. Here's what we got: " . $conn->error_list);
+        error_log("13262 - The SQL query to reserve user accuont failed. Here's what we got: " . print_r($conn->error_list, true));
         $conn->close();
         consoleExit("{\"success\":false,\"error\":\"13262\"}");
     }
 }
 
-// Being Main Stuff
+//////////////////////
+// Begin Main Stuff //
+//////////////////////
+
 if (!isset($create)) {
     check($steamID);
 } else if (isset($email) && isset($name) && isset($verify)){
 
-    $conn = mysqli_connect($server, $username, $password, $flaredb);
+    $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
     if ($conn->connect_error) {
-        error_log("1312 - Failed to connect to MySQL Database '" . $flaredb .
+        error_log("1312 - Failed to connect to MySQL Database '" . FLAREDB .
         "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
         consoleExit("{\"success\":false,\"error\":\"1312\"}");
     }
@@ -219,13 +225,15 @@ if (!isset($create)) {
     // Grab `id` and `status` for things
     $result = $result->fetch_assoc();
     $id = $result["id"];
-    $status = json_decode($result["status"], true);
+    $status = json_decode($result["status"]);
 
-    if ($status["verify"] !== $verify) {
+    if ($status->verify !== $verify) {
         // Given $verify doesn't match. Cannot validate request!
         $conn->close();
         consoleExit("{\"success\":false,\"error\":\"1323\"}");
     }
+
+    unset($status->verify); // No longer needed
 
     $name = $conn->real_escape_string(substr($name, 0, 30));
 
@@ -314,13 +322,13 @@ if (!isset($create)) {
     $secret = $id . "-" . $secret; // This is 100% unique all the time
 
     // Make activation link
-    $status["link"] = array(
-        "secret" => substr(hash("512", random_bytes(200)), 0, 20),
+    $status->{"link"} = array(
+        "secret" => substr(hash("sha256", random_bytes(200)), 0, 20),
         "action" => "verify"
     );
 
     // Grab the Data template
-    require_once("data_template");
+    require_once("data_template.php");
 
     $query = "UPDATE `Players_01` SET " .
     "`username`=\"" . $name . "\"," .
@@ -337,31 +345,26 @@ if (!isset($create)) {
         // the account has been created, build & email the verification link
         $headers  = "From: Flare Bot <flarebot@flare-esports.net>\r\nTo: " . $email . "\r\n";
         $headers .= "MIME-Version: 1.0\r\nContent-Type: text/html; charset=iso-8859-1\r\n";
-        $message = "<div style=\"background-color:#f2f2f2;\"><table width=\"100%\"\r\nstyle=\"background-color:#f2f2f2;padding:1.5em 0px 2em 0px;\r\nbox-shadow:inset #aaa 0px 0px 10px -2px;\"><tbody><tr><td>\r\n<table style=\"width:640px;padding:10px 25px;\r\nbackground-color:#fff;border-radius:5px;\r\nbox-shadow:#777 0px 1px 8px -2px;color:#000;\" align=\"center\"><tbody>\r\n<tr><td><h1 style=\"text-align:center;font-size:3em;\r\nfont-family:&quot;Verdana&quot;, sans-serif;font-weight:lighter;\">\r\nWelcome to Flare E-Sports!</h1><p style=\"font-size:2em;\r\nfont-family:&quot;Arial&quot;, sans-serif;\">\r\nHello ";
+        $message = '<div style="background-color:#f2f2f2;"><table width="100%" style="background-color:#f2f2f2;padding:1.5em 0px 2em 0px;box-shadow:inset #aaa 0px 0px 10px -2px;"><tbody><tr><td><table style="width:640px;padding:10px 25px;background-color:#fff;border-radius:5px;box-shadow:#777 0px 1px 8px -2px;color:#000;" align="center"><tbody><tr><td><h1 style="text-align:center;font-size:3em;font-family:&quot;Verdana&quot;, sans-serif;font-weight:lighter;">Welcome to Flare E-Sports!</h1><p style="font-size:2em;font-family:&quot;Arial&quot;, sans-serif;">Hello ';
         $message .= htmlspecialchars($name);
-        $message .= ",</p>\r\n<p style=\"font-size:1.5em;font-family:&quot;Arial&quot;, sans-serif;\r\ntext-indent:2em;text-align:justify\">You have successfully registered\r\nyour <a href=\"https://www.steamcommunity.com/profiles/";
+        $message .= ',</p><p style="font-size:1.5em;font-family:&quot;Arial&quot;, sans-serif;text-indent:2em;text-align:justify">You have successfully registered your <a href="https://steamcommunity.com/profiles/';
         $message .= $steamID;
-        $message .= "\"\r\nstyle=\"color:#FF9800;text-decoration:underline;\">Steam Account";
-        $message .= "\r\n</a> with Flare E-Sports. If this is your account, please click the\r\nverification link below to complete the registration process. This\r\nlink will only work for the next 48 hours. </p><div\r\nstyle=\"margin:0 20px;word-break:break-all\"><a href=\"\r\nhttp://www.flare-esports.net/verifyEmail?u=";
-        $message .= $steamID;
-        $message .= '&k=';
-        $message .= $status["link"]["secret"];
-        $message .= "\r\n\" style=\"font-size: 1.2em;font-family: &quot;Consolas&quot;, monospace;\r\ncolor: #FF9800;\">\r\nhttp://www.flare-esports.net/verifyEmail?u=";
+        $message .= '" style="color:#FF9800;text-decoration:underline;">Steam Account</a> with Flare E-Sports. If this is your account, please click the verification link below to complete the registration process. This link will only work for the next 48 hours.</p><div style="margin:0 20px;word-break:break-all"><a href="http://flare-esports.net/verifyEmail?u=';
         $message .= $steamID;
         $message .= '&k=';
-        $message .= $status["link"]["secret"];
-        $message .= "\r\n</a></div><p style=\"font-size:1.5em;font-family:&quot;Arial&quot;,\r\nsans-serif;text-indent:2em;\">Thank you for joining Flare E-Sports, GL HF!\r\n</p></td></tr></tbody></table><p style=\"font-size:0.8em;font-family:\r\n&quot;Arial&quot;, sans-serif;color:#888;text-align:center;display:\r\nblock;margin:1em auto;width:600px;\">If this is not your account, or\r\nyou did not register this email, please click <a href=\"\r\nhttp://www.flare-esports.net/verifyEmail?cancel=yes&u=";
+        $message .= $status->link->secret;
+        $message .= '" style="font-size: 1.2em;font-family: &quot;Consolas&quot;, monospace;color: #FF9800;">http://flare-esports.net/verifyEmail?u=';
         $message .= $steamID;
         $message .= '&k=';
-        $message .= $status["link"]["secret"];
-        $message .= "\r\n\" style=\"color:#444;\">here</a> to cancel and we'll remove your\r\nemail from our system. If you have any questions or concerns, please\r\nvisit <a href=\"http://flare-esports.net/faq\" style=\"color:#444;\">\r\nflare-esports.net/faq</a> or contact us via email at\r\n<a href=\"mailto:support@flare-esports.net\">support@flare-esports.net</a>\r\n</p></td></tr></tbody></table></div>";
+        $message .= $status->link->secret;
+        $message .= '</a></div><p style="font-size:1.5em;font-family:&quot;Arial&quot;,sans-serif;text-indent:2em;">Thank you for joining Flare E-Sports, GL HF!</p></td></tr></tbody></table><p style="font-size:0.8em;font-family:&quot;Arial&quot;, sans-serif;color:#888;text-align:center;display:block;margin:1em auto;width:600px;">If this is not your account, or you did not register this email, please ignore this email. We will not continue to email you. If you have any questions or concerns, please visit <a href="http://flare-esports.net/faq" style="color:#444;">flare-esports.net/faq</a> or contact us via email at<a href="mailto:support@flare-esports.net">support@flare-esports.net</a></p></td></tr></tbody></table></div>';
         mail($email, 'Welcome to Flare E-Sports, ' . $name . '!', $message, $headers);
 
         consoleExit("{\"success\":true,\"secret\":\"" . $secret . "\"}");
 
     } else {
         // Query failed, I cri evrytiem ;(
-        error_log("13263 - The SQL query to complete user signup failed. Here's what we got: " . $conn->error_list);
+        error_log("13263 - The SQL query to complete user signup failed. Here's what we got: " . print_r($conn->error_list, true));
         $conn->close();
         consoleExit("{\"success\":false,\"error\":\"13263\"}");
     }

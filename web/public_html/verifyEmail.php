@@ -2,8 +2,8 @@
 
 // TODO: This is NOT user-friendly at all. Rework before release!
 
-require_once("setup");
-require_once("dbInf");
+require_once("setup.php");
+require_once("dbInf.php");
 
 if (count($_GET) !== 2) {
     die("{\"success\":false,\"error\":\"1514\"}");
@@ -18,9 +18,9 @@ foreach ($expected as $f) {
     }
 }
 
-$conn = mysqli_connect($server, $username, $password, $flaredb);
+$conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
 if ($conn->connect_error) {
-    error_log("1512 - Failed to connect to MySQL Database '" . $flaredb .
+    error_log("1512 - Failed to connect to MySQL Database '" . FLAREDB .
     "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
     die("{\"success\":false,\"error\":\"1512\"}");
 }
@@ -43,8 +43,8 @@ if ($result["verified"] === 1) {
     exit("{\"success\":true}");
 }
 $status = json_decode($result["status"]);
-if ($status["link"]["action"] === "verify" && $verify === $status["link"]["secret"]) {
-    unset($status["link"]);
+if ($status->link->action === "verify" && $verify === $status->link->secret) {
+    unset($status->link);
     $query = "UPDATE `Players_01` SET `verified` = 1, " .
     "`status`=" . json_encode(json_encode($status)) . " WHERE `steamid`=\"" . $steamID . "\"";
     if (!$conn->query($query)) {

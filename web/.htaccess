@@ -1,6 +1,4 @@
-DefaultType application/x-httpd-php
 DirectoryIndex index index.html
 RewriteEngine On
-RedirectMatch permanent ^/api/(.*)$ http://api.flare-esports.net/$1
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule !.*\.php$ %{REQUEST_FILENAME}.php [QSA,L]

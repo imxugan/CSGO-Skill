@@ -8,7 +8,7 @@ $steamauth['apikey'] = "585DCDF484116BAEED7DCEB43000A7F4";
 $steamauth['domain'] = "http://www.flare-esports.net";
 $steamauth['logout'] = $steamauth['domain'] . "/logout";
 $steamauth['login'] = $steamauth['domain'];
-$STEAMKEY = "585DCDF484116BAEED7DCEB43000A7F4";
+define("STEAMKEY","585DCDF484116BAEED7DCEB43000A7F4");
 
 // Javascript Console logging
 
@@ -16,7 +16,7 @@ $STEAMKEY = "585DCDF484116BAEED7DCEB43000A7F4";
 function consoleExit($output){
     ?>
 <!DOCTYPE html>
-<html><body><script>console.log("FLARE-ESPORTS:<?=$output?>");</script></body></html>
+<html><body><script>console.log('FLARE-ESPORTS:<?=$output?>');</script></body></html>
     <?php
     exit();
 }
