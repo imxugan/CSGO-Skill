@@ -6,7 +6,7 @@ function getCategory($category) {
     $l = strpos($category, "[");
     if ($l === false) { return 'term="'.$category.'"'; }
     $t = substr($category, 0, $l);
-    $l = substr($category, $l, -1);
+    $l = substr($category, $l+1, -1);
     return 'term="'.$t.'" label="'.$l.'"';
 }
 function buildAuthors($authors) {
@@ -70,7 +70,7 @@ $SUB = "Official Train CSGO News Feed";
 
 ?>
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 
     <title><?= $TITLE ?></title>
     <link rel="self" href="<?= $LINK.$SELF ?>" />
