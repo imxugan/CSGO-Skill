@@ -9,7 +9,7 @@ function convertStats($stats) {
 
     $fixed = json_decode("{}");
     $new = json_decode("{}");
-    foreach ($stats->stats as $s) { // pack into list to reduce lookup time
+    foreach ($stats as $s) { // pack into list to reduce lookup time
         $fixed->{$s->name} = $s->value;
     }
     $new->{"kills"} = $fixed->total_kills;

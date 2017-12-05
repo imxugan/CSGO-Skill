@@ -2,6 +2,7 @@
 
 require_once("setup.php");
 require_once("dbInf.php");
+require_once("checkSteamProfile.php");
 
 /**
  * This file must be included at the time when a new account should be built
@@ -11,94 +12,14 @@ require_once("dbInf.php");
  * Otherwise, we simply check that the account COULD be created.
  */
 
-/**** REQUIREMENTS ****
- * A public profile
- * Owns CS: GO
- * Has 10 hours played (36000 seconds)
- * Scored 200 kills
- * Has the achievement Newb World Order (Win 10 rounds) [WIN_ROUNDS_LOW]
- */
-
 if (!isset($steamID)) {
     error_log("Missing \$steamID for included file \"makeAccount\"!");
     die("Missing steamID!");
 }
 
-function check($steamID, $doubleCheck = false) {
-    $url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/" .
-    "v0002/?key=" . STEAMKEY . "&steamids=" . $steamID;
-    $json= json_decode(file_get_contents($url));
+function doAction($steamID) {
 
-    if (!isset($json->response->players[0]->communityvisibilitystate)) {
-        // Non-existent profile
-        if ($doubleCheck) { return NULL; }
-        consoleExit("{\"success\":false,\"error\":\"1320\"}");
-    }
-
-    $player = $json->response->players[0];
-
-    if ($steamID !== $player->steamid) {
-        // Provided steamID is not properly sanitized or contains extra (attack) data, stop now
-        error_log("1323 - Possible SQL injection attack detected. \$steamID = \"" . $steamID . "\"");
-        if ($doubleCheck) { return NULL; }
-        consoleExit("{\"success\":false,\"error\":\"1323\"}");
-    }
-
-    if ($player->communityvisibilitystate !== 3) {
-        // Profile is not visible
-        if ($doubleCheck) { return NULL; }
-        consoleExit("{\"success\":false,\"error\":\"1321\"}");
-    }
-
-    $url = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/" .
-           "v2/?appid=730&key=" . STEAMKEY . "&steamid=" . $steamID;
-    $json = json_decode(file_get_contents($url));
-
-    if (!isset($json->playerstats)) {
-        // Profile does not have CS: GO
-        if ($doubleCheck) { return NULL; }
-        consoleExit("{\"success\":false,\"error\":\"13221\"}");
-    }
-
-    $stats = $json->playerstats->stats;
-    $achvs = $json->playerstats->achievements;
-    $goodPlaytime = false;
-    $goodKills = false;
-    $goodAchv = false;
-    $chkPlaytime = false;
-    $chkKills = false;
-
-    foreach ($stats as $e) {
-        if ($e->name === "total_time_played") {
-            if ($e->value > 36000) {
-                $goodPlaytime = true;
-            }
-            $chkPlaytime = true;
-        } else if ($e->name === "total_kills") {
-            if ($e->value > 200) {
-                $goodKills = true;
-            }
-            $chkKills = true;
-        }
-        if ($chkPlaytime && $chkKills) { break; }
-    } unset($e);
-
-    foreach ($achvs as $a) {
-        if ($a->name === "WIN_ROUNDS_LOW") {
-            if ($a->achieved === 1) {
-                $goodAchv = true;
-                break;
-            }
-        }
-    } unset($a);
-
-    if (!$goodPlaytime || !$goodAchv || !$goodKills) {
-        // Profile does not meet extra requirements
-        if ($doubleCheck) { return NULL; }
-        consoleExit("{\"success\":false,\"error\":\"13222\"}");
-    }
-
-    if ($doubleCheck) { return $stats; }
+    check($steamID, true);
 
     $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
     if ($conn->connect_error) {
@@ -172,7 +93,7 @@ function check($steamID, $doubleCheck = false) {
 //////////////////////
 
 if (!isset($create)) {
-    check($steamID);
+    doAction($steamID);
 } else if (isset($email) && isset($name) && isset($verify)){
 
     $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
@@ -297,7 +218,7 @@ if (!isset($create)) {
      * Commence account creation at once!
      */
 
-    $stats = check($steamID, true); // Double check the account
+    $stats = check($steamID); // Double check the account
     if (is_null($stats)) {
         // Account is no longer valid (for some reason), I cry everytime :'(
         $conn->close();
