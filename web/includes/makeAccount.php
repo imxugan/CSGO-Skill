@@ -17,7 +17,7 @@ if (!isset($steamID)) {
     die("Missing steamID!");
 }
 
-function doAction($steamID) {
+if (!isset($create)) { // Reserve Row, return Verify key
 
     check($steamID, true);
 
@@ -82,19 +82,13 @@ function doAction($steamID) {
         $conn->close();
         consoleExit("{\"success\":true,\"verify\":\"" . $string . "\"}");
     } else {
-        error_log("13262 - The SQL query to reserve user accuont failed. Here's what we got: " . print_r($conn->error_list, true));
+        error_log("13262 - The SQL query to reserve user account failed. Here's what we got: " . print_r($conn->error_list, true));
         $conn->close();
         consoleExit("{\"success\":false,\"error\":\"13262\"}");
     }
-}
 
-//////////////////////
-// Begin Main Stuff //
-//////////////////////
-
-if (!isset($create)) {
-    doAction($steamID);
 } else if (isset($email) && isset($name) && isset($verify)){
+    // Create account
 
     $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
     if ($conn->connect_error) {
