@@ -5,7 +5,7 @@
  * Last modified 9/5/17 12:47 PM
  */
 
-package net.flare_esports.traincsgo;
+package net.flare_esports.csgoskill;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

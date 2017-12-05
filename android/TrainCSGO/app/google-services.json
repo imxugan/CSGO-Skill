@@ -8,7 +8,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:428022534330:android:2458b3db42f039d0",
         "android_client_info": {
-          "package_name": "net.flare_esports.traincsgo"
+          "package_name": "net.flare_esports.csgoskill"
         }
       },
       "oauth_client": [
@@ -16,7 +16,7 @@
           "client_id": "428022534330-apva1si6lc59n73gc8eet0dr7ff5lo01.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "net.flare_esports.traincsgo",
+            "package_name": "net.flare_esports.csgoskill",
             "certificate_hash": "80afdbabde0cba0ae3015e2b52638618f3245602"
           }
         },

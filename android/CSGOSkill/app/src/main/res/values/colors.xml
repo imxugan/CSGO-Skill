@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team from Flare E-Sports on 12/5/17 4:13 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 12/5/17 4:03 PM
+  -->
+
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+</resources>

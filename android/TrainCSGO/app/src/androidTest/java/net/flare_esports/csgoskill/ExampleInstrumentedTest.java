@@ -5,7 +5,7 @@
  * Last modified 9/5/17 12:47 PM
  */
 
-package net.flare_esports.traincsgo;
+package net.flare_esports.csgoskill;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -28,6 +28,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("net.flare_esports.traincsgo", appContext.getPackageName());
+        assertEquals("net.flare_esports.csgoskill", appContext.getPackageName());
     }
 }

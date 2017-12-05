@@ -5,7 +5,7 @@
  * Last modified 11/26/17 8:28 AM
  */
 
-package net.flare_esports.traincsgo;
+package net.flare_esports.csgoskill;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,7 +18,7 @@ public class Database extends SQLiteOpenHelper{
     private static final int VERSION = 1;
     private static final int MAJOR = 1;
     private static final int MINOR = 0;
-    private static final String NAME = "traincsgo.db";
+    private static final String NAME = "csgoskill.db";
 
     private static final String USERTABLE = "Accounts";
     private static final String DATATABLE = "Data";

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team from Flare E-Sports on 12/5/17 4:13 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 12/5/17 4:04 PM
+  -->
+
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

@@ -11,7 +11,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
     defaultConfig {
-        applicationId "net.flare_esports.traincsgo"
+        applicationId "net.flare_esports.csgoskill"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
