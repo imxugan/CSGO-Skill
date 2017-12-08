@@ -1,28 +1,21 @@
 <?php
 
-require_once("setup.php");
-require_once("dbInf.php");
+/**
+ * THIS SHOULD BE STATIC.
+ * Dynamic sounds cool, but if we need to test live versions, we need to change
+ * the database version without affecting current users. When we are ready to
+ * roll out a new version, we simply change this file and the new version is
+ * officially released.
+ *
+ * The new version files should already be in the Database and on a timed release
+ * in the app store if needed. We just wait for the app to update on the store
+ * and publish the new `version.php` and boom, super smooth version change.
+ */
 
-$conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
-if ($conn->connect_error) {
-    error_log("1012 - Failed to connect to MySQL Database '" . FLAREDB . "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
-    die('{"success":false,"error":"1012"}');
-}
+$MAJOR = 0;
+$MINOR = 8;
+$POINT = 0;
 
-// Because version updates will add a new "version" row, we must check rows last-first
-$query = "SELECT `data` FROM `AppData` WHERE `name`='version' ORDER BY `id` DESC";
-$result = $conn->query($query);
-
-if ($result->num_rows == 0) {
-    error_log("1013 - Failed to find any 'version' rows in `" . FLAREDB . "`.`AppData`, empty result.");
-    $conn->close();
-    die('{"success":false,"error":"1013"}');
-} else {
-    while ($row = $result->fetch_assoc()) {
-        // Stop at first result, because it is the most up-to-date
-        $conn->close();
-        exit($row["data"]);
-    }
-}
+echo "v" + $MAJOR + "." + $MINOR + "." + $POINT;
 
 ?>
