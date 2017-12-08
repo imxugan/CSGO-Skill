@@ -1,5 +1,9 @@
 <?php
 
+/* Don't forget to delete this when we eventually implement this */
+exit("Coming in a future version");
+
+/*
 require_once("setup.php");
 require_once("dbInf.php");
 

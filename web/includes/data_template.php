@@ -22,6 +22,13 @@ function getDataTemplate() {
         "money" => 0,
         "knife" => 0,
         "nades" => 0,
+        "fires" => 0,
+        "csnipe" => 0,
+        "doms" => 0,
+        "revs" => 0,
+        "overkill" => 0,
+        "pistolwin" => 0,
+        "donation" => 0,
         "wins_cbble" => 0,
         "wins_dust2" => 0,
         "wins_infer" => 0,
@@ -31,7 +38,9 @@ function getDataTemplate() {
         "rnds_dust2" => 0,
         "rnds_infer" => 0,
         "rnds_nuke" => 0,
-        "rnds_train" => 0
+        "rnds_train" => 0,
+        "g35s" => 0,
+        "g35k" => 0
     );
 
     // Generate weapon entries. See item_ids.json
@@ -42,15 +51,6 @@ function getDataTemplate() {
     foreach ($guns as $g) {
         $data["g".$g."s"] = 0; $data["g".$g."h"] = 0; $data["g".$g."k"] = 0;
     }
-
-    require_once("main_tasks_template.php");
-
-    array_merge($data, array(
-        "daily" => 0,
-        "weekly" => 0,
-        "weekly_req" => 0,
-        "main_tasks" => getMainTasks()
-    ));
 
     return $data;
 

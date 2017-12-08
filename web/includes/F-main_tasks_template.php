@@ -1,5 +1,10 @@
 <?php
 
+/* Don't forget to delete this when we eventually implement this */
+exit("Coming in a future version");
+
+/*
+
 function getMainTasks() {
     $tasks = array(
         "getting_started" => array(
@@ -62,5 +67,6 @@ function getMainTasks() {
     return $tasks;
 
 }
+*/
 
 ?>
