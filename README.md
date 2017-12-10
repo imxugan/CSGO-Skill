@@ -1,2 +1,2 @@
-# Train-CSGO
-Improve your game in CSGO
+# CSGO-Skill
+Track your stats and improve your skills in CSGO!

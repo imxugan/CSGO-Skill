@@ -18,7 +18,7 @@ public class Database extends SQLiteOpenHelper{
     private static final int VERSION = 1;
     private static final int MAJOR = 1;
     private static final int MINOR = 0;
-    private static final String NAME = "traincsgo.db";
+    private static final String NAME = "csgoskill.db";
 
     private static final String USERTABLE = "Accounts";
     private static final String DATATABLE = "Data";
@@ -64,16 +64,6 @@ public class Database extends SQLiteOpenHelper{
 
         // Currently there are no plans to change the structure of the DB, so nothing is here
 
-    }
-
-    /**
-     * Attempts to get guide data from the website and save it to the DATA table.
-     *
-     * @return true if successful or up-to-date, false otherwise.
-     */
-    public boolean syncGuides() {
-        // TODO
-        return false;
     }
 
     /**
@@ -127,77 +117,6 @@ public class Database extends SQLiteOpenHelper{
     public boolean updateUser(String steamId) {
         // TODO
         return false;
-    }
-
-    /**
-     * Attempts to download the ID and all user progress for the current weekly task.
-     *
-     * @return true if successful or up-to-date, false otherwise.
-     */
-    public boolean updateWeekly() {
-        // TODO
-        return false;
-    }
-
-    /**
-     * Attempts to set the taskName as complete for the given steamId.
-     *
-     * @param steamId  The Steam ID of the user to update.
-     * @param taskName The Task Name to set as complete.
-     * @return         true if successfully tried (even if denied), false if error occurred.
-     */
-    public boolean saveTask(String steamId, String taskName) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * Attempts to download the main task progress only for the given steamId.
-     * Should be manually called by user, not by the device.
-     *
-     * @param steamId The Steam ID of the user.
-     * @return        true if successful or up-to-date, false otherwise.
-     */
-    public boolean updateTasks(String steamId) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * Gets a JSONObject representing the main task progress of the given steamId, according to data on the device.
-     * DOES NOT request info from server.
-     *
-     * @param steamId The Steam ID of the user.
-     * @return        JSONObject of main task progress, or null if error occurred.
-     */
-    public JSONObject getMainTasks(String steamId) {
-        // TODO
-        return null;
-    }
-
-    /**
-     * Gets a JSONObject representing the current weekly task, and the given user's progress according to the device.
-     * DOES NOT request info from server.
-     *
-     * @param steamId The Steam ID of the user
-     * @return        JSONObject of weekly task and progress of user if given, or null if error occurred.
-     * @see           #getWeeklyTask()
-     */
-    public JSONObject getWeeklyTask(String steamId) {
-        // TODO
-        return null;
-    }
-
-    /**
-     * Gets a JSONObject representing the current weekly task, according to the device.
-     * DOES NOT request info from server.
-     *
-     * @return JSONObject of weekly task information, or null if error occurred.
-     * @see    #getWeeklyTask(String steamId)
-     */
-    public JSONObject getWeeklyTask() {
-        // TODO
-        return null;
     }
 
     /**
