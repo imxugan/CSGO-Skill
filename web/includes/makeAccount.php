@@ -19,6 +19,7 @@ if (!isset($steamID)) {
 
 if (!isset($create)) { // Reserve Row, return Verify key
 
+    // Would terminate script if it fails
     check($steamID, true);
 
     $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
@@ -30,6 +31,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
 
     $steamID = $conn->real_escape_string($steamID);
 
+    // Look up accounts which are registered.
     $query = "SELECT `id` FROM `Players_01` WHERE `steamid`=\"" . $steamID .
     "\" AND `verified` = 1 AND NOT `secret`=\"empty\"";
     $result = $conn->query($query);
@@ -40,6 +42,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
         consoleExit("{\"success\":false,\"error\":\"13241\"}");
     }
 
+    // Check for existing, non-registered accounts
     $query = "SELECT `id` FROM `Players_01` WHERE `steamid`=\"" . $steamID .
     "\" AND `verified` = 0 AND `secret`=\"empty\"";
     $result = $conn->query($query);
@@ -60,8 +63,6 @@ if (!isset($create)) { // Reserve Row, return Verify key
         }
     }
 
-    // Only checking if account COULD be made, and it can :)
-
     /**
      * To make the next call faster and more secure, we'll "reserve" the given
      * Steam ID in our Players table, that way we don't have to waste time
@@ -77,7 +78,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
         "verify" => $string
     );
     $query = "INSERT INTO `Players_01` (`steamid`, `status`) VALUES (\"" . $steamID .
-             "\", " . json_encode(json_encode($status)) . ")";
+             "\", " . jsonToSql($status) . ")";
     if ($conn->query($query)) {
         $conn->close();
         consoleExit("{\"success\":true,\"verify\":\"" . $string . "\"}");
@@ -213,7 +214,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
      */
 
     $stats = check($steamID); // Double check the account
-    if (is_null($stats)) {
+    if ($stats === NULL || $stats === false ) {
         // Account is no longer valid (for some reason), I cry everytime :'(
         $conn->close();
         consoleExit("{\"success\":false,\"error\":\"13223\"}");
@@ -250,9 +251,9 @@ if (!isset($create)) { // Reserve Row, return Verify key
     "`persona`=\"" . $name . "\"," .
     "`email`=\"" . $email . "\"," .
     "`secret`=\"" . $secret . "\"," .
-    "`current`=" . json_encode(json_encode($stats)) . // Double encoding escapes the things
-    ",`data`=" . json_encode(json_encode(getDataTemplate())) . // Same here.
-    ",`status`=" . json_encode(json_encode($status)) . // And here too.
+    "`current`=" . jsonToSql($stats) .
+    ",`data`=" . jsonToSql(getDataTemplate()) .
+    ",`status`=" . jsonToSql($status) .
     " WHERE `id` = " . $id;
 
     if ($conn->query($query)) { // That's a big query
@@ -274,9 +275,6 @@ if (!isset($create)) { // Reserve Row, return Verify key
         $message .= $status->link->secret;
         $message .= '</a></div><p style="font-size:1.5em;font-family:&quot;Arial&quot;,sans-serif;text-indent:2em;">Thank you for joining Flare E-Sports, GL HF!</p></td></tr></tbody></table><p style="font-size:0.8em;font-family:&quot;Arial&quot;, sans-serif;color:#888;text-align:center;display:block;margin:1em auto;width:600px;">If this is not your account, or you did not register this email, please ignore this email. We will not continue to email you. If you have any questions or concerns, please visit <a href="http://flare-esports.net/faq" style="color:#444;">flare-esports.net/faq</a> or contact us via email at<a href="mailto:support@flare-esports.net">support@flare-esports.net</a></p></td></tr></tbody></table></div>';
         mail($email, 'Welcome to Flare E-Sports, ' . $name . '!', $message, $headers);
-
-        consoleExit("{\"success\":true,\"secret\":\"" . $secret . "\"}");
-
     } else {
         // Query failed, I cri evrytiem ;(
         error_log("13263 - The SQL query to complete user signup failed. Here's what we got: " . print_r($conn->error_list, true));

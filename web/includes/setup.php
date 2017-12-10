@@ -15,9 +15,15 @@ define("STEAMKEY","585DCDF484116BAEED7DCEB43000A7F4");
 function consoleExit($output){
     ?>
 <!DOCTYPE html>
-<html><body><script>console.log('FLARE-ESPORTS:<?=$output?>');</script></body></html>
+<html><body><script>console.log('FLARE-ESPORTS:<?=$output?>');</script><span id="out"><?=$output?></body></html>
     <?php
     exit();
+}
+
+// Convert JSON objects to a string for SQL statments
+function jsonToSql($object) {
+    // This is the best I got, and seems secure enough.
+    return json_encode(json_encode($object));
 }
 
 // It's a little lonely here :(
