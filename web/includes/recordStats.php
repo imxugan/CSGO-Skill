@@ -141,12 +141,23 @@ if ($h === "08") {
         $history_stats->today = $now_stats;
         $entry = json_decode("{}");
         $check = false;
-        foreach ($now_stats as $k => $v) {
-            $diff = $v - $last_stats->{$k};
-            $global_stats->{$k} = $global_stats->{$k} + $diff;
-            if ($diff !== 0) {
-                $entry->{$k} = $diff;
-                $check = true;
+        // Check once to reduce the need to check potentially 50+ times per account
+        if ($row->type === "none") {
+            foreach ($now_stats as $k => $v) {
+                $diff = $v - $last_stats->{$k};
+                if ($diff !== 0) {
+                    $entry->{$k} = $diff;
+                    $check = true;
+                }
+            }
+        } else {
+            foreach ($now_stats as $k => $v) {
+                $diff = $v - $last_stats->{$k};
+                $global_stats->{$k} = $global_stats->{$k} + $diff;
+                if ($diff !== 0) {
+                    $entry->{$k} = $diff;
+                    $check = true;
+                }
             }
         }
         if ($check) {
