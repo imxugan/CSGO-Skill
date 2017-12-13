@@ -31,14 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (count($_GET) !== 1) {
         consoleExit("{\"success\":false,\"error\":\"14143\"}");
     }
-    if (strlen(http_build_query($_GET)) > 30) {
+    if (strlen(http_build_query($_GET)) > 40) {
         consoleExit("{\"success\":false,\"error\":\"14282\"}");
     }
-    $expected = array("steamid");
-    foreach ($expected as $f) {
-        if (!array_key_exists($f, $_GET)) {
-            consoleExit("{\"success\":false,\"error\":\"14144\"}");
-        }
+
+    if (!isset($_GET["steamid"]))
+        consoleExit("{\"success\":false,\"error\":\"14144\"}");
     }
 
     require_once("checkSteamProfile.php");
@@ -65,18 +63,44 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
         consoleExit("{\"success\":false,\"error\":\"1412\"}");
     }
-    $id = $_GET["steamid"];
-    $steamID = $id;
+    $steamID = $_GET["steamid"]; // Safe for SQL at this point
     $type = "none";
     $get = true;
 }
 
-$stats = json_decode("{\"today\":{" . json_encode($stats) . "}}");
-$stats->{"info"} = json_decode("{\"type\":\"" . $type . "\",\"steamid\":\"" . $steamID . "\"}");
-$stats->{"entries_month"} = json_decode("[]");
-$stats->{"entries_year"} = json_decode("[]");
+$query = "SELECT `type` FROM `Stats_01` WHERE `id`=\"" . $steamID . "\"";
+$result = $conn->query($query);
+if ($result->num_rows !== 0) {
+    // Non-user already in Stats table, cool?
+    if ($get) { $conn->close(); consoleExit("{\"success\":true}"); }
 
-$query = "INSERT INTO `Stats_01` (`id`, `type`, `data`) VALUES (\"" . $id . "\", \"" . $type . "\", \"" . jsonToSql($stats) . "\")";
+    // In Stats table, but we may update the Type
+    $result = $result->fetch_assoc();
+    if ($result["type"] === "none") {
+        $query = "UPDATE `Stats_01` SET `type` = \"user\" WHERE `id` = \"" . $steamID . "\"";
+        if ($conn->query($query)) {
+            $conn->close();
+            consoleExit("{\"success\":true,\"secret\":\"" . $secret . "\"}");
+        } else {
+            error_log("14262 - The SQL query to complete user stats insert failed. Here's what we got: " . print_r($conn->error_list, true));
+            $conn->close();
+            consoleExit("{\"success\":true,\"error\":\"14262\",\"secret\":\"" . $secret . "\"}");
+        }
+    } else {
+        // In Stats table, and already existing account? idk, return true?
+        $conn->close();
+        consoleExit("{\"success\":true}");
+    }
+}
+
+// Not in table, insert a fresh new avocado
+require_once("data_template.php");
+$global = jsonToSql(getDataTemplate());
+$history = jsonToSql(json_decode("{\"today\":{" . json_encode($stats) . "},\"entries_month\":[],\"entries_year\":[]}"));
+$stats = jsonToSql($stats);
+
+$query = "INSERT INTO `Stats_01` (`id`, `type`, `current`, global`, `history`) " .
+         "VALUES (\"$steamID\", \"$type\", \"$stats\", \"$global\", \"$history\")";
 
 if ($conn->query($query)) {
     $conn->close();
@@ -91,9 +115,9 @@ if ($conn->query($query)) {
         $conn->close();
         consoleExit("{\"success\":false,\"error\":\"14261\"}");
     } else {
-        error_log("14262 - The SQL query to complete user stats insert failed. Here's what we got: " . print_r($conn->error_list, true));
+        error_log("14263 - The SQL query to complete user stats insert failed. Here's what we got: " . print_r($conn->error_list, true));
         $conn->close();
-        consoleExit("{\"success\":true,\"error\":\"14262\",\"secret\":\"" . $secret . "\"}");
+        consoleExit("{\"success\":true,\"error\":\"14263\",\"secret\":\"" . $secret . "\"}");
     }
 
 }

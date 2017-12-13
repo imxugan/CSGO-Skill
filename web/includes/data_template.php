@@ -3,7 +3,6 @@
 function getDataTemplate() {
 
     $data = array(
-        "recently_changed" => false,
         "kills" => 0,
         "deaths" => 0,
         "heads" => 0,
@@ -52,7 +51,7 @@ function getDataTemplate() {
         $data["g".$g."s"] = 0; $data["g".$g."h"] = 0; $data["g".$g."k"] = 0;
     }
 
-    return $data;
+    return json_decode(json_encode($data));
 
 }
 

@@ -89,7 +89,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     }
 
 } else if (isset($email) && isset($name) && isset($verify)){
-    // Create account
+    // Finalize & create account
 
     $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
     if ($conn->connect_error) {
@@ -247,11 +247,11 @@ if (!isset($create)) { // Reserve Row, return Verify key
     require_once("data_template.php");
 
     $query = "UPDATE `Players_01` SET " .
-    "`username`=\"" . $name . "\"," .
-    "`persona`=\"" . $name . "\"," .
-    "`email`=\"" . $email . "\"," .
-    "`secret`=\"" . $secret . "\"," .
-    "`current`=" . jsonToSql($stats) .
+    "`username`=\"" . $name .
+    "\",`persona`=\"" . $name .
+    "\",`email`=\"" . $email .
+    "\",`secret`=\"" . $secret .
+    "\",`current`=" . jsonToSql($stats) .
     ",`data`=" . jsonToSql(getDataTemplate()) .
     ",`status`=" . jsonToSql($status) .
     " WHERE `id` = " . $id;

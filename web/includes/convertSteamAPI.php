@@ -14,6 +14,7 @@ function convertStats($stats) {
     }
     $new->{"kills"} = $fixed->total_kills;
     $new->{"deaths"} = $fixed->total_deaths;
+    $new->{"heads"} = $fixed->total_kills_headshot;
     $new->{"time"} = $fixed->total_time_played;
     $new->{"wins"} = $fixed->total_wins;
     $new->{"rounds"} = $fixed->total_rounds_played;
@@ -48,7 +49,6 @@ function convertStats($stats) {
     $new->{"rnds_infer"} = $fixed->total_rounds_map_de_inferno;
     $new->{"rnds_nuke"} = $fixed->total_rounds_map_de_nuke;
     $new->{"rnds_train"} = $fixed->total_rounds_map_de_train;
-    $new->{"heads"} = $fixed->total_kills_headshot;
     $new->{"g0s"} = $fixed->total_shots_glock;
     $new->{"g0h"} = $fixed->total_hits_glock;
     $new->{"g0k"} = $fixed->total_kills_glock;

@@ -50,9 +50,7 @@ function check($steamID, $throwError = false, $getStats = false) {
         consoleExit("{\"success\":false,\"error\":\"1321\"}");
     }
 
-    $url = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/" .
-           "v2/?appid=730&key=" . STEAMKEY . "&steamid=" . $steamID;
-    $json = json_decode(file_get_contents($url));
+    $json = downloadStats($steamID);
 
     if (!isset($json->playerstats)) {
         // Profile does not have CS: GO

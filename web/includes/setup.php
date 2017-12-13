@@ -1,6 +1,6 @@
 <?php
 
-// Our server time is based in Denver
+// Our server time is based in Denver, screw UTC!
 date_default_timezone_set("America/Denver");
 
 // Steam Setup
@@ -24,6 +24,14 @@ function consoleExit($output){
 function jsonToSql($object) {
     // This is the best I got, and seems secure enough.
     return json_encode(json_encode($object));
+}
+
+// Download CSGO stats for steamID
+function downloadStats($steamID) {
+    return json_decode(file_get_contents(
+        "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/" .
+        "v2/?appid=730&key=" . STEAMKEY . "&steamid=" . $steamID
+    ));
 }
 
 // It's a little lonely here :(
