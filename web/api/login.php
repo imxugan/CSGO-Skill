@@ -6,8 +6,10 @@ require_once('dbInf.php');
 
 try {
     if (isset($_GET["app"])) {
+        $app = true;
         $openid = new LightOpenID("http://api.flare-esports.net/login?app");
     } else {
+        $app = false;
         $openid = new LightOpenID("http://www.flare-esports.net/login");
     }
 
@@ -16,7 +18,9 @@ try {
 		header('Location: ' . $openid->authUrl());
 	} elseif ($openid->mode == 'cancel') {
         // No need to log when a user cancels authentication.
-        consoleExit("{\"success\":false,\"error\":\"1218\"}");
+        $msg = "{\"success\":false,\"error\":\"1218\"}"
+        if ($app){ consoleExit($msg); }
+        else { exit($msg); }
 	} else {
 		if($openid->validate()) {
 			$id = $openid->identity;
@@ -27,7 +31,9 @@ try {
             if ($conn->connect_error) {
                 error_log("1212 - Failed to connect to MySQL Database '" . FLAREDB .
                 "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
-                consoleExit("{\"success\":false,\"error\":\"1212\"}");
+                $msg = "{\"success\":false,\"error\":\"1212\"}";
+                if ($app){ consoleExit($msg); }
+                else { exit($msg); }
             }
             $query = "SELECT `secret` FROM `Players_01` WHERE `steamid`=\"" . $conn->real_escape_string($steamID) .
                      "\" AND `verified` = 1";
@@ -39,13 +45,19 @@ try {
             }
             $result = $result->fetch_assoc()["secret"];
             $conn->close();
-            consoleExit("{\"success\":true,\"secret\":\"" . $result . "\"}");
+            $msg = "{\"success\":true,\"secret\":\"" . $result . "\"}";
+            if ($app){ consoleExit($msg); }
+            else { exit($msg); }
 		} else {
             error_log("1219 - OpenID failed to validate. Reason unknown.");
-			consoleExit("{\"success\":false,\"error\":\"1219\"}");
+			$msg = "{\"success\":false,\"error\":\"1219\"}";
+            if ($app){ consoleExit($msg); }
+            else { exit($msg); }
 		}
 	}
 } catch(ErrorException $e) {
     error_log("1220 - ErrorException occured: " . $e->getMessage());
-	consoleExit("{\"success\":false,\"error\":\"1220\"}");
+	$msg = "{\"success\":false,\"error\":\"1220\"}";
+    if ($app){ consoleExit($msg); }
+    else { exit($msg); }
 }

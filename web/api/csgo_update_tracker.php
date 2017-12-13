@@ -1,6 +1,5 @@
 <?php
 
-require_once("setup.php");
 require("dbInf.php");
 
 // Load the RSS feed into a JSON array-like object;

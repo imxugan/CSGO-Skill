@@ -4,6 +4,10 @@ require_once("setup.php");
 require_once("dbInf.php");
 require_once("checkSteamProfile.php");
 
+if (!isset($app)) {
+    $app = false;
+}
+
 /**
  * This file must be included at the time when a new account should be built
  * and only takes two external variables: $steamID, $create [OPTIONAL]
@@ -95,7 +99,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     if ($conn->connect_error) {
         error_log("1312 - Failed to connect to MySQL Database '" . FLAREDB .
         "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
-        consoleExit("{\"success\":false,\"error\":\"1312\"}");
+        exit("{\"success\":false,\"error\":\"1312\"}");
     }
 
     $steamID = $conn->real_escape_string($steamID);
@@ -135,7 +139,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
         error_log("!!! - Account with Steam ID \"" . substr($steamID, 0, 25) .
         "\" creation attempted without a reserved row. Potentially attempted " .
         "outside of defined logic flow.");
-        consoleExit("{\"success\":false,\"error\":\"TRY AGAIN\"}");
+        exit("{\"success\":false,\"error\":\"TRY AGAIN\"}");
     }
 
     // Grab `id` and `status` for things
@@ -146,7 +150,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     if ($status->verify !== $verify) {
         // Given $verify doesn't match. Cannot validate request!
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"1323\"}");
+        exit("{\"success\":false,\"error\":\"1323\"}");
     }
 
     unset($status->verify); // No longer needed
@@ -157,7 +161,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     //             (a@b.c - anextremelylongemailthatnooneuses@bigdomain.domain)
     if (strlen($name) < 3 || strlen($email) < 5 || strlen($email) > 50){
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"1325\"}");
+        exit("{\"success\":false,\"error\":\"1325\"}");
     }
 
     // Check that email does not contain strange non-email characters
@@ -165,7 +169,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     foreach ($invalids as $char){
         if (strpos($email, $char) !== false){
             $conn->close();
-            consoleExit("{\"success\":false,\"error\":\"1325\"}");
+            exit("{\"success\":false,\"error\":\"1325\"}");
         }
     }
 
@@ -173,7 +177,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     $email = filter_var($email, FILTER_SANITIZE_EMAIL);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"1325\"}");
+        exit("{\"success\":false,\"error\":\"1325\"}");
     }
 
     $query = "SELECT `id` FROM `Players_01` WHERE `username` = \"" . $name . "\"";
@@ -185,7 +189,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
          * still be unique.
          */
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"13242\"}");
+        exit("{\"success\":false,\"error\":\"13242\"}");
     }
 
     $query = "SELECT `id` FROM `Players_01` WHERE `email` = \"" . $conn->real_escape_string($email) . "\"";
@@ -197,7 +201,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
          * account if they want!
          */
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"13243\"}");
+        exit("{\"success\":false,\"error\":\"13243\"}");
     }
 
     /**
@@ -217,7 +221,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     if ($stats === NULL || $stats === false ) {
         // Account is no longer valid (for some reason), I cry everytime :'(
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"13223\"}");
+        exit("{\"success\":false,\"error\":\"13223\"}");
     }
 
     // Generate secret
@@ -279,8 +283,10 @@ if (!isset($create)) { // Reserve Row, return Verify key
         // Query failed, I cri evrytiem ;(
         error_log("13263 - The SQL query to complete user signup failed. Here's what we got: " . print_r($conn->error_list, true));
         $conn->close();
-        consoleExit("{\"success\":false,\"error\":\"13263\"}");
+        exit("{\"success\":false,\"error\":\"13263\"}");
     }
+
+    // Return to `addAccount` flow
 
 } else {
     error_log("Missing \$email, \$name, or \$verify for included file \"makeAccount\"!");
