@@ -40,9 +40,9 @@ foreach ($feed as $item){
         // Build Email
         $headers[] = "MIME-Version: 1.0";
         $headers[] = "Content-type: text/html; charset=iso-8859-1";
-        $headers[] = "To: Dev Team <devteam@flare-esports.net>, "
+        $headers[] = "To: Dev Team <devteam@csgo-skill.com>, "
                    . "Mick Ashton <mickxashton@gmail.com>";
-        $headers[] = "From: Flare Bot <flarebot@flare-esports.net>";
+        $headers[] = "From: Skill Bot <skillbot@csgo-skill.com>";
 
         $message = '
 <html>
@@ -139,7 +139,7 @@ foreach ($feed as $item){
 </body>
 </html>';
 
-        mail("devteam@flare-esports.net, mickxashton@gmail.com", // Receivers
+        mail("devteam@csgo-skill.com, mickxashton@gmail.com", // Receivers
              "[CSGO Update] " . $item["title"], // Subject
              $message, // Message
              implode("\r\n", $headers)); // Headers

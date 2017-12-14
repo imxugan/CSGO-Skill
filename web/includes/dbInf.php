@@ -1,9 +1,9 @@
 <?php
 
 define("DB_SERVER", "localhost");
-define("USERNAME", "flaredevo");
+define("USERNAME", "flareesp_flaredevo");
 define("PASSWORD", "LOZ#^%TGoWRd,%ssxI");
-define("UPDATEDB", "flare-update");
-define("FLAREDB", "flare-db");
+define("UPDATEDB", "flareesp_update");
+define("FLAREDB", "flareesp_db");
 
 ?>
