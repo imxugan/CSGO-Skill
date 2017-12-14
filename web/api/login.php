@@ -7,10 +7,10 @@ require_once('dbInf.php');
 try {
     if (isset($_GET["app"])) {
         $app = true;
-        $openid = new LightOpenID("http://api.flare-esports.net/login?app");
+        $openid = new LightOpenID("http://api.csgo-skill.com/login?app");
     } else {
         $app = false;
-        $openid = new LightOpenID("http://www.flare-esports.net/login");
+        $openid = new LightOpenID("http://www.csgo-skill.com/login");
     }
 
 	if(!$openid->mode) {

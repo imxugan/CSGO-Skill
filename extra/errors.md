@@ -10,15 +10,15 @@ Just count up from 1 for multiple uses of the same general error.
 
 ## Script Prefixes
 
-|    Script Name    |        Location         | Prefix |
-| :---              | :---                    | :---:  |
-| `version.php`     | `api.flare-esports.net` |  `10`  |
-| `getGuides.php`   | `api.flare-esports.net` |  `11`  |
-| `login.php`       | `api.flare-esports.net` |  `12`  |
-| `makeAccount.php` | `web/includes/`         |  `13`  |
-| `addAccount.php`  | `api.flare-esports.net` |  `14`  |
-| `verifyEmail.php` | `flare-esports.net/`    |  `15`  |
-| `atom.php`        | `flare-esports.net/`    |  `16`  |
+|    Script Name    |       Location       | Prefix |
+| :---              | :---                 | :---:  |
+| `version.php`     | `api.csgo-skill.com` |  `10`  |
+| `getGuides.php`   | `api.csgo-skill.com` |  `11`  |
+| `login.php`       | `api.csgo-skill.com` |  `12`  |
+| `makeAccount.php` | `web/includes/`      |  `13`  |
+| `addAccount.php`  | `api.csgo-skill.com` |  `14`  |
+| `verifyEmail.php` | `csgo-skill.com/`    |  `15`  |
+| `atom.php`        | `csgo-skill.com/`    |  `16`  |
 
 ## Web API errors ()
 

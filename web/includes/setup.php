@@ -5,7 +5,7 @@ date_default_timezone_set("America/Denver");
 
 // Steam Setup
 $steamauth['apikey'] = "585DCDF484116BAEED7DCEB43000A7F4";
-$steamauth['domain'] = "http://www.flare-esports.net";
+$steamauth['domain'] = "http://www.csgo-skill.com";
 $steamauth['logout'] = $steamauth['domain'] . "/logout";
 $steamauth['login'] = $steamauth['domain'];
 define("STEAMKEY","585DCDF484116BAEED7DCEB43000A7F4");

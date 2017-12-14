@@ -55,9 +55,9 @@ if ($result->num_rows !== 0) {
 // Defaults, all are TEXT type!
 $MAXENTRIES = 15; // The maximum number of entries to show. Should be small.
 $TITLE = "Train CSGO News";
-$LINK = "http://flare-esports.net"; // No trailing slash, please.
+$LINK = "http://csgo-skill.com"; // No trailing slash, please.
 $SELF = "/atom"; // Beginning slash, please
-$AUTHOR = "Flare Dev Team";
+$AUTHOR = "CSGO Skill Dev Team";
 $GENERATOR = "Flare.Atom";
 $GEN_VERSION = "1.0";
 // Syntax of categories: "term[Label],term2[Label2]"
