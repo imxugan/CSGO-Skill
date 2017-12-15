@@ -16,6 +16,6 @@ $MAJOR = 0; // vX._._
 $MINOR = 8; // v_.X._
 $POINT = 0; // v_._.X
 
-echo "v" + $MAJOR + "." + $MINOR + "." + $POINT;
+echo "v" . $MAJOR . "." . $MINOR . "." . $POINT;
 
 ?>
