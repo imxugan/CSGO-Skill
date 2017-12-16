@@ -4,6 +4,5 @@
   -->
 
 <resources>
-    <string name="app_name">CSGO Skill</string>
-    <string name="title_activity_splash">Splash</string>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

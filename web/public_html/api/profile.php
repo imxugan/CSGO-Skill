@@ -87,7 +87,7 @@ $object->{"type"} = "none";
 $object->{"url"} = $player->profileurl;
 $object->{"avatar"} = $player->avatarfull;
 
-$query = "SELECT `steamid`, `username`, `persona`, `bio`, `created`, `status` FROM `Players_01` WHERE `steamid`=\"" . $conn->real_escape_string($player->steamid) . "\" AND `verified`=1 LIMIT 1";
+$query = "SELECT `steamid`, `username`, `secret`, `email`, `persona`, `bio`, `created`, `status` FROM `Players_01` WHERE `steamid`=\"" . $conn->real_escape_string($player->steamid) . "\" AND `verified`=1 LIMIT 1";
 
 $result = $conn->query($query);
 
@@ -106,6 +106,12 @@ if ($result->num_rows === 0) {
     $object->{"username"} = $result->username;
     $object->{"persona"} = $result->persona;
     $object->{"bio"} = $result->bio;
+    if (isset($_POST["secret"])) {
+        // Users can request the email, if they know the secret.
+        if ($result->secret === $_POST["secret"]) {
+            $object->{"email"} = $result->email;
+        }
+    }
     pretty_exit($object);
 }
 

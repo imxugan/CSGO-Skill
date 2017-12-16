@@ -3,7 +3,7 @@
 require_once("dbInf.php");
 
 function cron_log($message) {
-    echo $message . "\r\n";
+    echo date("[Y-m-d H:i:s] ") . $message . "\r\n";
 }
 
 $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);

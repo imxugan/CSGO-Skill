@@ -2,6 +2,10 @@
 
 require("dbInf.php");
 
+function cron_log($message) {
+    echo date("[Y-m-d H:i:s] ") . $message . "\r\n";
+}
+
 // Load the RSS feed into a JSON array-like object;
 $rss = new DOMDocument();
 $rss->load("http://blog.counter-strike.net/index.php/category/updates/feed/");
@@ -22,7 +26,8 @@ $feed = array_reverse($feed);
 
 $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, UPDATEDB);
 if ($conn->connect_error){
-    die("Connection failed");
+    cron_log("Connection failed");
+    die();
 }
 
 foreach ($feed as $item){
@@ -145,7 +150,8 @@ foreach ($feed as $item){
              implode("\r\n", $headers)); // Headers
 
         // Display for testing
-        echo $message;
+        //echo $message;
+        cron_log("Article \""$item["title"] . "\" at " . $item["link"] . " discovered.")
 
         // Break because the next time it runs it will start with the next post
         // This is just to prevent overloading the mail() function

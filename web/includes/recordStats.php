@@ -40,7 +40,7 @@ $headers .= "MIME-Version: 1.0\r\nContent-Type: text/html; charset=iso-8859-1\r\
  */
 
 function cron_log($message) {
-    echo $message . "\r\n";
+    echo date("[Y-m-d H:i:s] ") . $message . "\r\n";
 }
 
 // To check the dates
