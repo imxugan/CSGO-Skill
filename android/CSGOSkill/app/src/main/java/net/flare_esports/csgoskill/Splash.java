@@ -15,8 +15,10 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import static net.flare_esports.csgoskill.Constants.*;
+import static net.flare_esports.csgoskill.InternetHelper.*;
 
 public class Splash extends AppCompatActivity {
 
@@ -48,7 +50,7 @@ public class Splash extends AppCompatActivity {
                 });
                 logo.setAnimation(animation);
 
-                connected = IntenetCheck.isOnline();
+                connected = isOnline();
                 if (devmode) Log.d("DEV", "Connection: " + connected);
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -56,10 +58,11 @@ public class Splash extends AppCompatActivity {
 
                 if (firstRun && !connected) {
                     // Request that first timers turn on the internet before using, but they don't HAVE to
-                    new DynamicAlert(Splash.this, R.string.first_run_no_internet_warning).show();
+                    new DynamicAlert(Splash.this, R.string.first_run_no_internet_warning).allowCancel().show();
                 }
-                // Regardless of internet connection, start the app.
+                if (!connected) Toast.makeText(Splash.this, R.string.no_internet_warning, Toast.LENGTH_SHORT).show();
 
+                // Regardless of internet connection, start the app.
                 if (firstRun) {
                     Intent intent = new Intent(Splash.this, Introduction.class);
                     if (!hasAnimated) {
@@ -69,7 +72,9 @@ public class Splash extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    Intent intent = new Intent(Splash.this, Introduction.class);
+                    Intent intent = new Intent(Splash.this, MainActivity.class);
+                    intent.putExtra("open", "login");
+                    // TODO: Implement auto-login functionality, which loads directly to the good stuff
                 }
 
             }

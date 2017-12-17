@@ -10,22 +10,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.concurrent.TimeUnit;
-
 import static net.flare_esports.csgoskill.Constants.*;
+import static net.flare_esports.csgoskill.InternetHelper.*;
 
 class Database extends SQLiteOpenHelper{
 
@@ -93,21 +83,23 @@ class Database extends SQLiteOpenHelper{
      */
     public int checkVersion() {
         try {
-            JSONObject request = new JSONObject()
-                    .put("url", "http://api.csgo-skill.com/version");
-            JSONObject response = new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
-            new_version = response.getString("message");
+            String response = HTTPRequest("http://api.csgo-skill.com/version");
+            if (response.isEmpty()) {
+                throw new Throwable("Empty response");
+            }
+            new_version = response;
             int first = new_version.indexOf('.');
             int last = new_version.lastIndexOf('.');
-            response.put("major", Integer.valueOf(new_version.substring(1, first)));
-            response.put("minor", Integer.valueOf(new_version.substring(first + 1, last)));
-            response.put("point", Integer.valueOf(new_version.substring(last + 1)));
-            if (C_MAJOR < response.getInt("major")) {
+            JSONObject version = new JSONObject()
+                    .put("major", Integer.valueOf(new_version.substring(1, first)))
+                    .put("minor", Integer.valueOf(new_version.substring(first + 1, last)))
+                    .put("point", Integer.valueOf(new_version.substring(last + 1)));
+            if (C_MAJOR < version.getInt("major")) {
                 return 0;
-            } else if (C_MAJOR == response.getInt("major")) {
-                if (C_MINOR < response.getInt("minor")) {
+            } else if (C_MAJOR == version.getInt("major")) {
+                if (C_MINOR < version.getInt("minor")) {
                     return 0;
-                } else if (C_MINOR == response.getInt("minor") && C_POINT < response.getInt("point")) {
+                } else if (C_MINOR == version.getInt("minor") && C_POINT < version.getInt("point")) {
                     return 0;
                 }
             }
@@ -124,28 +116,27 @@ class Database extends SQLiteOpenHelper{
      *
      * @return The most recently received version number, or null.
      */
-    public String getNewVersion() {
-        return new_version;
-    }
+    public String getNewVersion() { return new_version; }
 
     /**
      * Returns the current app version.
      *
      * @return The current app version, ex: "v1.0.0"
      */
-    public String getVersion() {
-        return "v" + C_MAJOR + "." + C_MINOR;
-    }
+    public String getVersion() { return "v" + C_MAJOR + "." + C_MINOR; }
 
     /**
      * Returns the int constant of the last (silently) thrown error.
      *
      * @return Last (silently) thrown error constant
      */
-    public Throwable lastError() {
-        return last_error;
-    }
+    public Throwable lastError() { return last_error; }
 
+    /**
+     * Inserts the given user (Username, Steam ID, Email, Secret), updateUser() should be called immediately after.
+     * @param data Contains the 'username', 'steamid', 'email', and 'secret' information
+     * @return     True if successful, false otherwise.
+     */
     public boolean insertUser(JSONObject data) {
         try {
             /*
@@ -180,7 +171,7 @@ class Database extends SQLiteOpenHelper{
      * Also downloads the persona and email. Should only be called every 30 minutes,
      * any more frequently and changes are unlikely to be seen.
      * @param steamId The Steam ID of the user to update.
-     * @return true if successful or up-to-date, false otherwise.
+     * @return        True if successful or up-to-date, false otherwise.
      */
     public boolean updateUser(String steamId, String secret) {
         try {
@@ -190,11 +181,11 @@ class Database extends SQLiteOpenHelper{
                     .put("post", new JSONObject()
                             .put("secret", secret)
                     );
-            JSONObject response = new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
-            if (response.has("message")) {
-                // oh no
-                throw new Throwable(response.getString("message"));
-            }
+            JSONObject response = HTTPJsonRequest(request);
+
+            if (response.length() < 1 || response.has("message"))
+                throw new Throwable((response.length() < 1) ? "Empty response" : response.getString("message"));
+
             ContentValues values = new ContentValues();
             values.put(EMAIL, response.getString("email"));
             values.put(STATUS, response.getString("status"));
@@ -203,16 +194,16 @@ class Database extends SQLiteOpenHelper{
             values.put(USERNAME, response.getString("persona"));
             request = new JSONObject()
                     .put("url", "http://api.csgo-skill.com/stats?steamid=" + steamId);
-            response = new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
-            if (response.has("message")) {
+            response = HTTPJsonRequest(request);
+            if (response.length() < 1 || response.has("message")) {
                 // oh no
                 SQLiteDatabase sql = getWritableDatabase();
                 if (sql.update(USERTABLE, values, STEAMID+"=?", new String[]{steamId}) > 0) {
                     sql.close();
-                    throw new Throwable("Failed to update player stats. " + response.getString("message"));
+                    throw new Throwable("Failed to update player stats. " + ((response.length() < 1) ? "Empty response" : response.getString("message")));
                 } else {
                     sql.close();
-                    throw new Throwable("Failed to update player information. " + response.getString("message"));
+                    throw new Throwable("Failed to update player information. " + ((response.length() < 1) ? "Empty response" : response.getString("message")));
                 }
             }
             values.put(DATA, response.toString());
@@ -345,52 +336,4 @@ class Database extends SQLiteOpenHelper{
         }
     }
 
-    /**
-     * Takes a JSONObject containing the URL and POST information, and returns the response as JSON.
-     */
-
-    private class HTTPJsonTask extends AsyncTask<JSONObject, Integer, JSONObject> {
-        @Override
-        protected JSONObject doInBackground(JSONObject... jsonObjects) {
-            try {
-                BufferedReader stream;
-                StringBuilder builder;
-                URL url = new URL(jsonObjects[0].getString("url"));
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                if (jsonObjects[0].has("post")) {
-                    conn.setDoOutput(true);
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    builder = new StringBuilder();
-                    JSONArray keys = jsonObjects[0].getJSONObject("post").names();
-                    int index = 0;
-                    while (index < keys.length()) {
-                        builder.append(keys.getString(index))
-                                 .append("=")
-                                 .append(URLEncoder.encode(jsonObjects[0].getJSONObject("post").getString(keys.getString(index)), "UTF-8"))
-                                 .append("&");
-                    }
-                    wr.write(builder.substring(0, builder.length() - 1));
-                    wr.flush();
-                }
-                stream = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                builder = new StringBuilder();
-                String line;
-                while ((line = stream.readLine()) != null) {
-                    builder.append(line);
-                }
-                stream.close();
-                try {
-                    return new JSONObject(builder.toString());
-                } catch (JSONException e) {
-                    return new JSONObject().put("message", builder.toString());
-                }
-            } catch (Throwable e) {
-                try {
-                    return new JSONObject().put("message", e.getMessage());
-                } catch (Throwable e2) {
-                    return null;
-                }
-            }
-        }
-    }
 }

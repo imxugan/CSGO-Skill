@@ -17,6 +17,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
+import android.util.Log;
 import android.view.View;
 
 /*
@@ -28,7 +29,7 @@ import android.view.View;
  * newAlert(Builder), all without making a new DynamicAlert.
  *
  * By default (except when initialized with a builder), all DynamicAlerts have
- * an OK button which simply dismisses the dialogue.
+ * an OK button which simply dismisses the dialogue, and cannot be cancelled.
  */
 
 class DynamicAlert {
@@ -41,16 +42,47 @@ class DynamicAlert {
     public static final char ACTION_CANCEL = 2;
     public static final char ACTION_NONE = 3;
 
+    // Change based on what default functionality you desire. Can safely
+    // include default message text.
+    private void defaultSetup() {
+        setButton();
+        noCancel();
+    }
+
     /* CONSTRUCTORS */
-    public DynamicAlert(Context context) { self = new AlertDialog.Builder(context); c = context; setButton(); }
+    public DynamicAlert(Context context) {
+        self = new AlertDialog.Builder(context);
+        c = context;
+        defaultSetup();
+    }
 
-    public DynamicAlert(Context context, String message) { self = new AlertDialog.Builder(context); self.setMessage(message); c = context; setButton(); }
+    public DynamicAlert(Context context, String message) {
+        self = new AlertDialog.Builder(context);
+        c = context;
+        defaultSetup();
+        self.setMessage(message);
+    }
 
-    public DynamicAlert(Context context, @StringRes int message) { self = new AlertDialog.Builder(context); self.setMessage(message); c = context; setButton(); }
+    public DynamicAlert(Context context, @StringRes int message) {
+        self = new AlertDialog.Builder(context);
+        c = context;
+        defaultSetup();
+        self.setMessage(message);
+    }
 
-    public DynamicAlert(Context context, String message, @StyleRes int theme) { self = new AlertDialog.Builder(context, theme); self.setMessage(message); c = context; setButton(); }
+    public DynamicAlert(Context context, String message, @StyleRes int theme) {
+        self = new AlertDialog.Builder(context, theme);
+        c = context;
+        defaultSetup();
+        self.setMessage(message);
+    }
 
-    public DynamicAlert(Context context, @StringRes int message, @StyleRes int theme) { self = new AlertDialog.Builder(context, theme); self.setMessage(message); c = context; setButton(); }
+    public DynamicAlert(Context context, @StringRes int message, @StyleRes int theme) {
+        self = new AlertDialog.Builder(context, theme);
+        c = context;
+        defaultSetup();
+        self.setMessage(message);
+    }
 
     public DynamicAlert(AlertDialog.Builder builder) { self = builder; c = builder.getContext(); }
     /* END CONSTRUCTORS */
@@ -67,7 +99,7 @@ class DynamicAlert {
         if (isUiThread)
             return self.show();
         else
-            new Handler(Looper.getMainLooper()).post(new Runnable() { @Override public void run() { self.create().show(); }});
+            new Handler(Looper.getMainLooper()).post(new Runnable() { @Override public void run() { self.show(); }});
         return self.create();
     }
 
@@ -78,6 +110,7 @@ class DynamicAlert {
     /* REBUILDERS */
     private DynamicAlert new_alert(Context context, @StyleRes int theme, String message) {
         self = new AlertDialog.Builder(context, theme);
+        defaultSetup();
         if (message != null) self.setMessage(message);
         c = context;
         return this;
@@ -85,11 +118,12 @@ class DynamicAlert {
 
     private DynamicAlert new_alert(Context context, String message) {
         self = new AlertDialog.Builder(context);
+        defaultSetup();
         if (message != null) self.setMessage(message);
         c = context;
         return this;
     }
-    
+
     public DynamicAlert newAlert(Context context) { return new_alert(context, null); }
 
     public DynamicAlert newAlert(Context context, @StyleRes int theme) { return new_alert(context, theme, null); }
@@ -155,21 +189,24 @@ class DynamicAlert {
 
 
     /* SET ICON */
-    public DynamicAlert setIcon(@DrawableRes int icon) {
-        self.setIcon(icon);
-        return this;
-    }
+    public DynamicAlert setIcon(@DrawableRes int icon) { self.setIcon(icon); return this; }
 
-    public DynamicAlert setIcon(Drawable icon) {
-        self.setIcon(icon);
-        return this;
-    }
+    public DynamicAlert setIcon(Drawable icon) { self.setIcon(icon); return this; }
 
-    public DynamicAlert setIconT(@AttrRes int icon) {
-        self.setIconAttribute(icon);
-        return this;
-    }
+    public DynamicAlert setIconT(@AttrRes int icon) { self.setIconAttribute(icon); return this; }
     /* END ICON */
+
+    /* CANCELABLE */
+    public DynamicAlert noCancel() { self.setCancelable(false); return this; }
+
+    /**
+     * You might as well be using a Toast message if your alert can be canceled.
+     */
+    public DynamicAlert allowCancel() {
+        self.setCancelable(true); // Are you sure about that?
+        return this;
+    }
+    /* END CANCEL */
 
     // Set Buttons
     private DynamicAlert positive(final char action, String text, final Runnable runnable) {
@@ -354,6 +391,30 @@ class DynamicAlert {
 
     public DynamicAlert setCancelAction(DialogInterface.OnCancelListener listener) {
         self.setOnCancelListener(listener);
+        return this;
+    }
+
+    public DynamicAlert setCancelAction(final int action) {
+        // Recreating a dismissed alert is totally not cool bro
+        Log.i("Friendly Reminder", "Recreating an Alert Dialogue is NOT recommended!");
+        self.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if (action == ACTION_RECREATE) show();
+            }
+        });
+        return this;
+    }
+
+    public DynamicAlert setDismissAction(final int action) {
+        // Recreating a dismissed alert is totally not cool bro
+        Log.i("Friendly Reminder", "Recreating an Alert Dialogue is NOT recommended!");
+        self.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (action == ACTION_RECREATE) show();
+            }
+        });
         return this;
     }
 
