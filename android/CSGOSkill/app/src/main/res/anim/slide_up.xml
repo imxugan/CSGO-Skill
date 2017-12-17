@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team for CSGO Skill.
+  ~ Copyright (c) 2017. All rights reserved.
+  -->
+
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate android:fromYDelta="50%" android:toYDelta="0%" android:duration="1250" />
+    <alpha android:fromAlpha="0.0" android:toAlpha="1.0" android:duration="1250" />
+</set>

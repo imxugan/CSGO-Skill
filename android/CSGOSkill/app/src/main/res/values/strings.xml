@@ -6,4 +6,7 @@
 <resources>
     <string name="app_name">CSGO Skill</string>
     <string name="title_activity_splash">Splash</string>
+
+    <string name="first_run_no_internet_warning">This app functions better with the Power of the Internet</string>
+    <string name="no_internet_warning">No Internet Connection</string>
 </resources>

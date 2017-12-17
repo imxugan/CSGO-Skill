@@ -114,7 +114,7 @@ class Database extends SQLiteOpenHelper{
             return 1;
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return -1;
     }
@@ -170,7 +170,7 @@ class Database extends SQLiteOpenHelper{
             }
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return false;
     }
@@ -226,7 +226,7 @@ class Database extends SQLiteOpenHelper{
             }
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return false;
     }
@@ -267,7 +267,7 @@ class Database extends SQLiteOpenHelper{
             }
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return null;
     }
@@ -285,7 +285,7 @@ class Database extends SQLiteOpenHelper{
             return grabData(steamId).getJSONObject("global");
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return null;
     }
@@ -305,7 +305,7 @@ class Database extends SQLiteOpenHelper{
                     .put("monthly", result.getJSONArray("monthly"));
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return null;
     }
@@ -322,7 +322,7 @@ class Database extends SQLiteOpenHelper{
             return grabData(steamId).getJSONObject("current");
         } catch (Throwable e) {
             last_error = e;
-            if (C_DEVMODE == 1) { Log.d("DEV",e.getMessage()); }
+            if (devmode) { Log.d("DEV",e.getMessage()); }
         }
         return null;
     }
