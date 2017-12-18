@@ -9,5 +9,6 @@
     <color name="colorPrimaryDark">#323232</color>
     <color name="colorAccent">#1f5ae0</color>
     <color name="colorWhite">#f4f7fb</color>
-    <color name="colorBlack">#262619</color>
+    <color name="colorBlack">#262621</color>
+    <color name="colorLightGrey">#bdbdbd</color>
 </resources>

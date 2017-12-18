@@ -247,11 +247,12 @@ class Database extends SQLiteOpenHelper{
             } else {
                 c.moveToFirst();
                 JSONObject result = new JSONObject()
-                        .put(USERNAME, c.getString(c.getColumnIndex(USERNAME)))
-                        .put(EMAIL, c.getString(c.getColumnIndex(EMAIL)))
-                        .put(STATUS, new JSONObject(c.getString(c.getColumnIndex(STATUS))))
-                        .put(AVATAR, c.getString(c.getColumnIndex(AVATAR)))
-                        .put(VANITY_URL, c.getString(c.getColumnIndex(VANITY_URL)));
+                        .put("username", c.getString(c.getColumnIndex(USERNAME)))
+                        .put("steamid", steamId)
+                        .put("email", c.getString(c.getColumnIndex(EMAIL)))
+                        .put("status", new JSONObject(c.getString(c.getColumnIndex(STATUS))))
+                        .put("avatar", c.getString(c.getColumnIndex(AVATAR)))
+                        .put("url", c.getString(c.getColumnIndex(VANITY_URL)));
                 c.close();
                 sql.close();
                 return result;
@@ -333,6 +334,32 @@ class Database extends SQLiteOpenHelper{
             c.close();
             sql.close();
             return result;
+        }
+    }
+
+    /**
+     * Uses getUserInfo() to return a list of all users on the device.
+     *
+     * @return JSONObject[] of all users, using getUserInfo()
+     */
+    public JSONObject[] getUsers() {
+        SQLiteDatabase sql = getWritableDatabase();
+        Cursor c = sql.rawQuery("SELECT " + STEAMID + " FROM " + USERTABLE + " WHERE 1", null);
+        if (c.getCount() <= 0) {
+            c.close();
+            sql.close();
+            return new JSONObject[0];
+        } else {
+            JSONObject[] users = new JSONObject[c.getCount()];
+            int index = 0;
+            int column = c.getColumnIndex(STEAMID);
+            while (c.moveToNext()) {
+                users[index] = getUserInfo(c.getString(column));
+                index++;
+            }
+            c.close();
+            sql.close();
+            return users;
         }
     }
 

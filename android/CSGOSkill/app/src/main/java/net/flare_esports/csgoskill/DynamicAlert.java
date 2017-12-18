@@ -42,6 +42,9 @@ class DynamicAlert {
     public static final char ACTION_CANCEL = 2;
     public static final char ACTION_NONE = 3;
 
+    // Set to your own custom default theme
+    public static final int THEME_DEFAULT = R.style.Flare_Dialog_AlertDialog;
+
     // Change based on what default functionality you desire. Can safely
     // include default message text.
     private void defaultSetup() {

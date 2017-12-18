@@ -8,11 +8,15 @@ package net.flare_esports.csgoskill;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Introduction extends AppCompatActivity {
+import com.github.paolorotolo.appintro.AppIntro2;
+
+public class Introduction extends AppIntro2 {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_introduction);
+
+
+
     }
 }

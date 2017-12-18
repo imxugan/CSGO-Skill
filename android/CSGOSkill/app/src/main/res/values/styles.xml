@@ -5,21 +5,79 @@
 
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Flare" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBlack</item>
+        <item name="android:textColorPrimary">@color/primary_text_material_dark</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:colorForeground">@color/colorLightGrey</item>
+        <item name="android:textColorSecondary">@color/primary_text_material_dark</item>
+        <item name="android:textColorTertiary">@color/colorLightGrey</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="Flare.Dialog" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="android:windowTitleStyle">@style/Flare.DialogWindowTitle</item>
+        <item name="android:borderlessButtonStyle">@style/Widget.Flare.Button.Borderless</item>
+        <item name="android:buttonBarStyle">@style/Flare.ButtonBar.AlertDialog</item>
+
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="Flare.Dialog.AlertDialog" parent="Flare.Dialog">
+        <item name="android:buttonBarStyle">@style/Flare.ButtonBar.AlertDialog</item>
+        <item name="android:borderlessButtonStyle">@style/Widget.Flare.Button.Borderless</item>
+    </style>
+
+    <style name="Flare.DialogWindowTitle">
+        <item name="android:maxLines">1</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textAppearance">
+            @style/Flare.DialogWindowTitle.TextAppearance
+        </item>
+    </style>
+
+    <style name="Flare.DialogWindowTitle.TextAppearance">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.Flare.Button.Borderless" parent="android:Widget.DeviceDefault.Button.Borderless">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="Flare.ButtonBar.AlertDialog" parent="android:DeviceDefault.ButtonBar.AlertDialog">
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="Flare.TextAppearance">
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="Flare.TextAppearance.SplashTitle" parent="Flare.TextAppearance">
+        <item name="android:textSize">56sp</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Flare.TextAppearance.SplashCaption" parent="Flare.TextAppearance">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Flare.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Flare.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Flare.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
