@@ -6,4 +6,5 @@
 <resources>
     <item name="disabled_alpha" format="float" type="dimen">0.3</item>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="intro_fragment1_half_linespacing">0dp</dimen>
 </resources>

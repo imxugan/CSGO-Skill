@@ -3,10 +3,11 @@
  * Copyright (c) 2017. All rights reserved.
  */
 
+// Intentionally left as Java
+
 package net.flare_esports.csgoskill;
 
 class Constants {
-    // Simply defines a list of constant values for the current app version
 
     static final boolean devmode = true; // Set to false before release!!
 

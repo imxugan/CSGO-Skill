@@ -36,10 +36,10 @@ foreach ($feed as $item){
     if ($result->num_rows == 0){
         $query = "INSERT INTO `csgo-updates` (`title`, `date`, `link`, `content`) "
                . "VALUES (\""
-               . $item["title"] . "\", \""
+               . $conn->real_escape_string($item["title"]) . "\", \""
                . date("Y-m-d H:i:s", $item["date"]) . "\", \""
                . $item["link"] . "\", \""
-               . $item["content"] . "\")";
+               . $conn->real_escape_string($item["content"]) . "\")";
         $conn->query($query);
 
         // Build Email

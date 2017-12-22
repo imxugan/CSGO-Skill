@@ -3,6 +3,8 @@
  * Copyright (c) 2017. All rights reserved.
  */
 
+// Intentionally left as Java
+
 package net.flare_esports.csgoskill;
 
 import android.app.AlertDialog;
