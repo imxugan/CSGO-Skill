@@ -5,9 +5,12 @@
 
 package net.flare_esports.csgoskill
 
+import android.app.Fragment
+import android.app.FragmentManager
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -24,13 +27,19 @@ import kotlinx.android.synthetic.main.activity_intro.*
 class Intro : AppCompatActivity() {
 
     internal lateinit var db: Database
+    internal lateinit var handler: Handler
+    internal lateinit var fragmentManager: FragmentManager
+
+    internal lateinit var slide1: Fragment
+    internal lateinit var slide2: Fragment
+    internal lateinit var slide3: Fragment
 
     internal var hasAnimated: Boolean = false
     internal var firstRun: Boolean = false
     internal var connected: Boolean = false
 
     private val splashing = Runnable { this.splashing() }
-    private val toIntroduction = Runnable { this.toIntroduction() }
+    private val startIntro = Runnable { this.startIntro() }
     private val toMain = Runnable { this.toMain() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,17 +47,17 @@ class Intro : AppCompatActivity() {
         setContentView(R.layout.activity_intro)
 
         db = Database(this, null)
+        handler = Handler()
+        fragmentManager = getFragmentManager()
+
         hasAnimated = false
         connected = false
 
         Thread(splashing).start()
-
     }
 
-    private fun toIntroduction() {
-        /*Intent intent = new Intent(Intro.this, Introduction.class);
-        startActivity(intent);
-        finish();*/
+    private fun startIntro() {
+
     }
 
     private fun toMain() {
@@ -106,7 +115,7 @@ class Intro : AppCompatActivity() {
             DynamicAlert(this,
                     R.string.first_run_no_internet_warning,
                     DynamicAlert.THEME_DEFAULT)
-                    .setDismissAction(DialogInterface.OnDismissListener { runOnUiThread(toIntroduction) }).show()
+                    .setDismissAction(DialogInterface.OnDismissListener { handler.postDelayed(startIntro, 200) }).show()
         }
         if (!connected) Toast.makeText(this, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 
@@ -122,7 +131,7 @@ class Intro : AppCompatActivity() {
                     }
 
                 }
-                runOnUiThread(toIntroduction)
+                handler.postDelayed(startIntro, 200)
             }
         } else {
             runOnUiThread(toMain)
