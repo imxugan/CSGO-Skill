@@ -7,7 +7,7 @@
 
 package net.flare_esports.csgoskill;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
@@ -45,31 +45,31 @@ class DynamicAlert {
     public static final char ACTION_NONE = 3;
 
     // Set to your own custom default theme
-    public static final int THEME_DEFAULT = R.style.Flare_Dialog_AlertDialog;
+    private static final int THEME_DEFAULT = R.style.AlertDialog;
 
     // Change based on what default functionality you desire. Can safely
     // include default message text.
     private void defaultSetup() {
-        setButton();
+        setPositive();
         noCancel();
     }
 
     /* CONSTRUCTORS */
     public DynamicAlert(Context context) {
-        self = new AlertDialog.Builder(context);
+        self = new AlertDialog.Builder(context, THEME_DEFAULT);
         c = context;
         defaultSetup();
     }
 
     public DynamicAlert(Context context, String message) {
-        self = new AlertDialog.Builder(context);
+        self = new AlertDialog.Builder(context, THEME_DEFAULT);
         c = context;
         defaultSetup();
         self.setMessage(message);
     }
 
     public DynamicAlert(Context context, @StringRes int message) {
-        self = new AlertDialog.Builder(context);
+        self = new AlertDialog.Builder(context, THEME_DEFAULT);
         c = context;
         defaultSetup();
         self.setMessage(message);
@@ -273,16 +273,16 @@ class DynamicAlert {
 
 
     /* SET POSITIVE */
-    public DynamicAlert setPositive() { return positive(ACTION_DISMISS, c.getString(android.R.string.yes), null); }
+    public DynamicAlert setPositive() { return positive(ACTION_DISMISS, c.getString(android.R.string.ok), null); }
 
 
     public DynamicAlert setPositive(String text)         { return positive(ACTION_DISMISS, text, null); }
 
     public DynamicAlert setPositive(@StringRes int text) { return positive(ACTION_DISMISS, c.getString(text), null); }
 
-    public DynamicAlert setPositive(char action)         { return positive(action, c.getString(android.R.string.yes), null); }
+    public DynamicAlert setPositive(char action)         { return positive(action, c.getString(android.R.string.ok), null); }
 
-    public DynamicAlert setPositive(Runnable runnable)   { return positive(ACTION_NONE, c.getString(android.R.string.yes), runnable); }
+    public DynamicAlert setPositive(Runnable runnable)   { return positive(ACTION_NONE, c.getString(android.R.string.ok), runnable); }
 
 
     public DynamicAlert setPositive(String text, char action)               { return positive(action, text, null); }
@@ -293,7 +293,7 @@ class DynamicAlert {
 
     public DynamicAlert setPositive(@StringRes int text, Runnable runnable) { return positive(ACTION_NONE, c.getString(text), runnable); }
 
-    public DynamicAlert setPositive(char action, Runnable runnable)         { return positive(action, c.getString(android.R.string.yes), runnable); }
+    public DynamicAlert setPositive(char action, Runnable runnable)         { return positive(action, c.getString(android.R.string.ok), runnable); }
 
 
     public DynamicAlert setPositive(String text, char action, Runnable runnable)         { return positive(action, text, runnable); }
@@ -301,7 +301,7 @@ class DynamicAlert {
     public DynamicAlert setPositive(@StringRes int text, char action, Runnable runnable) { return positive(action, c.getString(text), runnable); }
 
 
-    public DynamicAlert setPositive(DialogInterface.OnClickListener listener)                      { return positive(c.getString(android.R.string.yes), listener); }
+    public DynamicAlert setPositive(DialogInterface.OnClickListener listener)                      { return positive(c.getString(android.R.string.ok), listener); }
 
     public DynamicAlert setPositive(String text, DialogInterface.OnClickListener listener)         { return positive(text, listener); }
 

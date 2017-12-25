@@ -17,7 +17,7 @@
         android:layout_marginBottom="@dimen/intro_fragment1_half_linespacing"
         android:text="@string/welcome_to"
         android:textAlignment="center"
-        android:textAppearance="@style/Flare.TextAppearance"
+        android:textAppearance="@style/Theme.Flare.TextAppearance"
         app:layout_constraintBottom_toTopOf="@+id/textAppName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -30,11 +30,25 @@
         android:layout_marginTop="@dimen/intro_fragment1_half_linespacing"
         android:text="@string/app_name"
         android:textAlignment="center"
-        android:textAppearance="@style/Flare.TextAppearance.Title"
+        android:textAppearance="@style/Theme.Flare.TextAppearance.Title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabSlide1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:tint="@color/colorPrimary"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAppName"
+        app:srcCompat="@drawable/ic_arrow_forward_white_24dp" />
 
 </android.support.constraint.ConstraintLayout>
