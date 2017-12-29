@@ -5,8 +5,6 @@
 
 package net.flare_esports.csgoskill
 
-import android.animation.Animator
-import android.animation.AnimatorInflater
 import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Context
@@ -16,6 +14,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.transition.Fade
 import android.util.Log
@@ -38,8 +37,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     internal lateinit var context: Context
 
     internal lateinit var slide1: Frag1
-    internal lateinit var slide2: Fragment
-    internal lateinit var slide3: Fragment
+    internal lateinit var slide2: Frag2
+    internal lateinit var slide3: Frag3
 
     internal lateinit var fadeOut: Animation
     internal lateinit var fadeIn: Animation
@@ -71,21 +70,19 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     }
 
     private fun startIntro() {
-        fabStartIntro.animation = fadeIn
-        fabStartIntro.visibility = View.VISIBLE
-        fabStartIntro.setOnClickListener {
+        ibContinue.animation = fadeIn
+        ibContinue.imageTintList = ContextCompat.getColorStateList(context, R.color.colorPrimary)
+        ibContinue.visibility = View.VISIBLE
+        ibContinue.setOnClickListener {
             var fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
-            fadeOut.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {}
-                override fun onAnimationEnd(animation: Animation) { fabStartIntro.visibility = View.GONE }
-                override fun onAnimationRepeat(animation: Animation) {}
+            fadeOut.setAnimationListener( Animer {
+                ibContinue.visibility = View.GONE
+                ibContinue.imageTintList = null
             })
-            fabStartIntro.startAnimation(fadeOut)
+            ibContinue.startAnimation(fadeOut)
             fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
-            fadeOut.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {}
-                override fun onAnimationEnd(animation: Animation) { imageLogo.visibility = View.GONE }
-                override fun onAnimationRepeat(animation: Animation) {}
+            fadeOut.setAnimationListener( Animer {
+                imageLogo.visibility = View.GONE
             })
             imageLogo.startAnimation(fadeOut)
             slide1 = Frag1()
@@ -98,12 +95,29 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
     }
 
-    override fun nextSlide(currentFragment: Fragment) {
-        when (currentFragment) {
-            slide1 -> {
-                /*val fragmentTransaction = fragmentManager.beginTransaction()
-                slide1.exitTransition = Fade().setDuration(1000)*/
-                DynamicAlert(context, "Hey it works!").show()
+    override fun animationComplete(currentFragment: Fragment) {
+        ibContinue.animation = fadeIn
+        ibContinue.setOnClickListener {
+
+            if (currentFragment == slide1 || currentFragment == slide2 || currentFragment == slide3) {
+                val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+                fadeOut.setAnimationListener( Animer {
+                    ibContinue.visibility = View.GONE
+                })
+                ibContinue.startAnimation(fadeOut)
+            }
+
+            when (currentFragment) {
+                slide1 -> {
+                    //TODO
+                    DynamicAlert(context, "Hey it works!").show()
+                }
+                slide2 -> {
+                    //TODO
+                }
+                slide3 -> {
+                    //TODO
+                }
             }
         }
     }
@@ -140,13 +154,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private fun splashing() {
         Looper.prepare()
         val animation = AnimationUtils.loadAnimation(context, R.anim.slide_up)
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation) {}
-            override fun onAnimationEnd(animation: Animation) {
-                hasAnimated = true
-            }
-            override fun onAnimationRepeat(animation: Animation) {}
-        })
+        animation.setAnimationListener( Animer { hasAnimated = true } )
         imageLogo.animation = animation
 
         connected = isOnline()

@@ -13,9 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 
 import net.flare_esports.csgoskill.R
-import kotlinx.android.synthetic.main.fragment_introslide1.*
+import kotlinx.android.synthetic.main.fragment_introslide3.*
 
-class Frag1 : Slide() {
+class Frag3 : Slide() {
 
     internal lateinit var view: View
     internal lateinit var context: Context
@@ -29,7 +29,7 @@ class Frag1 : Slide() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        view = inflater.inflate(R.layout.fragment_introslide1, container, false)
+        view = inflater.inflate(R.layout.fragment_introslide3, container, false)
         return view
     }
 

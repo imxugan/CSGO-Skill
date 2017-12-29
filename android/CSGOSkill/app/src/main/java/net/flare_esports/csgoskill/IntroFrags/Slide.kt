@@ -12,7 +12,7 @@ abstract class Slide: Fragment() {
     abstract var slideListener: SlideListener
 
     interface SlideListener {
-        fun nextSlide(currentFragment: Fragment)
+        fun animationComplete(currentFragment: Fragment)
     }
 
 }
