@@ -70,14 +70,17 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     }
 
     private fun startIntro() {
+        slide1 = Frag1()
+        slide2 = Frag2()
+        slide3 = Frag3()
         ibContinue.animation = fadeIn
         ibContinue.imageTintList = ContextCompat.getColorStateList(context, R.color.colorPrimary)
         ibContinue.visibility = View.VISIBLE
         ibContinue.setOnClickListener {
             var fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
             fadeOut.setAnimationListener( Animer {
-                ibContinue.visibility = View.GONE
-                ibContinue.imageTintList = null
+                ibContinue.visibility = View.INVISIBLE
+                ibContinue.imageTintList = ContextCompat.getColorStateList(context, R.color.colorWhite)
             })
             ibContinue.startAnimation(fadeOut)
             fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
@@ -85,19 +88,28 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                 imageLogo.visibility = View.GONE
             })
             imageLogo.startAnimation(fadeOut)
-            slide1 = Frag1()
             fragmentManager = getFragmentManager()
             val fragmentTransaction = fragmentManager.beginTransaction()
             slide1.enterTransition = Fade().setDuration(1000)
-            fragmentTransaction.replace(R.id.intro_frag_container, slide1)
+            fragmentTransaction.add(R.id.intro_frag_container, slide1)
             handler.postDelayed ({ fragmentTransaction.commit() }, 800)
         }
 
     }
 
     override fun animationComplete(currentFragment: Fragment) {
-        ibContinue.animation = fadeIn
+        if (devmode) Log.d("DEV", "running animationComplete()")
+
+        if (currentFragment == slide3) ibContinue.setImageResource(R.drawable.ic_check_white_48dp)
+        ibContinue.visibility = View.VISIBLE
+        ibContinue.startAnimation(fadeIn)
         ibContinue.setOnClickListener {
+
+            val exitFade = Fade()
+            exitFade.duration = 700
+            val enterFade = Fade()
+            enterFade.duration = 700
+            enterFade.startDelay = 750
 
             if (currentFragment == slide1 || currentFragment == slide2 || currentFragment == slide3) {
                 val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
@@ -109,14 +121,31 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
             when (currentFragment) {
                 slide1 -> {
-                    //TODO
-                    DynamicAlert(context, "Hey it works!").show()
+                    val fragmentTransaction = fragmentManager.beginTransaction()
+
+                    slide1.exitTransition = exitFade
+                    slide2.enterTransition = enterFade
+
+                    fragmentTransaction.replace(intro_frag_container.id, slide2)
+                    fragmentTransaction.commitAllowingStateLoss()
                 }
                 slide2 -> {
-                    //TODO
+                    val fragmentTransaction = fragmentManager.beginTransaction()
+
+                    slide2.exitTransition = exitFade
+                    slide3.enterTransition = enterFade
+
+                    fragmentTransaction.replace(intro_frag_container.id, slide3)
+                    fragmentTransaction.commitAllowingStateLoss()
                 }
                 slide3 -> {
-                    //TODO
+                    val fragmentTransaction = fragmentManager.beginTransaction()
+
+                    slide3.exitTransition = exitFade
+
+                    fragmentTransaction.remove(slide3)
+                    fragmentTransaction.commitAllowingStateLoss()
+                    Handler().postDelayed(toMain, 750)
                 }
             }
         }
@@ -143,7 +172,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         }
 
         startActivity(intent)
-        finishAfterTransition()
+        finish()
     }
 
     /* This is the meat of the operations done by Intro. It starts the animations for the views,

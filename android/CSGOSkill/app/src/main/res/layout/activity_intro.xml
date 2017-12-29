@@ -11,6 +11,10 @@
     android:layout_height="match_parent"
     tools:context="net.flare_esports.csgoskill.Intro">
 
+    <FrameLayout
+        android:id="@+id/intro_frag_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/imageLogo"
@@ -29,18 +33,11 @@
         android:layout_height="60dp"
         android:backgroundTint="@color/transparent"
         android:src="@drawable/ic_arrow_forward_white_48dp"
-        android:tint=""
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="52dp"/>
-
-    <FrameLayout
-        android:id="@+id/intro_frag_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 
 </android.support.constraint.ConstraintLayout>

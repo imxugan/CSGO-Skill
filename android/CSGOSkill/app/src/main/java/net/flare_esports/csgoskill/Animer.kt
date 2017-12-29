@@ -8,7 +8,7 @@ package net.flare_esports.csgoskill
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 
-internal class Animer : AnimationListener {
+class Animer : AnimationListener {
 
     private var start: () -> Unit = {}
     private var end: () -> Unit = {}
@@ -44,10 +44,10 @@ internal class Animer : AnimationListener {
         this.repeat = repeat
     }
 
-    override fun onAnimationStart(animation: Animation) { start }
+    override fun onAnimationStart(animation: Animation) { start() }
 
-    override fun onAnimationEnd(animation: Animation) { end }
+    override fun onAnimationEnd(animation: Animation) { end() }
 
-    override fun onAnimationRepeat(animation: Animation) { repeat }
+    override fun onAnimationRepeat(animation: Animation) { repeat() }
 
 }
