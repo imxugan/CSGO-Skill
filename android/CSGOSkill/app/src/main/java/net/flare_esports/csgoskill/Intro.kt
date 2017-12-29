@@ -5,6 +5,7 @@
 
 package net.flare_esports.csgoskill
 
+import android.app.ActivityOptions
 import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Context
@@ -65,6 +66,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
         fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
         fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+
+        window.exitTransition = Fade()
 
         Thread(splashing).start()
     }
@@ -171,8 +174,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             intent.putExtra("open", "login")
         }
 
-        startActivity(intent)
-        finish()
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
+        Handler().postDelayed({ finish() }, 1000)
     }
 
     /* This is the meat of the operations done by Intro. It starts the animations for the views,

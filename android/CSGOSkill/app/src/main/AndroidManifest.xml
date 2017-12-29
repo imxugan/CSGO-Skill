@@ -16,6 +16,7 @@
         android:theme="@style/Theme.Flare">
         <activity
             android:name=".Intro"
+            android:noHistory="true"
             android:theme="@style/Theme.Flare.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
