@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -33,9 +34,17 @@ class InternetHelper {
             int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
         } catch (Throwable e) {
-            if (devmode) { Log.d("DEV",e.getMessage()); }
+            if (devmode) Log.e("DEV",e.getMessage());
         }
         return false;
+    }
+
+    public static InputStream RawRequest(String url) throws Throwable {
+        return new RawTask().execute(url).get(5, TimeUnit.SECONDS);
+    }
+
+    public static InputStream RawRequest(String url, int timeout) throws Throwable {
+        return new RawTask().execute(url).get(timeout, TimeUnit.SECONDS);
     }
 
 
@@ -54,12 +63,27 @@ class InternetHelper {
     }
 
 
+    public static JSONObject HTTPJsonRequest(JSONObject request) throws Throwable {
+        return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
+    }
+
     public static JSONObject HTTPJsonRequest(JSONObject request, int timeout) throws Throwable {
         return new HTTPJsonTask().execute(request).get(timeout, TimeUnit.SECONDS);
     }
 
-    public static JSONObject HTTPJsonRequest(JSONObject request) throws Throwable {
-        return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
+    /**
+     * Takes a URL and returns the InputStream for raw parsing.
+     */
+    private static class RawTask extends AsyncTask<String, Integer, InputStream> {
+        @Override
+        protected InputStream doInBackground(String... strings) {
+            try {
+                return new java.net.URL(strings[0]).openStream();
+            } catch (Throwable e) {
+                if (devmode) Log.e("DEV",e.getMessage());
+                return null;
+            }
+        }
     }
 
     /**
@@ -99,12 +123,15 @@ class InternetHelper {
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {
+                    if (devmode) Log.e("DEV",e.getMessage());
                     return new JSONObject().put("message", builder.toString());
                 }
             } catch (Throwable e) {
+                if (devmode) Log.e("DEV",e.getMessage());
                 try {
                     return new JSONObject().put("message", e.getMessage());
                 } catch (Throwable e2) {
+                    if (devmode) Log.e("DEV",e2.getMessage());
                     return new JSONObject();
                 }
             }

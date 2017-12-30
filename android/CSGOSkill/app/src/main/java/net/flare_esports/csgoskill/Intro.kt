@@ -164,14 +164,14 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         try {
             tempId = users[0].getString("steamid")
         } catch (e: Throwable) {
-            if (devmode) Log.d("DEV", e.message)
+            if (devmode) Log.e("DEV", e.message)
         }
 
         if (!tempId.isEmpty() && users.size == 1) {
-            intent.putExtra("open", "home")
-            intent.putExtra("user", tempId)
+            intent.putExtra(INAME_OPEN, IVALUE_HOME)
+            intent.putExtra(INAME_USER, tempId)
         } else {
-            intent.putExtra("open", "login")
+            intent.putExtra(INAME_OPEN, IVALUE_LOGIN)
         }
 
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
@@ -213,7 +213,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                         Thread.sleep(1250)
                     } // Yeah, yeah so what it looks nicer
                     catch (e: Throwable) {
-                        if (devmode) Log.d("DEV", e.message)
+                        if (devmode) Log.e("DEV", e.message)
                     }
 
                 }

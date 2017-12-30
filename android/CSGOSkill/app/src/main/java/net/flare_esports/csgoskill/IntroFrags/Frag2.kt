@@ -19,7 +19,6 @@ class Frag2 : Slide() {
 
     internal lateinit var view: View
     internal lateinit var context: Context
-
     override lateinit var slideListener: SlideListener
 
     override fun onAttach(context: Context) {

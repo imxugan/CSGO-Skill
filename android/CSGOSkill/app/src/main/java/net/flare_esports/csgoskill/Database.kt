@@ -16,8 +16,8 @@ import org.json.JSONObject
 import net.flare_esports.csgoskill.InternetHelper.*
 import net.flare_esports.csgoskill.Constants.*
 
-internal class Database(
-        private val context: Context,
+class Database(
+        context: Context,
         factory: SQLiteDatabase.CursorFactory?
 ) : SQLiteOpenHelper(context, NAME, factory, VERSION) {
 
@@ -100,8 +100,9 @@ internal class Database(
     }
 
     /**
-     * Asks the server for the most current version number. When outdated, it will set
-     * a variable called 'newVersion' to the response before returning.
+     * <p>Asks the server for the most current version number. When outdated,
+     * it will set a variable called 'newVersion' to the response before
+     * returning.</p>
      *
      * @return 1 if up-to-date, 0 if updates available, -1 if error
      */
@@ -123,16 +124,15 @@ internal class Database(
             } else if (C_MAJOR == version.getInt("major")) {
                 if (C_MINOR < version.getInt("minor")) {
                     return 0
-                } else if (C_MINOR == version.getInt("minor") && C_POINT < version.getInt("point")) {
+                } else if (C_MINOR == version.getInt("minor")
+                        && C_POINT < version.getInt("point")) {
                     return 0
                 }
             }
             return 1
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return -1
@@ -148,9 +148,11 @@ internal class Database(
     }
 
     /**
-     * Inserts the given user (Username, Steam ID, Email, Secret), updateUser() should be called immediately after.
+     * <p>Inserts the given user (Username, Steam ID, Email, Secret),
+     * updateUser() should be called immediately after.</p>
+     *
      * @param data Contains the 'username', 'steamid', 'email', and 'secret' information
-     * @return     True if successful, false otherwise.
+     * @return True if successful, false otherwise.
      */
     fun insertUser(data: JSONObject): Boolean {
         try {
@@ -176,20 +178,18 @@ internal class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return false
     }
 
     /**
-     * Attempts to download the most recent stats for a given user.
-     * Also downloads the persona and email. Should only be called every 30 minutes,
-     * any more frequently and changes are unlikely to be seen.
+     * <p>Attempts to download the most recent stats for a given user. Also
+     * downloads the persona and email. Should only be called every 30 minutes,
+     * any more frequently and changes are unlikely to be seen.</p>
      * @param steamId The Steam ID of the user to update.
-     * @return        True if successful or up-to-date, false otherwise.
+     * @return True if successful or up-to-date, false otherwise.
      */
     fun updateUser(steamId: String, secret: String): Boolean {
         try {
@@ -202,7 +202,8 @@ internal class Database(
             var response = HTTPJsonRequest(request)
 
             if (response.length() < 1 || response.has("message"))
-                throw Throwable(if (response.length() < 1) "Empty response" else response.getString("message"))
+                throw Throwable(if (response.length() < 1) "Empty response"
+                                else response.getString("message"))
 
             val values = ContentValues()
             values.put(EMAIL, response.getString("email"))
@@ -218,10 +219,14 @@ internal class Database(
                 val sql = writableDatabase
                 if (sql.update(USERTABLE, values, STEAMID + "=?", arrayOf(steamId)) > 0) {
                     sql.close()
-                    throw Throwable("Failed to update player stats. " + if (response.length() < 1) "Empty response" else response.getString("message"))
+                    throw Throwable("Failed to update player stats. " +
+                            if (response.length() < 1) "Empty response"
+                            else response.getString("message"))
                 } else {
                     sql.close()
-                    throw Throwable("Failed to update player information. " + if (response.length() < 1) "Empty response" else response.getString("message"))
+                    throw Throwable("Failed to update player information. " +
+                            if (response.length() < 1) "Empty response"
+                            else response.getString("message"))
                 }
             }
             values.put(DATA, response.toString())
@@ -235,20 +240,18 @@ internal class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return false
     }
 
     /**
-     * Gets a JSONObject representing the given user's info, according to the device.
-     * DOES NOT request info from server.
+     * <p>Gets a JSONObject representing the given user's info, according to
+     * the device. DOES NOT request info from server.</p>
      *
      * @param steamId The Steam ID of the user
-     * @return        JSONObject of user information, or null if error occurred.
+     * @return JSONObject of user information, or null if error occurred.
      */
     fun getUserInfo(steamId: String): JSONObject {
         try {
@@ -256,6 +259,7 @@ internal class Database(
             val sql = writableDatabase
             val c = sql.rawQuery("SELECT " +
                     USERNAME + ", " +
+                    SECRET + ", " +
                     EMAIL + ", " +
                     STATUS + ", " +
                     AVATAR + "," +
@@ -269,6 +273,7 @@ internal class Database(
                 c.moveToFirst()
                 val result = JSONObject()
                         .put("username", c.getString(c.getColumnIndex(USERNAME)))
+                        .put("secret", c.getString(c.getColumnIndex(SECRET)))
                         .put("steamid", steamId)
                         .put("email", c.getString(c.getColumnIndex(EMAIL)))
                         .put("status", JSONObject(c.getString(c.getColumnIndex(STATUS))))
@@ -280,41 +285,37 @@ internal class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return JSONObject()
     }
 
     /**
-     * Gets a JSONObject representing the given user's global tracked stats, according to the device.
-     * DOES NOT request info from server.
+     * <p>Gets a JSONObject representing the given user's global tracked stats,
+     * according to the device. DOES NOT request info from server.</p>
      *
      * @param steamId The Steam ID of the user
-     * @return        JSONObject of the user's global stats, or null if error occurred.
-     * @see .getUserStatsHistory
+     * @return JSONObject of the user's global stats, or null if error occurred.
+     * @see #getUserStatsHistory(String)
      */
     fun getUserStats(steamId: String): JSONObject? {
         try {
             return grabData(steamId).getJSONObject("global")
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return null
     }
 
     /**
-     * Gets a JSONObject representing the given user's stat history, according to the device.
-     * DOES NOT request info from server.
+     * <p>Gets a JSONObject representing the given user's stat history,
+     * according to the device. DOES NOT request info from server.</p>
      *
      * @param steamId The Steam ID of the user
-     * @return        JSONObject of the user's stat history, or null if error occurred.
+     * @return JSONObject of the user's stat history, or null if error occurred.
      */
     fun getUserStatsHistory(steamId: String): JSONObject? {
         try {
@@ -324,29 +325,26 @@ internal class Database(
                     .put("monthly", result.getJSONArray("monthly"))
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return null
     }
 
     /**
-     * Gets a JSONObject of the most recently saved stats of user (the Steam API response), according to the device.
-     * DOES NOT request info from server.
+     * <p>Gets a JSONObject of the most recently saved stats of user (the Steam
+     * API response), according to the device. DOES NOT request info from
+     * server.</p>
      *
      * @param steamId The Steam ID of the user
-     * @return        JSONObject of the user's all-time stats, or null if error occurred.
+     * @return JSONObject of the user's all-time stats, or null if error occurred.
      */
     fun getUserAllTime(steamId: String): JSONObject? {
         try {
             return grabData(steamId).getJSONObject("current")
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
-                Log.d("DEV", e.message)
-            }
+            if (devmode) Log.e("DEV", e.message)
         }
 
         return null
