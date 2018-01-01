@@ -85,7 +85,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
              "\", " . jsonToSql($status) . ")";
     if ($conn->query($query)) {
         $conn->close();
-        consoleExit("{\"success\":true,\"verify\":\"" . $string . "\"}");
+        consoleExit("{\"success\":true,\"steamid\":\"" . $steamID . "\",\"verify\":\"" . $string . "\"}");
     } else {
         error_log("13262 - The SQL query to reserve user account failed. Here's what we got: " . print_r($conn->error_list, true));
         $conn->close();
@@ -154,6 +154,8 @@ if (!isset($create)) { // Reserve Row, return Verify key
     }
 
     unset($status->verify); // No longer needed
+    // Just to clarify, although this is unset here, the database will not be
+    // updated unless the provided info is good and the account created.
 
     $name = $conn->real_escape_string(substr($name, 0, 30));
 

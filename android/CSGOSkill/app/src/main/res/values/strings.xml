@@ -16,4 +16,8 @@
     <string name="safe_error_title">Something happened</string>
     <string name="safe_error_content">Try doing that again. If this error persists, contact support at http://csgo-skill.com</string>
 
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="login_almost_there">Almost There</string>
+
 </resources>

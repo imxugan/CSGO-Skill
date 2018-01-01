@@ -45,7 +45,7 @@ try {
             }
             $result = $result->fetch_assoc()["secret"];
             $conn->close();
-            $msg = "{\"success\":true,\"secret\":\"" . $result . "\"}";
+            $msg = "{\"success\":true,\"steamid\":\"" . $steamID . "\",\"secret\":\"" . $result . "\"}";
             if ($app){ consoleExit($msg); }
             else { exit($msg); }
 		} else {
