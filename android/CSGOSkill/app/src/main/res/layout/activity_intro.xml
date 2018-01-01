@@ -12,7 +12,7 @@
     tools:context="net.flare_esports.csgoskill.Intro">
 
     <FrameLayout
-        android:id="@+id/intro_frag_container"
+        android:id="@+id/introFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

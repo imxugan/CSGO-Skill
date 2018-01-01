@@ -9,7 +9,6 @@ import android.app.ActivityOptions
 import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -32,21 +31,21 @@ import net.flare_esports.csgoskill.IntroFrags.*
 
 class Intro : AppCompatActivity(), Slide.SlideListener {
 
-    internal lateinit var db: Database
-    internal lateinit var handler: Handler
-    internal lateinit var fragmentManager: FragmentManager
-    internal lateinit var context: Context
+    private lateinit var db: Database
+    private lateinit var handler: Handler
+    private lateinit var fManager: FragmentManager
+    private lateinit var context: Context
 
-    internal lateinit var slide1: Frag1
-    internal lateinit var slide2: Frag2
-    internal lateinit var slide3: Frag3
+    private lateinit var slide1: Frag1
+    private lateinit var slide2: Frag2
+    private lateinit var slide3: Frag3
 
-    internal lateinit var fadeOut: Animation
-    internal lateinit var fadeIn: Animation
+    private lateinit var fadeOut: Animation
+    private lateinit var fadeIn: Animation
 
-    internal var hasAnimated: Boolean = false
-    internal var firstRun: Boolean = false
-    internal var connected: Boolean = false
+    private var hasAnimated: Boolean = false
+    private var firstRun: Boolean = false
+    private var connected: Boolean = false
 
     private val splashing = Runnable { this.splashing() }
     private val startIntro = Runnable { this.startIntro() }
@@ -58,14 +57,14 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
         db = Database(this, null)
         handler = Handler()
-        fragmentManager = getFragmentManager()
+        fManager = fragmentManager
         context = this
 
         hasAnimated = false
         connected = false
 
-        fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
-        fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+        fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_long)
+        fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
 
         window.exitTransition = Fade()
 
@@ -80,28 +79,26 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         ibContinue.imageTintList = ContextCompat.getColorStateList(context, R.color.colorPrimary)
         ibContinue.visibility = View.VISIBLE
         ibContinue.setOnClickListener {
-            var fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+            var fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
             fadeOut.setAnimationListener( Animer {
                 ibContinue.visibility = View.INVISIBLE
                 ibContinue.imageTintList = ContextCompat.getColorStateList(context, R.color.colorWhite)
             })
             ibContinue.startAnimation(fadeOut)
-            fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+            fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
             fadeOut.setAnimationListener( Animer {
                 imageLogo.visibility = View.GONE
             })
             imageLogo.startAnimation(fadeOut)
-            fragmentManager = getFragmentManager()
-            val fragmentTransaction = fragmentManager.beginTransaction()
+            val fragmentTransaction = fManager.beginTransaction()
             slide1.enterTransition = Fade().setDuration(1000)
-            fragmentTransaction.add(R.id.intro_frag_container, slide1)
+            fragmentTransaction.add(R.id.introFragmentContainer, slide1)
             handler.postDelayed ({ fragmentTransaction.commit() }, 800)
         }
 
     }
 
     override fun animationComplete(currentFragment: Fragment) {
-        if (devmode) Log.d("DEV", "running animationComplete()")
 
         if (currentFragment == slide3) ibContinue.setImageResource(R.drawable.ic_check_white_48dp)
         ibContinue.visibility = View.VISIBLE
@@ -115,42 +112,38 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             enterFade.startDelay = 750
 
             if (currentFragment == slide1 || currentFragment == slide2 || currentFragment == slide3) {
-                val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+                val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
                 fadeOut.setAnimationListener( Animer {
                     ibContinue.visibility = View.GONE
                 })
                 ibContinue.startAnimation(fadeOut)
             }
 
+            val fragmentTransaction = fManager.beginTransaction()
             when (currentFragment) {
                 slide1 -> {
-                    val fragmentTransaction = fragmentManager.beginTransaction()
 
                     slide1.exitTransition = exitFade
                     slide2.enterTransition = enterFade
 
-                    fragmentTransaction.replace(intro_frag_container.id, slide2)
-                    fragmentTransaction.commitAllowingStateLoss()
+                    fragmentTransaction.replace(introFragmentContainer.id, slide2)
                 }
                 slide2 -> {
-                    val fragmentTransaction = fragmentManager.beginTransaction()
 
                     slide2.exitTransition = exitFade
                     slide3.enterTransition = enterFade
 
-                    fragmentTransaction.replace(intro_frag_container.id, slide3)
-                    fragmentTransaction.commitAllowingStateLoss()
+                    fragmentTransaction.replace(introFragmentContainer.id, slide3)
                 }
                 slide3 -> {
-                    val fragmentTransaction = fragmentManager.beginTransaction()
 
                     slide3.exitTransition = exitFade
 
                     fragmentTransaction.remove(slide3)
-                    fragmentTransaction.commitAllowingStateLoss()
-                    Handler().postDelayed(toMain, 750)
+                    handler.postDelayed(toMain, 750)
                 }
             }
+            fragmentTransaction.commitAllowingStateLoss()
         }
     }
 
@@ -168,14 +161,14 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         }
 
         if (!tempId.isEmpty() && users.size == 1) {
-            intent.putExtra(INAME_OPEN, IVALUE_HOME)
+            intent.putExtra(INAME_OPEN, HOME_FRAG)
             intent.putExtra(INAME_USER, tempId)
         } else {
-            intent.putExtra(INAME_OPEN, IVALUE_LOGIN)
+            intent.putExtra(INAME_OPEN, LOGIN_FRAG)
         }
 
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
-        Handler().postDelayed({ finish() }, 1000)
+        handler.postDelayed({ finish() }, 1000)
     }
 
     /* This is the meat of the operations done by Intro. It starts the animations for the views,
@@ -201,7 +194,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             alerted = true
             DynamicAlert(context,
                     R.string.first_run_no_internet_warning)
-                    .setDismissAction(DialogInterface.OnDismissListener { handler.postDelayed(startIntro, 200) }).show()
+                    .setDismissAction{ handler.postDelayed(startIntro, 200) }.show()
         }
         if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 

@@ -19,7 +19,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
-import android.util.Log;
 import android.view.View;
 
 /*
@@ -31,9 +30,10 @@ import android.view.View;
  * newAlert(Builder), all without making a new DynamicAlert.
  *
  * By default (except when initialized with a builder), all DynamicAlerts have
- * an OK button which simply dismisses the dialogue, and cannot be cancelled.
+ * a GOT IT button, and cannot be cancelled.
  */
 
+@SuppressWarnings("ALL")
 class DynamicAlert {
 
     private AlertDialog.Builder self;
@@ -50,7 +50,7 @@ class DynamicAlert {
     // Change based on what default functionality you desire. Can safely
     // include default message text.
     private void defaultSetup() {
-        setPositive();
+        setPositive(R.string.got_it);
         noCancel();
     }
 
@@ -385,56 +385,12 @@ class DynamicAlert {
 
     /* SET LISTENER */
     public DynamicAlert setCancelAction(final Runnable runnable) {
-        self.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                new Thread(runnable).start();
-            }
-        });
-        return this;
-    }
-
-    public DynamicAlert setCancelAction(DialogInterface.OnCancelListener listener) {
-        self.setOnCancelListener(listener);
-        return this;
-    }
-
-    public DynamicAlert setCancelAction(final int action) {
-        // Recreating a dismissed alert is totally not cool bro
-        Log.i("Friendly Reminder", "Recreating an Alert Dialogue is NOT recommended!");
-        self.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (action == ACTION_RECREATE) show();
-            }
-        });
-        return this;
-    }
-
-    public DynamicAlert setDismissAction(final int action) {
-        // Recreating a dismissed alert is totally not cool bro
-        Log.i("Friendly Reminder", "Recreating an Alert Dialogue is NOT recommended!");
-        self.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (action == ACTION_RECREATE) show();
-            }
-        });
+        self.setOnCancelListener(dialog -> runnable.run());
         return this;
     }
 
     public DynamicAlert setDismissAction(final Runnable runnable) {
-        self.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                new Thread(runnable).start();
-            }
-        });
-        return this;
-    }
-
-    public DynamicAlert setDismissAction(DialogInterface.OnDismissListener listener) {
-        self.setOnDismissListener(listener);
+        self.setOnDismissListener(dialog -> runnable.run());
         return this;
     }
     /* END LISTENER */

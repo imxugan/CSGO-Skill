@@ -148,6 +148,27 @@ class Database(
     }
 
     /**
+     * Polls the database to see if a given Steam ID is found.
+     *
+     * @param steamId The Steam ID of the account to search
+     * @return True if found, false otherwise
+     */
+    fun hasUser(steamId: String): Boolean {
+        val l = users.size
+        var i = 0
+        try {
+            while (i < l) {
+                if (steamId == users[i].getString("steamid")) return true
+                i++
+            }
+        } catch (e: Throwable) {
+            lastError = e
+            if (devmode) Log.e("DEV", e.message)
+        }
+        return false
+    }
+
+    /**
      * <p>Inserts the given user (Username, Steam ID, Email, Secret),
      * updateUser() should be called immediately after.</p>
      *
@@ -156,16 +177,6 @@ class Database(
      */
     fun insertUser(data: JSONObject): Boolean {
         try {
-            /*
-            USERNAME + " TEXT," +           // Custom username, updated at startup
-            STEAMID + " TEXT UNIQUE," +     // Steam ID
-            SECRET + " TEXT PRIMARY KEY," + // Secret
-            EMAIL + " TEXT UNIQUE," +       // Email, updated at startup
-            STATUS + " TEXT," +             // Account standing info
-            AVATAR + " TEXT," +             // Link to full avatar
-            VANITY_URL + " TEXT," +         // Link to Steam profile
-            DATA + " TEXT)"                 // Stats, pulled from the server (includes main tasks)
-             */
             val sql = writableDatabase
             val values = ContentValues()
             values.put(USERNAME, data.getString("username"))
@@ -188,12 +199,16 @@ class Database(
      * <p>Attempts to download the most recent stats for a given user. Also
      * downloads the persona and email. Should only be called every 30 minutes,
      * any more frequently and changes are unlikely to be seen.</p>
+     *
+     * This function will run assuming our servers know the account. If the
+     * server doesn't, it would provide a response that would ultimately throw
+     * an error when trying to access "persona". This is desired behavior.
+     *
      * @param steamId The Steam ID of the user to update.
      * @return True if successful or up-to-date, false otherwise.
      */
     fun updateUser(steamId: String, secret: String): Boolean {
         try {
-            // Grab email
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/profile?id=" + steamId)
                     .put("post", JSONObject()
@@ -202,8 +217,13 @@ class Database(
             var response = HTTPJsonRequest(request)
 
             if (response.length() < 1 || response.has("message"))
-                throw Throwable(if (response.length() < 1) "Empty response"
+                throw Throwable("Failed to update player.\n" +
+                                if (response.length() < 1) "Empty response"
                                 else response.getString("message"))
+
+            // This call is safe, it allows us to call updateUser even if the
+            // account isn't on the device.
+            if (!hasUser(steamId)) insertUser(response.put("secret", secret))
 
             val values = ContentValues()
             values.put(EMAIL, response.getString("email"))
@@ -215,16 +235,16 @@ class Database(
                     .put("url", "http://api.csgo-skill.com/stats?steamid=" + steamId)
             response = HTTPJsonRequest(request)
             if (response.length() < 1 || response.has("message")) {
-                // oh no
+                // Response is NOT good!
                 val sql = writableDatabase
                 if (sql.update(USERTABLE, values, STEAMID + "=?", arrayOf(steamId)) > 0) {
                     sql.close()
-                    throw Throwable("Failed to update player stats. " +
+                    throw Throwable("Failed to update player stats.\n" +
                             if (response.length() < 1) "Empty response"
                             else response.getString("message"))
                 } else {
                     sql.close()
-                    throw Throwable("Failed to update player information. " +
+                    throw Throwable("Failed to update player information.\n" +
                             if (response.length() < 1) "Empty response"
                             else response.getString("message"))
                 }

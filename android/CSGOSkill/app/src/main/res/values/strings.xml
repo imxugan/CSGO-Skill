@@ -10,4 +10,10 @@
     <string name="no_internet_warning">No Internet Connection</string>
 
     <string name="welcome_to">Welcome to</string>
+
+    <string name="got_it">GOT IT</string>
+
+    <string name="safe_error_title">Something happened</string>
+    <string name="safe_error_content">Try doing that again. If this error persists, contact support at http://csgo-skill.com</string>
+
 </resources>

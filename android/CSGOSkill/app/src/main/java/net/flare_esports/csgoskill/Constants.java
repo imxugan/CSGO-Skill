@@ -15,10 +15,14 @@ class Constants {
     static final int C_MINOR = 8;
     static final int C_POINT = 0;
 
+    static final int NO_USER = 0;
+    static final int BAD_USER = 1;
+    static final int USER_FOUND = 2;
+
     static final String INAME_OPEN = "open";
     static final String INAME_USER = "user";
 
-    static final String IVALUE_LOGIN = "login";
-    static final String IVALUE_HOME = "home";
+    static final String LOGIN_FRAG = "login";
+    static final String HOME_FRAG = "home";
 
 }
