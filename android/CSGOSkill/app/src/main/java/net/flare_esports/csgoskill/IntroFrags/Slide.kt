@@ -9,7 +9,7 @@ import android.app.Fragment
 
 abstract class Slide: Fragment() {
 
-    abstract var slideListener: SlideListener
+    abstract var slideListener: SlideListener?
 
     interface SlideListener {
         fun animationComplete(currentFragment: Fragment)

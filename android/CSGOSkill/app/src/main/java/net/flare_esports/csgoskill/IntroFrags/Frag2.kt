@@ -19,12 +19,17 @@ class Frag2 : Slide() {
 
     internal lateinit var view: View
     internal lateinit var context: Context
-    override lateinit var slideListener: SlideListener
+    override var slideListener: SlideListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.context = context
         slideListener = context as SlideListener
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        slideListener = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,6 +39,6 @@ class Frag2 : Slide() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Handler().postDelayed({ slideListener.animationComplete(this) }, 1500)
+        Handler().postDelayed({ slideListener?.animationComplete(this) }, 1500)
     }
 }
