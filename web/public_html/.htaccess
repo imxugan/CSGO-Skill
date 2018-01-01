@@ -1,15 +1,6 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_URI} \.xml$ [OR]
-RewriteCond %{REQUEST_URI} \.atom$
-RewriteCond %{DOCUMENT_ROOT}/$1.php -f
-RewriteRule ^(.*)?.xml$ $1.php [L]
-
-# Check if request is .html and doesn't exist
+# This will basically just see if the file requested is a .php, and serve that
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)\.html$ $1.php [QSA,L]
-
-# Finally, check if adding .php is a file
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule (.*) $1.php [QSA,L]
+RewriteCond $1.php -f
+RewriteRule ^([^.]*).*$ $1.php [QSA, L]
