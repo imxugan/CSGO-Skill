@@ -1,1 +1,1 @@
-gource -1920x1080 --frameless --seconds-per-day .2 --hide filenames --max-file-lag 1
+gource -1920x1080 --frameless --seconds-per-day .25 --hide filenames --max-file-lag 4
