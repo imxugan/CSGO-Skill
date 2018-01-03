@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("An unexpected error occurred.");
     }
 
-    if (!isset($_GET["steamid"]))
+    if (!isset($_GET["steamid"])) {
         die("An unexpected error occurred.");
     }
 

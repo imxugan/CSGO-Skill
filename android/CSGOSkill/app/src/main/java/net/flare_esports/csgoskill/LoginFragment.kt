@@ -14,8 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.widget.Button
 
-import kotlinx.android.synthetic.main.fragment_login.*
+//import kotlinx.android.synthetic.main.fragment_login.*
 import net.flare_esports.csgoskill.Constants.*
 import org.json.JSONObject
 
@@ -28,7 +30,8 @@ class LoginFragment : BaseFragment() {
     internal lateinit var context: Context
     override var lMain: FragmentListener? = null
 
-    private val startLogin = Runnable { this.startLogin() }
+    private lateinit var loginLoginButton: Button
+    private lateinit var loginWebView: WebView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -41,9 +44,14 @@ class LoginFragment : BaseFragment() {
         lMain = null
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         view = inflater.inflate(R.layout.fragment_login, container, false)
-        loginLoginButton.setOnClickListener{startLogin}
+
+        loginLoginButton = view.findViewById(R.id.loginLoginButton)
+        loginWebView = view.findViewById(R.id.loginWebView)
+
+        loginLoginButton.setOnClickListener { startLogin() }
+
         return view
     }
 
@@ -86,6 +94,7 @@ class LoginFragment : BaseFragment() {
                 return false
             }
         }
+        loginLoginButton.visibility = View.GONE
         loginWebView.visibility = View.VISIBLE
         loginWebView.loadUrl("http://www.csgo-skill.com/api/login?app")
     }

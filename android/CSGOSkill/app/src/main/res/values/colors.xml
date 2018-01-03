@@ -14,4 +14,5 @@
 
     <color name="transparent">#00000000</color>
     <color name="textShadowLight">#77000000</color>
+    <color name="roundedBoxBackground">#b0ffffff</color>
 </resources>

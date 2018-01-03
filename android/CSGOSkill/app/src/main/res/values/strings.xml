@@ -19,5 +19,9 @@
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="login_almost_there">Almost There</string>
+    <string name="register_text">To access the features of the app, we require that you provide a unique username and email address.</string>
+    <string name="tc_agreement">I agree to the Terms and Conditions</string>
+    <string name="login_button">Login with Steam</string>
+    <string name="create">Create</string>
 
 </resources>

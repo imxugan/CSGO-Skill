@@ -18,7 +18,7 @@ try {
 		header('Location: ' . $openid->authUrl());
 	} elseif ($openid->mode == 'cancel') {
         // No need to log when a user cancels authentication.
-        $msg = "{\"success\":false,\"error\":\"1218\"}"
+        $msg = "{\"success\":false,\"error\":\"1218\"}";
         if ($app){ consoleExit($msg); }
         else { exit($msg); }
 	} else {

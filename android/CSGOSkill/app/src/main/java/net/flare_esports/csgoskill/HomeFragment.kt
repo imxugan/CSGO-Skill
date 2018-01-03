@@ -20,7 +20,7 @@ class HomeFragment : BaseFragment() {
     internal lateinit var context: Context
     override var lMain: FragmentListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         view = inflater.inflate(R.layout.fragment_home, container, false)
         return view
     }

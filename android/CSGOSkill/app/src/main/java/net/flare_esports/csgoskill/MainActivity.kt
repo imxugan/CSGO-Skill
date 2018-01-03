@@ -11,6 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.transition.Fade
 import android.util.Log
 import android.view.View
@@ -53,14 +54,15 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
         window.enterTransition = Fade()
 
         context = this
+        fManager = fragmentManager
 
         db = Database(context, null)
 
         LoginFrag = LoginFragment()
         HomeFrag = HomeFragment()
 
-        loadUser(intent.getStringExtra(INAME_USER))
-        switchFragment(intent.getStringExtra(INAME_OPEN))
+        //loadUser(intent.getStringExtra(INAME_USER))
+        Handler().postDelayed({switchFragment(intent.getStringExtra(INAME_OPEN))}, 500)
     }
 
     override fun onBackPressed() {
