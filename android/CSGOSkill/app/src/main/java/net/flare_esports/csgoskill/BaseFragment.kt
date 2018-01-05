@@ -11,6 +11,15 @@ import android.app.Fragment
 abstract class BaseFragment : Fragment() {
 
     abstract var lMain: FragmentListener?
+    abstract val name: String
+
+    /**
+     * <p>Called when user presses the back button, should return False when
+     * the Main Activity should handle the event itself.</p>
+     *
+     * @return True if fragment handled the event, false otherwise
+     */
+    abstract fun onBack(): Boolean
 
     interface FragmentListener {
 

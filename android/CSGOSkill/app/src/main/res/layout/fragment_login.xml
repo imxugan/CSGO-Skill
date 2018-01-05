@@ -45,6 +45,7 @@
         android:shadowDx="0.0"
         android:shadowDy="1.2"
         android:shadowRadius="16"
+        android:visibility="gone"
         android:background="@color/colorPrimaryDark" />
 
     <android.support.constraint.ConstraintLayout
@@ -56,7 +57,7 @@
         app:layout_constraintVertical_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/loginTitle"
@@ -206,6 +207,7 @@
                         android:paddingBottom="16dp"
                         android:paddingStart="32dp"
                         android:paddingEnd="32dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_gravity="center"
                         android:text="@string/create"
                         android:textSize="20sp"

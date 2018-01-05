@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
     }
 
     override fun onBackPressed() {
+        val fragment = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment
+        if (fragment.onBack()) {return}
         //TODO
     }
 

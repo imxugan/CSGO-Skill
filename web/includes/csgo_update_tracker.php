@@ -151,7 +151,7 @@ foreach ($feed as $item){
 
         // Display for testing
         //echo $message;
-        cron_log("Article \""$item["title"] . "\" at " . $item["link"] . " discovered.")
+        cron_log("Article \"" . $item["title"] . "\" at " . $item["link"] . " discovered.");
 
         // Break because the next time it runs it will start with the next post
         // This is just to prevent overloading the mail() function

@@ -8,13 +8,16 @@ package net.flare_esports.csgoskill
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
 
 //import kotlinx.android.synthetic.main.fragment_login.*
@@ -29,9 +32,15 @@ class LoginFragment : BaseFragment() {
     internal lateinit var view: View
     internal lateinit var context: Context
     override var lMain: FragmentListener? = null
+    override val name: String = "login"
 
     private lateinit var loginLoginButton: Button
     private lateinit var loginWebView: WebView
+    private lateinit var loginRegisterView: ConstraintLayout
+
+    private var verifyCode: String = ""
+    private var steamId: String = ""
+    private var stage: String = "login"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -49,17 +58,31 @@ class LoginFragment : BaseFragment() {
 
         loginLoginButton = view.findViewById(R.id.loginLoginButton)
         loginWebView = view.findViewById(R.id.loginWebView)
+        loginRegisterView = view.findViewById(R.id.loginRegisterView)
 
         loginLoginButton.setOnClickListener { startLogin() }
 
         return view
     }
 
+    override fun onBack(): Boolean {
+        when (stage) {
+            "web" -> {
+                //TODO
+            }
+            "register" -> {
+                //TODO
+            }
+            else -> return false
+        }
+        return true
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun startLogin() {
+
         loginWebView.settings.javaScriptEnabled = true // Yes, I'm sure
-        loginWebView.settings.builtInZoomControls = true
-        loginWebView.settings.allowFileAccess = false
+        loginWebView.webViewClient = WebViewClient() // This forces the webview layout
         loginWebView.webChromeClient = object: WebChromeClient() {
             override fun onConsoleMessage(cM: ConsoleMessage): Boolean {
                 val message = cM.message() // Message looks like 'FLARE-ESPORTS:message'
@@ -78,9 +101,20 @@ class LoginFragment : BaseFragment() {
                             lMain?.onLogin(response.getString("steamid"), response.getString("secret"))
                             return true
                         } else if (response.has("verify")) {
-                            //TODO, continue account creation by asking for Username and Email
+                            stage = "register"
+                            verifyCode = response.getString("verify")
+                            steamId = response.getString("steamid")
+                            val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_medium)
+                            fadeIn.setAnimationListener(Animer {
+                                loginRegisterView.visibility = View.VISIBLE
+                                loginWebView.visibility = View.GONE
+                            })
+                            val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
+                            loginRegisterView.startAnimation(fadeIn)
+                            loginWebView.startAnimation(fadeOut)
                         } else {
                             //TODO, what happened?
+                            if (devmode) Log.e("DEV", "Something happened with the console message")
                         }
 
                     } else {
@@ -94,9 +128,10 @@ class LoginFragment : BaseFragment() {
                 return false
             }
         }
+        stage = "web"
         loginLoginButton.visibility = View.GONE
         loginWebView.visibility = View.VISIBLE
-        loginWebView.loadUrl("http://www.csgo-skill.com/api/login?app")
+        loginWebView.loadUrl("http://api.csgo-skill.com/login?app")
     }
 
 }
