@@ -18,12 +18,14 @@
         android:id="@+id/imageLoginBackground"
         android:layout_centerVertical="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/mirage" />
+        android:src="@drawable/mirage"
+        tools:ignore="ContentDescription" />
 
     <WebView
         android:id="@+id/loginWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorSteamBG"
         android:visibility="gone" />
 
     <Button
@@ -45,7 +47,6 @@
         android:shadowDx="0.0"
         android:shadowDy="1.2"
         android:shadowRadius="16"
-        android:visibility="gone"
         android:background="@color/colorPrimaryDark" />
 
     <android.support.constraint.ConstraintLayout
@@ -57,7 +58,7 @@
         app:layout_constraintVertical_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/loginTitle"
@@ -108,6 +109,20 @@
                     android:id="@+id/loginAvatarView"
                     android:layout_width="80dp"
                     android:layout_height="80dp" />
+
+                <ProgressBar
+                    android:id="@+id/loginAvatarLoader"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="60dp"
+                    android:maxHeight="60dp"
+                    android:minWidth="60dp"
+                    android:minHeight="60dp"
+                    app:layout_constraintStart_toStartOf="@id/loginAvatarView"
+                    app:layout_constraintEnd_toEndOf="@id/loginAvatarView"
+                    app:layout_constraintTop_toTopOf="@id/loginAvatarView"
+                    app:layout_constraintBottom_toBottomOf="@id/loginAvatarView" />
 
                 <TextView
                     android:id="@+id/loginPersonaView"

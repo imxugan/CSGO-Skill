@@ -202,4 +202,8 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
+    fun toggleFullscreen(fullscreen: Boolean) {
+        //TODO
+    }
+
 }

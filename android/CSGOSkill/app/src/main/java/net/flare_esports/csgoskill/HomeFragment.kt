@@ -19,11 +19,7 @@ class HomeFragment : BaseFragment() {
     internal lateinit var view: View
     internal lateinit var context: Context
     override var lMain: FragmentListener? = null
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        view = inflater.inflate(R.layout.fragment_home, container, false)
-        return view
-    }
+    override val name: String = "home"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -34,6 +30,16 @@ class HomeFragment : BaseFragment() {
     override fun onDetach() {
         super.onDetach()
         lMain = null
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        view = inflater.inflate(R.layout.fragment_home, container, false)
+        return view
+    }
+
+    override fun onBack(): Boolean {
+        //TODO
+        return true
     }
 
 }

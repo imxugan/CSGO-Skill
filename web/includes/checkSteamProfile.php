@@ -61,6 +61,8 @@ function check($steamID, $throwError = false, $getStats = false) {
     require_once("convertSteamAPI.php");
 
     $stats = convertStats($json->playerstats->stats);
+    // We return the stats here without checking, because according to the logic
+    // flow, we would've already checked them if we are asking for stats here
     if ($getStats) { return $stats; }
     $achvs = $json->playerstats->achievements;
     $goodPlaytime = false;

@@ -19,11 +19,7 @@ class LoaderFragment : BaseFragment() {
     internal lateinit var view: View
     internal lateinit var context: Context
     override var lMain: FragmentListener? = null
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        view = inflater.inflate(R.layout.fragment_loader, container, false)
-        return view
-    }
+    override val name: String = "loader"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -34,6 +30,17 @@ class LoaderFragment : BaseFragment() {
     override fun onDetach() {
         super.onDetach()
         lMain = null
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        view = inflater.inflate(R.layout.fragment_loader, container, false)
+        return view
+    }
+
+    override fun onBack(): Boolean {
+        // The rest of the application is responsible for handling situations
+        // where back is called and the Loader is visible and in focus.
+        return false
     }
 
 }

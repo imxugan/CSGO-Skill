@@ -11,6 +11,7 @@
     <color name="colorWhite">#f4f7fb</color>
     <color name="colorBlack">#262621</color>
     <color name="colorLightGrey">#bdbdbd</color>
+    <color name="colorSteamBG">#1b2838</color>
 
     <color name="transparent">#00000000</color>
     <color name="textShadowLight">#77000000</color>

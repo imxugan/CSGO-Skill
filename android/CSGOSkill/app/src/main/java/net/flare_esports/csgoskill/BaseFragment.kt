@@ -48,6 +48,8 @@ abstract class BaseFragment : Fragment() {
 
         /**
          * Request to update the user information.
+         *
+         * @return True if successful, false + alert otherwise
          */
         fun updateUser(): Boolean
 
