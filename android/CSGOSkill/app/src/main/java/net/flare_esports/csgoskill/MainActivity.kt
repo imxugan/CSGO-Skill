@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.transition.Fade
-import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 
@@ -41,9 +40,12 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
     private lateinit var context: Context
     private lateinit var db: Database
     private lateinit var fManager: FragmentManager
+    private lateinit var handler: Handler
 
     private lateinit var LoginFrag: LoginFragment
     private lateinit var HomeFrag: HomeFragment
+
+    private var baseUiVisibility: Int = 0
 
     // BEGIN OVERRIDES
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,11 +54,13 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
 
         window.allowEnterTransitionOverlap = true
         window.enterTransition = Fade()
+        baseUiVisibility = window.decorView.systemUiVisibility
 
         context = this
         fManager = fragmentManager
 
         db = Database(context, null)
+        handler = Handler()
 
         LoginFrag = LoginFragment()
         HomeFrag = HomeFragment()
@@ -78,13 +82,13 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
             if (db.updateUser(steamId, secret)) {
                 switchFragment(HOME_FRAG)
             } else {
-                if (devmode) DynamicAlert(context, db.lastError()!!.message).show()
-                else DynamicAlert(context, R.string.safe_error_content)
+                if (devmode) Log.e("MainActivity.onLogin(String)", db.lastError())
+                DynamicAlert(context, R.string.safe_error_content)
                         .setTitle(R.string.safe_error_title).show()
             }
         } else {
             //TODO: User does not exist on device, allow user to try different account or create one
-            if (devmode) Log.e("DEV", "Something happened.")
+            if (devmode) Log.e("MainActivity.onLogin(String)", "Something happened")
         }
     }
 
@@ -95,13 +99,13 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
             if (db.updateUser(steamId, secret)) {
                 switchFragment(HOME_FRAG)
             } else {
-                if (devmode) DynamicAlert(context, db.lastError()!!.message).show()
-                else DynamicAlert(context, R.string.safe_error_content)
+                if (devmode) Log.e("MainActivity.onLogin(String, String)", db.lastError())
+                DynamicAlert(context, R.string.safe_error_content)
                         .setTitle(R.string.safe_error_title).show()
             }
         } else {
             //TODO: What should happen here?
-            if (devmode) Log.e("DEV", "Something happened.")
+            if (devmode) Log.e("MainActivity.onLogin(String, String)", "Something happened")
         }
     }
 
@@ -138,8 +142,8 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
         if (db.updateUser(steamId, secret)) {
             return true
         }
-        if (devmode) DynamicAlert(context, db.lastError()!!.message).show()
-        else DynamicAlert(context, R.string.safe_error_content).setTitle(R.string.safe_error_title).show()
+        if (devmode) Log.e("MainActivity.updateUser", db.lastError())
+        DynamicAlert(context, R.string.safe_error_content).setTitle(R.string.safe_error_title).show()
         return false
     }
 
@@ -164,7 +168,7 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
             getAvatarImg(true)
             return USER_FOUND
         } catch (e: Throwable) {
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("MainActivity.loadUser", e)
         }
         return BAD_USER
     }
@@ -174,7 +178,10 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
         // quickly. Fragments using the image should check this a few times
         // over a couple seconds before giving up
         if ((override || avatarImg == null) && !downloadingAvatar)
-            Thread().run { downloadingAvatar = true; avatarImg = BitmapFactory.decodeStream(RawRequest(avatarUrl)); downloadingAvatar = false }
+            Thread().run {
+                downloadingAvatar = true
+                avatarImg = BitmapFactory.decodeStream(RawRequest(avatarUrl)); downloadingAvatar = false
+            }
         return avatarImg
         // BitmapFactory.decodeResource(resources, R.drawable.default_avatar_1)
     }
@@ -187,13 +194,30 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
     fun getAccountUrl(): String { return accountUrl }
     fun getAvatarUrl(): String { return avatarUrl }
 
+    fun canHasServer(): Boolean {
+        val check = db.checkVersion()
+        if (devmode) Log.d("MainActivity.canHasServer", "Server connection checked")
+        when (check) {
+            1 -> {
+                // Up to date, nothing to do
+            }
+            0 -> {
+                //TODO, updates available
+            }
+            -1 -> {
+                return false
+            }
+        }
+        return true
+    }
+
     fun toggleLoader(visible: Boolean) {
         if (visible && fragmentLoaderContainer.visibility == View.GONE) {
             fragmentLoaderContainer.visibility = View.VISIBLE
             val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_medium)
             fragmentLoaderContainer.startAnimation(fadeIn)
 
-        } else if (fragmentLoaderContainer.visibility == View.VISIBLE) {
+        } else if (!visible && fragmentLoaderContainer.visibility == View.VISIBLE) {
             val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_fast)
             fadeOut.setAnimationListener( Animer {
                 fragmentLoaderContainer.visibility = View.GONE
@@ -203,7 +227,13 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
     }
 
     fun toggleFullscreen(fullscreen: Boolean) {
-        //TODO
+        var newVis = baseUiVisibility
+        val decor = window.decorView
+        if (fullscreen)
+            newVis = newVis or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LOW_PROFILE
+        val changed = newVis != decor.systemUiVisibility
+        if (changed)
+            decor.systemUiVisibility = newVis
     }
 
 }

@@ -17,7 +17,6 @@ import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.transition.Fade
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -152,17 +151,9 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
         val users = db.users
         // Try to get the first Steam ID, and if the only entry, auto load it.
-        // tempId must be initialized to an empty string!!
-        var tempId = ""
-        try {
-            tempId = users[0].getString("steamid")
-        } catch (e: Throwable) {
-            if (devmode) Log.e("DEV", e.message)
-        }
-
-        if (!tempId.isEmpty() && users.size == 1) {
+        if (users.size == 1) {
             intent.putExtra(INAME_OPEN, HOME_FRAG)
-            intent.putExtra(INAME_USER, tempId)
+            intent.putExtra(INAME_USER, users[0].getString("steamid"))
         } else {
             intent.putExtra(INAME_OPEN, LOGIN_FRAG)
         }
@@ -183,7 +174,22 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         imageLogo.animation = animation
 
         connected = isOnline()
-        if (devmode) Log.d("DEV", "Connection: " + connected)
+        if (devmode) Log.d("Intro.splashing", "Connection: " + connected)
+        if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
+
+        val check = db.checkVersion()
+        if (devmode) Log.d("Intro.splashing", "Checked: " + check)
+        when (check) {
+            1 -> {
+                // Up to date, nothing to do
+            }
+            0 -> {
+                //TODO, updates available
+            }
+            -1 -> {
+                Toast.makeText(context, R.string.failed_server_connection, Toast.LENGTH_LONG).show()
+            }
+        }
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
         firstRun = devmode || prefs.getBoolean("firstRun", true)
@@ -196,7 +202,6 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                     R.string.first_run_no_internet_warning)
                     .setDismissAction{ handler.postDelayed(startIntro, 200) }.show()
         }
-        if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 
         // Regardless of internet connection, start the app.
         if (firstRun) {
@@ -206,7 +211,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                         Thread.sleep(1250)
                     } // Yeah, yeah so what it looks nicer
                     catch (e: Throwable) {
-                        if (devmode) Log.e("DEV", e.message)
+                        if (devmode) Log.e("Intro.splashing", e)
                     }
 
                 }

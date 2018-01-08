@@ -9,7 +9,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
+import android.widget.Toast
 
 import org.json.JSONObject
 
@@ -17,7 +17,7 @@ import net.flare_esports.csgoskill.InternetHelper.*
 import net.flare_esports.csgoskill.Constants.*
 
 class Database(
-        context: Context,
+        private var context: Context,
         factory: SQLiteDatabase.CursorFactory?
 ) : SQLiteOpenHelper(context, NAME, factory, VERSION) {
 
@@ -108,9 +108,12 @@ class Database(
      */
     fun checkVersion(): Int {
         try {
+            if (!isOnline()) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
             val response = HTTPRequest("http://api.csgo-skill.com/version")
             if (response.isEmpty()) {
-                throw Throwable("Empty response")
+                throw Throwable("No response")
+            } else if (response == "Unable to resolve host \"api.csgo-skill.com\": No address associated with hostname") {
+                throw Throwable("No connection")
             }
             newVersion = response
             val first = newVersion.indexOf('.')
@@ -132,7 +135,12 @@ class Database(
             return 1
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) {
+                if (e.message == "No connection")
+                    Log.e("Database.checkVersion", "No connection")
+                else
+                    Log.e("Database.checkVersion", e)
+            }
         }
 
         return -1
@@ -163,7 +171,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.hasUser", e)
         }
         return false
     }
@@ -189,7 +197,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.insertUser", e)
         }
 
         return false
@@ -209,47 +217,47 @@ class Database(
      */
     fun updateUser(steamId: String, secret: String): Boolean {
         try {
+            if (!isOnline()) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/profile?id=" + steamId)
                     .put("post", JSONObject()
                             .put("secret", secret)
                     )
-            var response = HTTPJsonRequest(request)
+            request = HTTPJsonRequest(request)
 
-            if (response.length() < 1 || response.has("message"))
+            if (request.length() < 1 || request.has("message"))
                 throw Throwable("Failed to update player.\n" +
-                                if (response.length() < 1) "Empty response"
-                                else response.getString("message"))
-
+                                if (request.length() < 1) "Empty response"
+                                else request.getString("message"))
             // This call is safe, it allows us to call updateUser even if the
             // account isn't on the device.
-            if (!hasUser(steamId)) insertUser(response.put("secret", secret))
+            if (!hasUser(steamId)) insertUser(request.put("secret", secret))
 
             val values = ContentValues()
-            values.put(EMAIL, response.getString("email"))
-            values.put(STATUS, response.getString("status"))
-            values.put(AVATAR, response.getString("avatar"))
-            values.put(VANITY_URL, response.getString("url"))
-            values.put(USERNAME, response.getString("persona"))
+            values.put(EMAIL, request.getString("email"))
+            values.put(STATUS, request.getString("status"))
+            values.put(AVATAR, request.getString("avatar"))
+            values.put(VANITY_URL, request.getString("url"))
+            values.put(USERNAME, request.getString("persona"))
             request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/stats?steamid=" + steamId)
-            response = HTTPJsonRequest(request)
-            if (response.length() < 1 || response.has("message")) {
+            request = HTTPJsonRequest(request)
+            if (request.length() < 1 || request.has("message")) {
                 // Response is NOT good!
                 val sql = writableDatabase
                 if (sql.update(USERTABLE, values, STEAMID + "=?", arrayOf(steamId)) > 0) {
                     sql.close()
                     throw Throwable("Failed to update player stats.\n" +
-                            if (response.length() < 1) "Empty response"
-                            else response.getString("message"))
+                            if (request.length() < 1) "Empty response"
+                            else request.getString("message"))
                 } else {
                     sql.close()
                     throw Throwable("Failed to update player information.\n" +
-                            if (response.length() < 1) "Empty response"
-                            else response.getString("message"))
+                            if (request.length() < 1) "Empty response"
+                            else request.getString("message"))
                 }
             }
-            values.put(DATA, response.toString())
+            values.put(DATA, request.toString())
             val sql = writableDatabase
             if (sql.update(USERTABLE, values, STEAMID + "=?", arrayOf(steamId)) > 0) {
                 sql.close()
@@ -260,7 +268,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.updateUser", e)
         }
 
         return false
@@ -305,7 +313,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.getUserInfo", e)
         }
 
         return JSONObject()
@@ -324,7 +332,7 @@ class Database(
             return grabData(steamId).getJSONObject("global")
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.getUserStats", e)
         }
 
         return null
@@ -345,7 +353,7 @@ class Database(
                     .put("monthly", result.getJSONArray("monthly"))
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.getUserStatsHistory", e)
         }
 
         return null
@@ -364,7 +372,7 @@ class Database(
             return grabData(steamId).getJSONObject("current")
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("DEV", e.message)
+            if (devmode) Log.e("Database.getUserAllTime", e)
         }
 
         return null

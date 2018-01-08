@@ -128,8 +128,10 @@ if (!isset($create)) { // Reserve Row, return Verify key
          *
          * The reason for the TRY AGAIN error is because this error should
          * technically never be seen if the user was going through the login
-         * flow as we designed it. The user would literally have to send a
-         * POST request to the addAccount script directly, or change hidden
+         * flow as we designed it. The user may have already registered their
+         * account, and are somehow trying to do it again. In such case, they
+         * only need to try logging in again. Or they have literally sent a
+         * POST request to the addAccount script directly, or changed hidden
          * form data to attempt to create an account under a different user.
          *
          * In the UI, this error is regarded just like a normal error, except
@@ -281,6 +283,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
         $message .= $status->link->secret;
         $message .= '</a></div><p style="font-size:1.5em;font-family:&quot;Arial&quot;,sans-serif;text-indent:2em;">Thank you for joining CSGO Skill, GL HF!</p></td></tr></tbody></table><p style="font-size:0.8em;font-family:&quot;Arial&quot;, sans-serif;color:#888;text-align:center;display:block;margin:1em auto;width:600px;">If this is not your account, or you did not register this email, please ignore this email. We will not continue to email you. If you have any questions or concerns, please visit <a href="http://csgo-skill.com/about" style="color:#444;">csgo-skill.com/about</a> or contact us via email at<a href="mailto:support@flare-esports.net">support@flare-esports.net</a></p></td></tr></tbody></table></div>';
         mail($email, 'Welcome to CSGO Skill, ' . $name . '!', $message, $headers);
+        // Return to addAccount flow
     } else {
         // Query failed, I cri evrytiem ;(
         error_log("13263 - The SQL query to complete user signup failed. Here's what we got: " . print_r($conn->error_list, true));

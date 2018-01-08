@@ -8,6 +8,11 @@ package net.flare_esports.csgoskill
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 
+/**
+ * Helps us set listeners without having to manually override each function
+ * every time we need to make one.
+ */
+
 class Animer : AnimationListener {
 
     private var start: () -> Unit = {}

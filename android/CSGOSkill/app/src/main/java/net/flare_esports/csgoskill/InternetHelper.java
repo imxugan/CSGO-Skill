@@ -8,7 +8,6 @@
 package net.flare_esports.csgoskill;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +33,7 @@ class InternetHelper {
             int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
         } catch (Throwable e) {
-            if (devmode) Log.e("DEV",e.getMessage());
+            if (devmode) Log.e("InternetHelper.isOnline()", e);
         }
         return false;
     }
@@ -43,9 +42,9 @@ class InternetHelper {
         return new RawTask().execute(url).get(5, TimeUnit.SECONDS);
     }
 
-    public static InputStream RawRequest(String url, int timeout) throws Throwable {
+    /*public static InputStream RawRequest(String url, int timeout) throws Throwable {
         return new RawTask().execute(url).get(timeout, TimeUnit.SECONDS);
-    }
+    }*/
 
 
     public static String HTTPRequest(String url) throws Throwable {
@@ -55,21 +54,21 @@ class InternetHelper {
         else return object.toString();
     }
 
-    public static String HTTPRequest(String url, int timeout) throws Throwable {
+    /*public static String HTTPRequest(String url, int timeout) throws Throwable {
         JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(timeout, TimeUnit.SECONDS);
         if (object == null) return "";
         else if (object.has("message")) return object.getString("message");
         else return object.toString();
-    }
+    }*/
 
 
     public static JSONObject HTTPJsonRequest(JSONObject request) throws Throwable {
         return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
     }
 
-    public static JSONObject HTTPJsonRequest(JSONObject request, int timeout) throws Throwable {
+    /*public static JSONObject HTTPJsonRequest(JSONObject request, int timeout) throws Throwable {
         return new HTTPJsonTask().execute(request).get(timeout, TimeUnit.SECONDS);
-    }
+    }*/
 
     /**
      * Takes a URL and returns the InputStream for raw parsing.
@@ -80,7 +79,7 @@ class InternetHelper {
             try {
                 return new java.net.URL(strings[0]).openStream();
             } catch (Throwable e) {
-                if (devmode) Log.e("DEV",e.getMessage());
+                if (devmode) Log.e("InternetHelper.RawTask", e);
                 return null;
             }
         }
@@ -123,15 +122,15 @@ class InternetHelper {
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {
-                    if (devmode) Log.e("DEV",e.getMessage());
+                    // No need to report the error, this is probably intended
                     return new JSONObject().put("message", builder.toString());
                 }
             } catch (Throwable e) {
-                if (devmode) Log.e("DEV",e.getMessage());
+                if (devmode) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
                 try {
                     return new JSONObject().put("message", e.getMessage());
                 } catch (Throwable e2) {
-                    if (devmode) Log.e("DEV",e2.getMessage());
+                    if (devmode) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
                     return new JSONObject();
                 }
             }

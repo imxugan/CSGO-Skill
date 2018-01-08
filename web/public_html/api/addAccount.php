@@ -44,6 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit("{\"success\":false,\"error\":\"1422\"}");
     }
 
+} else {
+    // Incase none of the above happened, just quit
+    exit();
 }
 
 /**
@@ -65,6 +68,48 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $steamID = $_GET["steamid"]; // Safe for SQL at this point
     $type = "none";
     $get = true;
+
+    // Checking if account already exists, if it does, then the app is likely
+    // trying to repair the account because the stats insert failed.
+    $query = "SELECT `id`, `steamid` FROM `Players_01` WHERE `steamid`=\"" . $steamID . "\"";
+    $result = $conn->query($query);
+
+    // Account needs to be repaired!
+    if ($result->num_rows !== 0) {
+        $query = "SELECT `type` FROM `Stats_01` WHERE `id`=\"" . $steamID . "\"";
+        $result = $conn->query($query);
+        if ($result->num_rows !== 0) {
+            // Try to update the Type
+            $result = $result->fetch_assoc();
+            if ($result["type"] === "none") {
+                $query = "UPDATE `Stats_01` SET `type` = \"user\" WHERE `id` = \"" . $steamID . "\"";
+                if (!$conn->query($query)) {
+                    error_log("!!! - The SQL query to repair user stats TYPE failed. Here's what we got: " . print_r($conn->error_list, true));
+                    $conn->close();
+                    exit("{\"success\":false}");
+                }
+            }
+            $conn->close();
+            exit("{\"success\":true}");
+        } else {
+            // The whole row needs to be inserted
+            require_once("data_template.php");
+            $global = jsonToSql(getDataTemplate());
+            $history = jsonToSql(json_decode("{\"today\":{" . json_encode($stats) . "},\"entries_month\":[],\"entries_year\":[]}"));
+            $stats = jsonToSql($stats);
+
+            $query = "INSERT INTO `Stats_01` (`id`, `type`, `current`, global`, `history`) " .
+                     "VALUES (\"$steamID\", \"$type\", \"$stats\", \"$global\", \"$history\")";
+
+            if (!$conn->query($query)) {
+                error_log("!!! - The SQL query to repair user stats INSERT failed. Here's what we got: " . print_r($conn->error_list, true));
+                $conn->close();
+                exit("{\"success\":false}");
+            }
+            $conn->close();
+            exit("{\"success\":true}");
+        }
+    }
 }
 
 $query = "SELECT `type` FROM `Stats_01` WHERE `id`=\"" . $steamID . "\"";

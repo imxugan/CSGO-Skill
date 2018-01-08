@@ -132,7 +132,7 @@
                     app:layout_constraintTop_toTopOf="@id/loginAvatarView"
                     app:layout_constraintBottom_toBottomOf="@id/loginAvatarView"
                     android:layout_marginStart="8dp"
-                    android:text="Very Long Name Placeholder Text"
+                    android:text="@string/loading"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:textColor="@color/colorBlack"
