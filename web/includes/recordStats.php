@@ -74,7 +74,7 @@ function prepare_stats_db($mode) {
         cron_log("Successfully setup");
     } else {
         mail($logMail, 'recordStats Failed Setup!',
-             "The recordStats script failed to setup.\r\n<br/>" . print_r($conn->error_list, true)),
+             "The recordStats script failed to setup.\r\n<br/>" . print_r($conn->error_list, true),
              $headers);
         cron_log("Setup failed!");
         die();

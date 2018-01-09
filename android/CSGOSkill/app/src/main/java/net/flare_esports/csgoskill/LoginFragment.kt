@@ -187,6 +187,8 @@ class LoginFragment : BaseFragment() {
             return false
         }
         goodEmail = true
+        loginEmailInputLayout.isErrorEnabled = false
+        loginEmailInput.error = null
         return true
     }
 
@@ -213,13 +215,14 @@ class LoginFragment : BaseFragment() {
             return
         }
         try {
-            val request = JSONObject()
+            var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/addAccount")
                     .put("post", JSONObject()
                             .put("steamid", steamId)
                             .put("verify", verifyCode)
                             .put("name", loginUsernameInput.text.toString())
                             .put("email", loginEmailInput.text.toString()))
+            request = HTTPJsonRequest(request)
             if (request.length() < 1 || request.has("message"))
                 throw Throwable("Failed to communicate with server.\n" +
                         if (request.length() < 1) "No response"
@@ -340,14 +343,21 @@ class LoginFragment : BaseFragment() {
         }
 
         loginWebView.settings.javaScriptEnabled = true // Yes, I'm sure
-        loginWebView.webViewClient = WebViewClient() // This forces the webview layout
+        loginWebView.webViewClient = object: WebViewClient() { // This forces the webview layout
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                context.toggleLoader(true)
+            }
+            override fun onPageFinished(view: WebView?, url: String?) {
+                context.toggleLoader(false)
+            }
+        }
         loginWebView.webChromeClient = object: WebChromeClient() {
             override fun onConsoleMessage(cM: ConsoleMessage): Boolean {
                 val message = cM.message() // Message looks like 'FLARE-ESPORTS:message'
 
                 if (!message.startsWith("FLARE-ESPORTS:", true))
                     return false
-
+                context.toggleLoader(true)
                 try {
                     val response = JSONObject(message.substring(14))
 
@@ -361,6 +371,7 @@ class LoginFragment : BaseFragment() {
 
                     if (response.has("secret")) {
                         lMain?.onLogin(response.getString("steamid"), response.getString("secret"))
+                        context.toggleLoader(false)
                         return true
                     } else if (response.has("verify")) {
                         stage = "register"
@@ -382,9 +393,10 @@ class LoginFragment : BaseFragment() {
                             request = InternetHelper.HTTPJsonRequest(request)
                             if (request.length() < 1 || request.has("message")) {
                                 //TODO, this shouldn't have happened
+                                if (devmode) Log.d("LoginFragment.onConsoleMessage", request.toString())
                                 throw Throwable("When grabbing the name and avatar, profile failed to deliver")
                             }
-                            avatar = BitmapFactory.decodeStream(RawRequest(request.getString("avatar")))
+                            avatar = BitmapRequest(request.getString("avatar"))
                             handler.post {
                                 loginAvatarView.setImageBitmap(avatar)
                                 loginAvatarLoader.visibility = View.GONE
@@ -392,6 +404,7 @@ class LoginFragment : BaseFragment() {
                                 loginUsernameInput.setText(request.getString("steamname"))
                             }
                         }
+                        context.toggleLoader(false)
                         return true
                     }
 
@@ -402,6 +415,7 @@ class LoginFragment : BaseFragment() {
                 } catch (e: Throwable) {
                     if (devmode) Log.e("LoginFragment.startLogin", e)
                 }
+                context.toggleLoader(false)
                 return false
             }
         }

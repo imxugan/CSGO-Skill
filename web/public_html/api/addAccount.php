@@ -1,5 +1,7 @@
 <?php
 
+require_once("setup.php");
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (count($_POST) !== 4) {

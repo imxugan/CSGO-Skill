@@ -180,7 +180,8 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
         if ((override || avatarImg == null) && !downloadingAvatar)
             Thread().run {
                 downloadingAvatar = true
-                avatarImg = BitmapFactory.decodeStream(RawRequest(avatarUrl)); downloadingAvatar = false
+                avatarImg = BitmapRequest(avatarUrl)
+                downloadingAvatar = false
             }
         return avatarImg
         // BitmapFactory.decodeResource(resources, R.drawable.default_avatar_1)

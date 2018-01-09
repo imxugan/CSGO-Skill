@@ -7,6 +7,8 @@
 
 package net.flare_esports.csgoskill;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -38,12 +40,12 @@ class InternetHelper {
         return false;
     }
 
-    public static InputStream RawRequest(String url) throws Throwable {
-        return new RawTask().execute(url).get(5, TimeUnit.SECONDS);
+    public static Bitmap BitmapRequest(String url) throws Throwable {
+        return new BitmapTask().execute(url).get(5, TimeUnit.SECONDS);
     }
 
-    /*public static InputStream RawRequest(String url, int timeout) throws Throwable {
-        return new RawTask().execute(url).get(timeout, TimeUnit.SECONDS);
+    /*public static InputStream BitmapRequest(String url, int timeout) throws Throwable {
+        return new BitmapTask().execute(url).get(timeout, TimeUnit.SECONDS);
     }*/
 
 
@@ -73,13 +75,13 @@ class InternetHelper {
     /**
      * Takes a URL and returns the InputStream for raw parsing.
      */
-    private static class RawTask extends AsyncTask<String, Integer, InputStream> {
+    private static class BitmapTask extends AsyncTask<String, Integer, Bitmap> {
         @Override
-        protected InputStream doInBackground(String... strings) {
+        protected Bitmap doInBackground(String... strings) {
             try {
-                return new java.net.URL(strings[0]).openStream();
+                return BitmapFactory.decodeStream(new java.net.URL(strings[0]).openStream());
             } catch (Throwable e) {
-                if (devmode) Log.e("InternetHelper.RawTask", e);
+                if (devmode) Log.e("InternetHelper.BitmapTask", e);
                 return null;
             }
         }
@@ -108,6 +110,7 @@ class InternetHelper {
                                 .append("=")
                                 .append(URLEncoder.encode(jsonObjects[0].getJSONObject("post").getString(keys.getString(index)), "UTF-8"))
                                 .append("&");
+                        index++;
                     }
                     wr.write(builder.substring(0, builder.length() - 1));
                     wr.flush();
@@ -119,6 +122,7 @@ class InternetHelper {
                     builder.append(line);
                 }
                 stream.close();
+                if (devmode) Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") + "\nReceived: " + builder.toString());
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {

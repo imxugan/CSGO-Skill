@@ -8,7 +8,7 @@ function cron_log($message) {
 
 $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
 if ($conn->connect_error) {
-    cron_log("Failed to connect to DB (" . $conn->connect_errno . "): " . $conn->connect_error));
+    cron_log("Failed to connect to DB (" . $conn->connect_errno . "): " . $conn->connect_error);
     die();
 }
 

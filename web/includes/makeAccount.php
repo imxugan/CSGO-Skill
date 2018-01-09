@@ -81,8 +81,8 @@ if (!isset($create)) { // Reserve Row, return Verify key
         "ban_history" => array(),
         "verify" => $string
     );
-    $query = "INSERT INTO `Players_01` (`steamid`, `status`) VALUES (\"" . $steamID .
-             "\", " . jsonToSql($status) . ")";
+    $query = "INSERT INTO `Players_01` (`steamid`, `status`, `secret`) VALUES (\"" . $steamID .
+             "\", " . jsonToSql($status) . ", \"empty\")";
     if ($conn->query($query)) {
         $conn->close();
         consoleExit("{\"success\":true,\"steamid\":\"" . $steamID . "\",\"verify\":\"" . $string . "\"}");
@@ -259,9 +259,7 @@ if (!isset($create)) { // Reserve Row, return Verify key
     "\",`persona`=\"" . $name .
     "\",`email`=\"" . $email .
     "\",`secret`=\"" . $secret .
-    "\",`current`=" . jsonToSql($stats) .
-    ",`data`=" . jsonToSql(getDataTemplate()) .
-    ",`status`=" . jsonToSql($status) .
+    "\",`status`=" . jsonToSql($status) .
     " WHERE `id` = " . $id;
 
     if ($conn->query($query)) { // That's a big query

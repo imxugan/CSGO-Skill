@@ -1,5 +1,7 @@
 <?php
 
+require_once("setup.php");
+
 function pretty_exit($json) {
     $json = json_encode($json, JSON_PRETTY_PRINT);
     exit($json);

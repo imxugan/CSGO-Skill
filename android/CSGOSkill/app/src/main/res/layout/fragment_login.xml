@@ -107,8 +107,10 @@
 
                 <ImageView
                     android:id="@+id/loginAvatarView"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:layout_width="80dp"
-                    android:layout_height="80dp" />
+                    android:layout_height="80dp"
+                    android:layout_marginTop="8dp"/>
 
                 <ProgressBar
                     android:id="@+id/loginAvatarLoader"
