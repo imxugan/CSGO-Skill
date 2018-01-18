@@ -16,7 +16,7 @@ If you have a feature idea, you should open an issue talking about it first to m
 If you want to translate portions of the website or application, see [the TRANSLATING file](TRANSLATING.md)
 
 #### Other Contributions
-If you want to contribute in a way other than listed here, open a `[QUESTION]` issue or email the <a href="mailto:devteam@csgo-skill.com">devteam@csgo-skill.com</a>
+If you want to contribute in a way other than listed here, open a `[QUESTION]` issue or email the devteam@csgo-skill.com.
 
 ## Dependencies
 You should install **[Git](https://git-scm.com/downloads)** on your computer. It let's you run console commands to interact with GitHub repositories. I recommend you also install **[GitHub Desktop](https://desktop.github.com/)**, it makes it a lot easier to make commits and change branches without even opening the console.

@@ -46,4 +46,4 @@ Users may opt-out of any services provided by the project. The best way to opt-o
 This privacy policy is current as of the above "Last updated" date. This policy may be changed from time to time, and we will post notifications of changes on the website and in change logs on the GitHub repository.
 
 ## Contact Us
-You may email the <a href="mailto:devteam@csgo-skill.com">devteam@csgo-skill.com</a> for any questions you have about the project.
+You may email the devteam@csgo-skill.com for any questions you have about the project.
