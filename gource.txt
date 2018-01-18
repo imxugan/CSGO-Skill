@@ -1,1 +1,3 @@
+Fun command to watch everything that happened since this thing started
+
 gource -1920x1080 --frameless --seconds-per-day .25 --hide filenames --max-file-lag 4
