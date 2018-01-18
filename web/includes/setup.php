@@ -3,19 +3,14 @@
 // Our server time is based in Denver, screw UTC!
 date_default_timezone_set("America/Denver");
 
-// Steam Setup
-$steamauth['apikey'] = "585DCDF484116BAEED7DCEB43000A7F4";
-$steamauth['domain'] = "http://www.csgo-skill.com";
-$steamauth['logout'] = $steamauth['domain'] . "/logout";
-$steamauth['login'] = $steamauth['domain'];
-define("STEAMKEY","585DCDF484116BAEED7DCEB43000A7F4");
+require_once("vars.php");
 
 // Javascript Console logging
 // Prints the provided $output to the console and exits immediately.
 function consoleExit($output){
     ?>
 <!DOCTYPE html>
-<html><body><script>console.log('FLARE-ESPORTS:<?=$output?>');</script><span id="out"><?=$output?></body></html>
+<html><body><script>console.log('FLARE-ESPORTS:<?=$output?>');</script><span id="out"><?=$output?></span></body></html>
     <?php
     exit();
 }
