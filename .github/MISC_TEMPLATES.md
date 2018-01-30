@@ -13,7 +13,7 @@ Use this when you are creating an issue to detail a feature to be implemented. D
 [Short description of feature, may simply be the title repeated]
 
 ### Estimated Requirements
-- [ ] Simple grocery list of estimated scripts or prerequisits
+- [ ] Simple grocery list of estimated scripts or prerequisites
 - [ ] Do not go into detail about the requirement
 - [ ] Specific thing the feature needs or may need
 
@@ -26,7 +26,7 @@ Use this when you are creating an issue to detail a feature to be implemented. D
 5. Avoid later editing the procedure directly, instead add a comment to the issue describing more steps needed.
 
 ### Explanation
-Anything else you think is important to this feature, ellaborate on it here.
+Anything else you think is important to this feature, elaborate on it here.
 
 <!-- End Implementing Features Template -->
 -----
