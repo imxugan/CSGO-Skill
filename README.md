@@ -3,7 +3,7 @@ Track your stats and improve your skills in CS: GO!
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
 [![Website](https://img.shields.io/website/http/www.csgo-skill.com.svg?label=csgo-skill.com)](http://www.csgo-skill.com)
-[![Donations](https://yourdonation.rocks/images/badge.svg)](https://www.paypal.me/FlareDonate)
+[![Donations](https://yourdonation.rocks/images/badge.svg)](https://www.paypal.me/TheAlmic)
 
 ## Intro
 When it comes to getting good, it can be hard to know where to start and how to keep going. CSGO Skill is designed to help players constantly improve their game in CS: GO and to maintain those improvements.
