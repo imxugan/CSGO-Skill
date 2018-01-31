@@ -1,5 +1,5 @@
 ### Note to Contributors
-This project is not even at version 1.0 yet! This means that so much is likely to change that your time might be better spent elsewhere while I get this project to a stable state. If you like where it's going so far, star it! If you are dying to contribute, please just open an issue or wait until version 0.8 is released.
+This project is not even at version 1.0 yet! This means that so much is likely to change that your time might be better spent elsewhere while I get this project to a stable state. If you like where it's going so far, star it! If you are dying to contribute, please just open an issue or wait until version 0.1 is released.
 
 <hr/>
 
