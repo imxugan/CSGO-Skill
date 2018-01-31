@@ -5,7 +5,6 @@ exit("Coming in a future version");
 
 /*
 require_once("setup.php");
-require_once("dbInf.php");
 
 if (!isset($_POST["version"])) {
     error_log("11141 - Missing POST[version] information, perhaps a direct request?");

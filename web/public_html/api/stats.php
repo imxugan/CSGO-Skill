@@ -1,5 +1,7 @@
 <?php
 
+require_once("setup.php");
+
 if (isset($_GET["steamid"])) {
     if (is_numeric($_GET["steamid"])) {
         $steamID = $_GET["steamid"];
@@ -23,8 +25,6 @@ if (isset($_GET["offset"])) {
     }
     $offset--;
 }
-
-require_once("dbInf.php");
 
 function pretty_exit($json) {
     $json = json_encode($json, JSON_PRETTY_PRINT);

@@ -1,6 +1,6 @@
 <?php
 
-require("dbInf.php");
+require("setup.php");
 
 function cron_log($message) {
     echo date("[Y-m-d H:i:s] ") . $message . "\r\n";

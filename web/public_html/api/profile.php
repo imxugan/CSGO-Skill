@@ -73,8 +73,6 @@ if (isset($_GET["id"])) {
     die("Missing required field `id`");
 }
 
-require_once("dbInf.php");
-
 $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
 if ($conn->connect_error) {
     die("An unexpected error occurred.");
