@@ -53,7 +53,6 @@ if (!in_array($h, array("08","13"))) {
     exit();
 }
 
-require_once("dbInf.php");
 $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
 if ($conn->connect_error) {
     mail($devMails, 'recordStats Failed!',

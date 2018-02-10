@@ -11,11 +11,11 @@ When it comes to getting good, it can be hard to know where to start and how to 
 For obvious security reasons, not all the source code is published here. If you believe there is certain missing source code that SHOULD be available, submit an issue talking about what you want to do and what code you think you need to do it.
 
 ## Goals
-- Non-invasive. Users can train when and how they want, without distractions like ads or pay walls.
-- Non-judgmental. Our goal is to give you the tools necessary to improve yourself how you want, not force you to train a certain way.
-- Forgiving UI. No user should ever be told "Don't do that." The application, at its core, is apologetic and tries to educate the user about how the application works.
+- Purely Free. Users can train when and how they want, without distractions like ads or pay walls.
+- Customizable. Our goal is to give you the tools necessary to improve yourself how you want, not force you to train a certain way.
+- Forgiving. No user should ever be told "Don't do that." The application, at its core, is apologetic and tries to educate the user about how the application works.
 - Open Source. CSGO Skill is a community project, by gamers and for gamers.
-- Accessible. Anyone can download and use the app, and anyone can browse the website. To make it easier, we hope to translate as much content as possible into as many different languages.
+- Localized. We hope to translate as much content as possible into as many different languages.
 
 ## Contributing
 I would love for you to help develop this project. To learn how to contribute to this project, see [the CONTRIBUTING file](CONTRIBUTING.md).

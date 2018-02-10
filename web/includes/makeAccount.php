@@ -1,7 +1,6 @@
 <?php
 
 require_once("setup.php");
-require_once("dbInf.php");
 require_once("checkSteamProfile.php");
 
 if (!isset($app)) {
@@ -259,7 +258,8 @@ if (!isset($create)) { // Reserve Row, return Verify key
     "\",`persona`=\"" . $name .
     "\",`email`=\"" . $email .
     "\",`secret`=\"" . $secret .
-    "\",`status`=" . jsonToSql($status) .
+    "\",`bio`=\"Plays CS: GO\"" .
+    ",`status`=" . jsonToSql($status) .
     " WHERE `id` = " . $id;
 
     if ($conn->query($query)) { // That's a big query
@@ -274,12 +274,12 @@ if (!isset($create)) { // Reserve Row, return Verify key
         $message .= '" style="color:#FF9800;text-decoration:underline;">Steam Account</a> with CSGO Skill, a free application provided by Flare E-Sports. If this is your account, please click the verification link below to complete the registration process. This link will only work for the next 48 hours.</p><div style="margin:0 20px;word-break:break-all"><a href="http://csgo-skill.com/verifyEmail?u=';
         $message .= $steamID;
         $message .= '&k=';
-        $message .= $status->link->secret;
+        $message .= $status->link["secret"];
         $message .= '" style="font-size: 1.2em;font-family: &quot;Consolas&quot;, monospace;color: #FF9800;">http://csgo-skill.com/verifyEmail?u=';
         $message .= $steamID;
         $message .= '&k=';
-        $message .= $status->link->secret;
-        $message .= '</a></div><p style="font-size:1.5em;font-family:&quot;Arial&quot;,sans-serif;text-indent:2em;">Thank you for joining CSGO Skill, GL HF!</p></td></tr></tbody></table><p style="font-size:0.8em;font-family:&quot;Arial&quot;, sans-serif;color:#888;text-align:center;display:block;margin:1em auto;width:600px;">If this is not your account, or you did not register this email, please ignore this email. We will not continue to email you. If you have any questions or concerns, please visit <a href="http://csgo-skill.com/about" style="color:#444;">csgo-skill.com/about</a> or contact us via email at<a href="mailto:support@flare-esports.net">support@flare-esports.net</a></p></td></tr></tbody></table></div>';
+        $message .= $status->link["secret"];
+        $message .= '</a></div><p style="font-size:1.5em;font-family:&quot;Arial&quot;,sans-serif;text-indent:2em;">Thank you for joining CSGO Skill, GL HF!</p></td></tr></tbody></table><p style="font-size:0.8em;font-family:&quot;Arial&quot;, sans-serif;color:#888;text-align:center;display:block;margin:1em auto;width:600px;">If this is not your account, or you did not register this email, please ignore this email. We will not continue to email you. If you have any questions or concerns, please visit <a href="http://csgo-skill.com/about" style="color:#444;">csgo-skill.com/about</a> or contact us via email at <a href="mailto:support@flare-esports.net">support@flare-esports.net</a></p></td></tr></tbody></table></div>';
         mail($email, 'Welcome to CSGO Skill, ' . $name . '!', $message, $headers);
         // Return to addAccount flow
     } else {

@@ -1,0 +1,40 @@
+<!--
+  ~ DISCLAIMER
+  ~ This is not always up-to-date, so please don't assume it is.
+  ~ Always double check with the current string files in the android
+  ~ directory before starting or continuing translation work.
+  -->
+
+
+<!-- Begin App specific strings -->
+
+<string name="app_name">CSGO Skill</string>
+
+<string name="first_run_no_internet_warning">This app functions better with the Power of the Internet™</string>
+<string name="no_internet_warning">No Internet Connection</string>
+<string name="failed_server_connection">Failed to connect to CSGO-Skill server</string>
+
+<string name="welcome_to">Welcome to</string>
+
+<string name="got_it">GOT IT</string>
+
+<string name="safe_error_title">Something happened</string>
+<string name="safe_error_content">Try doing that again. If this error persists, contact support at http://csgo-skill.com</string>
+
+<string name="username">Username</string>
+<string name="email">Email</string>
+<string name="login_almost_there">Almost There</string>
+<string name="register_text">To access the features of the app, we require that you provide a unique username and email address.</string>
+
+<string name="tc_agreement">I agree to the\u0020</string>
+<string name="tc_agreement_span">Terms and Conditions</string>
+<string name="tc_full"></string>
+
+<string name="login_button">Login with Steam</string>
+<string name="create">Create</string>
+
+<string name="loading">Loading…</string>
+
+<string name="login_successful_but_error">Account created successfully, but you need to login again.</string>
+
+<!-- End App specific strings -->

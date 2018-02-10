@@ -37,7 +37,7 @@ function buildAuthors($authors) {
     }
     return $s;
 }
-require_once("dbInf.php");
+
 $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, UPDATEDB);
 if ($conn->connect_error) {
     error_log("1612 - Failed to connect to MySQL Database '" . UPDATEDB . "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);

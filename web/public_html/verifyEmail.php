@@ -3,7 +3,6 @@
 // TODO: This is NOT user-friendly at all. Rework before release!
 
 require_once("setup.php");
-require_once("dbInf.php");
 
 if (count($_GET) !== 2) {
     die("{\"success\":false,\"error\":\"1514\"}");

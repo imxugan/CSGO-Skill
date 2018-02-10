@@ -58,15 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 $type = "user";
 $get = false;
+$conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
+if ($conn->connect_error) {
+    error_log("1412 - Failed to connect to MySQL Database '" . FLAREDB .
+    "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
+    exit("{\"success\":false,\"error\":\"1412\"}");
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    require_once("dbInf.php");
-    $conn = mysqli_connect(DB_SERVER, USERNAME, PASSWORD, FLAREDB);
-    if ($conn->connect_error) {
-        error_log("1412 - Failed to connect to MySQL Database '" . FLAREDB .
-        "' with error (" . $conn->connect_errno . "): " . $conn->connect_error);
-        exit("{\"success\":false,\"error\":\"1412\"}");
-    }
     $steamID = $_GET["steamid"]; // Safe for SQL at this point
     $type = "none";
     $get = true;
@@ -76,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $query = "SELECT `id`, `steamid` FROM `Players_01` WHERE `steamid`=\"" . $steamID . "\"";
     $result = $conn->query($query);
 
-    // Account needs to be repaired!
+    // Account may need to be repaired!
     if ($result->num_rows !== 0) {
         $query = "SELECT `type` FROM `Stats_01` WHERE `id`=\"" . $steamID . "\"";
         $result = $conn->query($query);
