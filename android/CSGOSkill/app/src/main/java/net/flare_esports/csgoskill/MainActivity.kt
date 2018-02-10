@@ -8,7 +8,6 @@ package net.flare_esports.csgoskill
 import android.app.FragmentManager
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -16,7 +15,7 @@ import android.transition.Fade
 import android.view.View
 import android.view.animation.AnimationUtils
 
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.include_progress_overlay.*
 import net.flare_esports.csgoskill.InternetHelper.*
 import net.flare_esports.csgoskill.Constants.*
 
@@ -184,7 +183,6 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
                 downloadingAvatar = false
             }
         return avatarImg
-        // BitmapFactory.decodeResource(resources, R.drawable.default_avatar_1)
     }
 
     fun getPersona(): String { return persona }
@@ -213,17 +211,17 @@ class MainActivity : AppCompatActivity(), BaseFragment.FragmentListener {
     }
 
     fun toggleLoader(visible: Boolean) {
-        if (visible && fragmentLoaderContainer.visibility == View.GONE) {
-            fragmentLoaderContainer.visibility = View.VISIBLE
+        if (visible && progressOverlay.visibility == View.GONE) {
+            progressOverlay.visibility = View.VISIBLE
             val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_medium)
-            fragmentLoaderContainer.startAnimation(fadeIn)
+            progressOverlay.startAnimation(fadeIn)
 
-        } else if (!visible && fragmentLoaderContainer.visibility == View.VISIBLE) {
+        } else if (!visible && progressOverlay.visibility == View.VISIBLE) {
             val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_fast)
             fadeOut.setAnimationListener( Animer {
-                fragmentLoaderContainer.visibility = View.GONE
+                progressOverlay.visibility = View.GONE
             })
-            fragmentLoaderContainer.startAnimation(fadeOut)
+            progressOverlay.startAnimation(fadeOut)
         }
     }
 
