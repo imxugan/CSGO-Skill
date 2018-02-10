@@ -1,7 +1,5 @@
-### Note to Contributors
-This project is not even at version 1.0 yet! This means that so much is likely to change that your time might be better spent elsewhere while I get this project to a stable state. If you like where it's going so far, star it! If you are dying to contribute, please just open an issue or wait until version 0.1 is released.
-
-<hr/>
+## Hold up!
+This project is not even at version 1.0 yet! This means that so much is likely to change that your time might be better spent elsewhere while I get this project to a stable state. If you like where it's going so far, star it! If you are dying to contribute, please just open an issue or at least wait until version 0.1 is released.
 
 # Contributing Guide
 Thank you for taking interest in contributing to this project! There are many ways that you can contribute: issue fixing, translations, feature additions, and pretty much anything else.
@@ -34,7 +32,7 @@ The most optimal way to contribute is by submitted bug fixes, but some of you ma
 You should always comment your code. Contributing a lot of code with no comments will make it harder to accept your work. All the same, contributing more comments than code is distracting and makes actual changes harder to spot. It will also make the code base harder for others to understand and work with. Be a good programmer and comment your code where necessary, or where you feel certain operations might be confusing and could benefit from a short explanation. *Do not include your name in any comments unless otherwise specified, like with translations.*
 
 ## Testing
-At the current moment, there is no testing for the website or app other than just physically messing around with the app. We try to develop the website and app to be very modular and with excellent error reporting so that problems are easily traceable, isolated, and fixable with minor adjustments.
+At the current moment, there is no testing for the website or app other than just physically messing around with the app. We try to develop the website and app to be very modular and with verbose error reporting so that problems are easily traceable, and fixable with minor adjustments.
 
 To get an idea for how to report errors, just look at the code. I trust that you know how to properly test changes by setting up your own tests or by just using the app or website itself. More extensive testing is done before accepting code changes, that way you can just focus on coding.
 

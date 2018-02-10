@@ -6,14 +6,14 @@ Making this project open-source has been a real headache, but I'm glad I did and
 <hr/>
 
 # CSGO Skill User Agreement
-Last updated: January 16th, 2018
+Last updated: February 9th, 2018
 
 The CSGO Skill User Agreement is a legal document that explains your rights and obligations as a user or contributor to CSGO Skill. To make things simple, we wrote these terms to be as short and clear as possible. Please read this in full, it should only take about 2 minutes.
 
 "We" refers, collectively, to the owner of the CSGO Skill repository and its collaborators. Contributors do NOT equal collaborators. Collaborators can only be invited by the owner of the repository. The repository is located at github.com/almic/CSGO-Skill.
 
 #### A. Your Account
-By completing the registration process with a valid Steam account and email address, you become a user of CSGO Skill and create a CSGO Skill account. You are responsible for your CSGO Skill account and it's security. We will securely retain only your email address, all other information is either publicly available through the Steam Web API or provided by you. You may not become a user if you are under the age of 13. This project is not intended for children under 13 and we will not knowingly collect personal information from children under the age of 13.
+By completing the registration process with a valid Steam account and email address, you become a user of CSGO Skill and create a CSGO Skill account. You are responsible for your CSGO Skill account and it's security, as well as the security of your Steam account, as detailed in the Steam Subscriber Agreement. We will securely retain only your email address, all other information is either publicly available through the Steam Web API or provided by you. You may not become a user if you are under the age of 13. This project is not intended for children under 13 and we will not knowingly collect personal information from children under the age of 13.
 
 #### B. Affiliation with Steam
 We *are not* endorsed or affiliated with Valve. We only play with Steam and follow their rules.
@@ -41,4 +41,7 @@ Because Valve.
 We reserve the right to change this agreement, and you are responsible for regularly reviewing this agreement. Your continued use of this project after the effective date of such changes will constitute acceptance of and agreement to any such changes. If you don't agree with any such changes, or to any of the terms in this agreement, your only remedy is to discontinue using this project. We may suspend or discontinue the project at any time to you and/or to others, without notice.
 
 #### G. Termination
-We reserve the right to terminate any CSGO Skill account for any reason and without notice.
+We reserve the right to terminate any CSGO Skill account for any reason and without notice. If you wish to terminate your CSGO Skill account, simply contact us and we will delete your information as required by law.
+
+#### H. Contact Information
+For any questions or concerns about CSGO Skill, please email the devteam@csgoskill.com. It could take 48 hours or more to receive a response, but it could also take less than an hour. Listen, I'm just one guy here, so please be patient. For the fastest response, you may open an issue on the GitHub repository at github.com/almic/CSGO-Skill.

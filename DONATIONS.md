@@ -1,5 +1,5 @@
 # Donations
-This project survives on the charity of myself and others, instead of placing ads or requiring payment for features. You can help speed development by [donating via PayPal](https://www.paypal.me/TheAlmic). Please leave a note stating you are donating for this project, and a name so I can give you credit.
+This project survives on the charity of myself and others, instead of placing ads or requiring payment for features. You can help speed development by [donating via PayPal](https://www.paypal.me/TheAlmic/1). Please leave a note stating you are donating for this project, and a name so I can give you credit.
 
 ## How your money will be spent
 > ### Hosting the Website
