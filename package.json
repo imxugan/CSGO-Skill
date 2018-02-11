@@ -2,7 +2,11 @@
   "name": "csgo-skill",
   "description": "Track your stats and improve your skills in CS: GO!",
   "version": "0.0.1",
-  "keywords": ["csgo-skill", "csgo"],
+  "main": "main.js",
+  "keywords": [
+    "csgo-skill",
+    "csgo"
+  ],
   "homepage": "http://www.csgo-skill.com",
   "bugs": {
     "url": "https://github.com/almic/CSGO-Skill/issues"
@@ -22,6 +26,9 @@
     }
   },
   "scripts": {
-    "test": "echo 'There are no tests here, go back from whence you came! Or make your own.'"
+    "test": "echo 'There are no tests here, go back!'"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
   }
 }

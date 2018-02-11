@@ -1,0 +1,5 @@
+# Ignore all but the actual web things
+.github
+/android
+/extra
+/locales
