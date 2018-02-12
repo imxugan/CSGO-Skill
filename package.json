@@ -1,0 +1,39 @@
+{
+  "name": "csgo-skill",
+  "description": "Track your stats and improve your skills in CS: GO!",
+  "version": "0.0.1",
+  "main": "main.js",
+  "keywords": [
+    "csgo-skill",
+    "csgo"
+  ],
+  "homepage": "http://www.csgo-skill.com",
+  "bugs": {
+    "url": "https://github.com/almic/CSGO-Skill/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mick Ashton",
+    "url": "https://github.com/almic"
+  },
+  "repository": "github:almic/CSGO-Skill",
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.0"
+  },
+  "devDependencies": {
+    "cz-conventional-changelog": "^2.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo 'There are no tests here, go back!'"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}

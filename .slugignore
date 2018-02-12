@@ -1,0 +1,7 @@
+# These will be ignored by Heroku when pushing to it
+/.github
+/android
+/extra
+/locales
+gource.txt
+*.md
