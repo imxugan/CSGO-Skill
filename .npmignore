@@ -1,5 +1,9 @@
 # Ignore all but the actual web things
-.github
+/.github
 /android
 /extra
 /locales
+CONTRIBUTING.md
+DONATIONS.md
+gource.txt
+TRANSLATING.md

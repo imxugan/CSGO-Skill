@@ -17,6 +17,10 @@
     "url": "https://github.com/almic"
   },
   "repository": "github:almic/CSGO-Skill",
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.0"
+  },
   "devDependencies": {
     "cz-conventional-changelog": "^2.1.0"
   },
@@ -26,6 +30,7 @@
     }
   },
   "scripts": {
+    "start": "node main.js",
     "test": "echo 'There are no tests here, go back!'"
   },
   "dependencies": {
