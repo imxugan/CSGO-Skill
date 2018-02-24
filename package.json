@@ -30,10 +30,11 @@
     }
   },
   "scripts": {
-    "start": "node main.js",
     "test": "echo 'There are no tests here, go back!'"
   },
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "mongojs": "^2.5.0",
+    "sync-request": "^5.0.0"
   }
 }
