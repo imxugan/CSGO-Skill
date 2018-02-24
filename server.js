@@ -25,37 +25,42 @@ app.use(express.urlencoded({ extended: true }))
 const MONGOURL = assistant.MONGOURL
 const STEAMKEY = assistant.STEAMKEY
 
-const skilldb = mongojs(MONGOURL)
-skilldb.Example.find((err, docs) => {
-    console.log(docs)
-});
+try {
+    const skilldb = mongojs(MONGOURL)
+    skilldb.Example.find((err, docs) => {
+        console.log(docs)
+    });
+} catch (e) {
+    assistant.errorOut(10, e.message)
+}
 
 /** END SETUP **/
 
 
 /* BEING ROUTING */
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    var m = 'Hello World!';
     skilldb.Example.find((err, docs) => {
-        res.send(`\nDoc located, _id: ${docs[0]._id}, test: ${docs[0].test}`)
+        m += `\nDoc located, _id: ${docs[0]._id}, test: ${docs[0].test}`
     })
+    res.send(m)
 })
 
 app.get('/login', (req, res) => {
-
+    var m = '';
     if (req.subdomains[0] === 'api') {
         // Device request
         const openid = new LightSteamID('http://api.csgo-skill.com/login', req)
         if (!openid.mode) {
             res.location(openid.authUrl)
         } else if(openid.mode == 'cancel') {
-            res.send('canceled')
+            m += 'canceled'
         } else {
             if (openid.validate()) {
                 var steamid = openid.steam_id
-                res.send(steamid)
+                m += steamid
             } else if (openid.errno !== 0) {
-                res.send(`Error occured during validation: [${openid.errno}] ${openid.error}`)
+                m += `Error occured during validation: [${openid.errno}] ${openid.error}`
             }
         }
     } else {
@@ -63,7 +68,7 @@ app.get('/login', (req, res) => {
         const openid = new LightSteamID('http://www.csgo-skill.com/login', req)
     }
 
-    //res.send(openid.authUrl())
+    res.send(m)
 })
 /** END ROUTING **/
 
