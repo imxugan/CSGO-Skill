@@ -10,10 +10,11 @@
   ********************************************************/
 
 /* BEGIN MODULES */
+const assistant = require('./lib/assistant.js')
+var startup = assistant.timer('Server Started')
 const express = require('express')
     , mongojs = require('mongojs')
     , LightSteamID = require('./lib/openid.js')
-    , assistant = require('./lib/assistant.js')
 
 /** END MODULES **/
 
@@ -24,12 +25,12 @@ app.use(express.urlencoded({ extended: true }))
 
 const MONGOURL = assistant.MONGOURL
 const STEAMKEY = assistant.STEAMKEY
+var skilldb = null
+var hasDb = false
 
 try {
-    const skilldb = mongojs(MONGOURL)
-    skilldb.Example.find((err, docs) => {
-        console.log(docs)
-    });
+    skilldb = mongojs(MONGOURL)
+    hasDb = true
 } catch (e) {
     assistant.errorOut(10, e.message)
 }
@@ -39,20 +40,26 @@ try {
 
 /* BEING ROUTING */
 app.get('/', (req, res) => {
+    var timer = assistant.timer()
     var m = 'Hello World!';
     skilldb.Example.find((err, docs) => {
         m += `\nDoc located, _id: ${docs[0]._id}, test: ${docs[0].test}`
+        res.send(m)
+        timer.stop()
     })
-    res.send(m)
+    //res.send(m)
 })
 
 app.get('/login', (req, res) => {
     var m = '';
+    var timer = assistant.timer()
     if (req.subdomains[0] === 'api') {
         // Device request
         const openid = new LightSteamID('http://api.csgo-skill.com/login', req)
         if (!openid.mode) {
-            res.location(openid.authUrl)
+            res.status(302).location(openid.authUrl)
+            res.send()
+            timer.stop()
         } else if(openid.mode == 'cancel') {
             m += 'canceled'
         } else {
@@ -60,7 +67,8 @@ app.get('/login', (req, res) => {
                 var steamid = openid.steam_id
                 m += steamid
             } else if (openid.errno !== 0) {
-                m += `Error occured during validation: [${openid.errno}] ${openid.error}`
+                assistant.errorOut(openid.errno, openid.error)
+                m += 'Error occured during validation'
             }
         }
     } else {
@@ -68,11 +76,15 @@ app.get('/login', (req, res) => {
         const openid = new LightSteamID('http://www.csgo-skill.com/login', req)
     }
 
-    res.send(m)
+    if (!res.headersSent) {
+        res.send(m)
+        timer.stop()
+    }
 })
 /** END ROUTING **/
 
 const server = app.listen(process.env.PORT || 8080, () => {
+    startup.stop()
     console.log('Listening on port ' + server.address().port)
 
 })
