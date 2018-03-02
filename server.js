@@ -1,6 +1,6 @@
     /*********************************************************
      *    This file is licensed under the MIT 2.0 license    *
-     *           Last updated February 26th, 2018            *
+     *           Last updated March 2nd, 2018            *
      *   *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *   *
      *    Please check out the full repository located at    *
      *   http://github.com/almic/CSGO-Skill for some other   *
@@ -8,15 +8,18 @@
      *  Policy, as well as some helpful information on how   *
      *     you can contribute directly to the project :)     *
      *********************************************************/
+console.log('Booting up...')
 
 /* BEGIN MODULES */
 const assistant = require('./lib/assistant.js')
 var startup = assistant.timer('Server Started')
+
+console.log('Loading libraries')
 const express = require('express')
     , skill = require('./lib/mongo.js')
     , api = require('./lib/api.js')
     , LightSteamID = require('./lib/openid.js')
-
+console.log('Loading complete')
 /** END MODULES **/
 
 /* BEGIN SETUP */
@@ -29,7 +32,8 @@ const STEAMKEY = assistant.STEAMKEY
 
 try {
     skill.connect(MONGOURL)
-    app.use(api({db: skill, apikey: STEAMKEY}))
+    console.log('Mounting API')
+    app.use(api)
     skill.db('collection:Testing', (err, col) => { if (err) throw err;
         col.find().toArray((err, docs) => { if (err) throw err;
             if (docs[0].test === 'abc123') {
@@ -39,6 +43,7 @@ try {
     })
 } catch (e) {
     assistant.e(100, e)
+    throw e // rethrow because we shouldn't start the server if anything in the try{} failed.
 }
 
 /** END SETUP **/
