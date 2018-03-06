@@ -22,7 +22,8 @@
     "npm": "5.6.0"
   },
   "devDependencies": {
-    "cz-conventional-changelog": "^2.1.0"
+    "cz-conventional-changelog": "^2.1.0",
+    "dotenv": "^5.0.1"
   },
   "config": {
     "commitizen": {
@@ -34,7 +35,7 @@
   },
   "dependencies": {
     "express": "^4.16.2",
-    "mongojs": "^2.5.0",
+    "mongodb": "^3.0.3",
     "sync-request": "^5.0.0"
   }
 }
