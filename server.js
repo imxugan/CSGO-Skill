@@ -1,6 +1,6 @@
     /*********************************************************
      *    This file is licensed under the MIT 2.0 license    *
-     *           Last updated March 2nd, 2018            *
+     *             Last updated March 5th, 2018              *
      *   *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *   *
      *    Please check out the full repository located at    *
      *   http://github.com/almic/CSGO-Skill for some other   *
