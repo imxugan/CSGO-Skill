@@ -1,6 +1,0 @@
-RewriteEngine On
-
-# This will basically just see if the file requested is a .php, and serve that
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^([^.]*).*$ $1.php [QSA, L]
