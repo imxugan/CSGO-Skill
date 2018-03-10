@@ -34,6 +34,8 @@
     "test": "echo 'There are no tests here, go back!'"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.2.1",
+    "ejs": "^2.5.7",
     "express": "^4.16.2",
     "mongodb": "^3.0.3",
     "sync-request": "^5.0.0"

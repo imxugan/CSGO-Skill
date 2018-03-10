@@ -1,6 +1,6 @@
     /*********************************************************
      *    This file is licensed under the MIT 2.0 license    *
-     *             Last updated March 5th, 2018              *
+     *             Last updated March 10th, 2018             *
      *   *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *   *
      *    Please check out the full repository located at    *
      *   http://github.com/almic/CSGO-Skill for some other   *
@@ -9,17 +9,15 @@
      *     you can contribute directly to the project :)     *
      *********************************************************/
 console.log('Booting up...')
+var serverStartTime = +new Date()
 
 /* BEGIN MODULES */
-const assistant = require('./lib/assistant.js')
-var startup = assistant.timer('Server Started')
-
-console.log('Loading libraries')
-const express = require('express')
-    , skill = require('./lib/mongo.js')
-    , api = require('./lib/api.js')
-    , LightSteamID = require('./lib/openid.js')
-console.log('Loading complete')
+const assistant = require('./lib/assistant.js'),
+      express = require('express'),
+      skill = require('./lib/mongo.js'),
+      api = require('./lib/api.js'),
+      LightSteamID = require('./lib/openid.js')
+console.log('Loading Complete')
 /** END MODULES **/
 
 /* BEGIN SETUP */
@@ -72,7 +70,7 @@ app.get('/login', (req, res) => {
 /** END ROUTING **/
 
 const server = app.listen(process.env.PORT || 8080, () => {
-    startup.stop()
+    console.log('Server Started: ' + ((+new Date()) - serverStartTime) + 'ms')
     console.log('Listening on port ' + server.address().port)
 })
 
