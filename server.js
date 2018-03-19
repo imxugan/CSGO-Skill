@@ -1,6 +1,6 @@
     /*********************************************************
      *    This file is licensed under the MIT 2.0 license    *
-     *             Last updated March 10th, 2018             *
+     *             Last updated March 18th, 2018             *
      *   *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *   *
      *    Please check out the full repository located at    *
      *   http://github.com/almic/CSGO-Skill for some other   *
@@ -41,9 +41,9 @@ try {
     skill.connect(MONGOURL)
     console.log('Mounting API')
     app.use(api)
-    skill.db('collection:Testing', (err, col) => { if (err) throw err;
-        col.find().toArray((err, docs) => { if (err) throw err;
-            if (docs[0].test === 'abc123') {
+    skill.db('collection:Single', (err, col) => { if (err) throw err;
+        col.findOne({name:'test'}, (err, doc) => { if (err) throw err;
+            if (doc.test === 'abc123') {
                 console.log(`Successfully connected to MongoDB`)
             }
         })
