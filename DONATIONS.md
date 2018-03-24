@@ -3,6 +3,9 @@ This project survives on the charity of myself and others, instead of placing ad
 
 ## How your money will be spent
 > ### Hosting the Website
-> Server space isn't free. Currently my hosting is costing $120 per year, and that might increase if the project starts requiring more demanding resources.
+> Server space isn't free. I host on Heroku, and it currently costs about $250/ year to run the site.
+
+> ### Domain Registration
+> Google is happily routing requests for www.csgo-skill.com for $1/ month. Not bad!
 
 And that's pretty much it. Donations I receive will go 100% to maintaining the project. Extra cash will be saved for future projects or if the cost of this one increases.

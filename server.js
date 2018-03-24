@@ -17,7 +17,7 @@ const assistant = require('./lib/assistant.js'),
       skill = require('./lib/mongo.js'),
       api = require('./lib/api.js'),
       LightSteamID = require('./lib/openid.js')
-console.log('Loading Complete')
+console.log(`Libraries loaded in ${+new Date() - serverStartTime}ms`)
 /** END MODULES **/
 
 /* BEGIN SETUP */
@@ -26,7 +26,7 @@ const app = express()
 // Response time logging
 app.use((req, res, next) => {
     var start = +new Date()
-    res.on('finish', () => { console.log('Response Time: ' + ((+new Date()) - start) + 'ms')})
+    res.on('finish', () => { console.log(`Responded to ${req.method} ${req.originalUrl} in ${+new Date() - start}ms`) })
     next()
 })
 app.use(express.json())
@@ -39,7 +39,7 @@ const STEAMKEY = assistant.STEAMKEY
 
 try {
     skill.connect(MONGOURL)
-    console.log('Mounting API')
+    console.log('Mounting API Router')
     app.use(api)
     skill.db('collection:Single', (err, col) => { if (err) throw err;
         col.findOne({name:'test'}, (err, doc) => { if (err) throw err;
@@ -138,8 +138,8 @@ app.get('/activate', (req, res) => {
 /** END ROUTING **/
 
 const server = app.listen(process.env.PORT || 8080, () => {
-    console.log('Server Started: ' + ((+new Date()) - serverStartTime) + 'ms')
-    console.log('Listening on port ' + server.address().port)
+    console.log(`Server Started in ${+new Date() - serverStartTime}ms`)
+    console.log(`Listening on port ${server.address().port}`)
 })
 
 // Don't forget to change the updated date!
