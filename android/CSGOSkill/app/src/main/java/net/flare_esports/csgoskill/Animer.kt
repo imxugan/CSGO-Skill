@@ -37,16 +37,19 @@ class Animer : AnimationListener {
         this.repeat = repeat
     }
 
-    fun setStart(start: () -> Unit) {
+    fun setStart(start: () -> Unit): Animer {
         this.start = start
+        return this
     }
 
-    fun setEnd(end: () -> Unit) {
+    fun setEnd(end: () -> Unit): Animer {
         this.start = end
+        return this
     }
 
-    fun setRepeat(repeat: () -> Unit) {
+    fun setRepeat(repeat: () -> Unit): Animer {
         this.repeat = repeat
+        return this
     }
 
     override fun onAnimationStart(animation: Animation) { start() }
