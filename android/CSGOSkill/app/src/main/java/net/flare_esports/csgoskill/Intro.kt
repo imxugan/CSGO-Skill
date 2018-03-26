@@ -199,11 +199,11 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         imageLogo.animation = slideUp
 
         connected = isOnline()
-        if (devmode) Log.d("Intro.splashing", "Connection: " + connected)
+        if (DEVMODE) Log.d("Intro.splashing", "Connection: " + connected)
         if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 
         val check = db.checkVersion()
-        if (devmode) Log.d("Intro.splashing", "Checked: " + check)
+        if (DEVMODE) Log.d("Intro.splashing", "Checked: " + check)
         when (check) {
             1 -> {
                 // Up to date, nothing to do
@@ -217,7 +217,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         }
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
-        firstRun = devmode || prefs.getBoolean("firstRun", true)
+        firstRun = DEVMODE || prefs.getBoolean("firstRun", true)
 
         if (firstRun && !connected) {
             // Request that first timers turn on the internet before using, but they don't HAVE to
@@ -230,7 +230,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                     Thread.sleep(1250)
                 } // Yeah, yeah so what it looks nicer
                 catch (e: Throwable) {
-                    if (devmode) Log.e("Intro.splashing", e)
+                    if (DEVMODE) Log.e("Intro.splashing", e)
                 }
             }
             handler.postDelayed(startIntro, 200)

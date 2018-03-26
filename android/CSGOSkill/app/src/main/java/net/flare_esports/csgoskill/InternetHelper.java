@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -35,7 +34,7 @@ class InternetHelper {
             int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
         } catch (Throwable e) {
-            if (devmode) Log.e("InternetHelper.isOnline()", e);
+            if (DEVMODE) Log.e("InternetHelper.isOnline()", e);
         }
         return false;
     }
@@ -81,7 +80,7 @@ class InternetHelper {
             try {
                 return BitmapFactory.decodeStream(new java.net.URL(strings[0]).openStream());
             } catch (Throwable e) {
-                if (devmode) Log.e("InternetHelper.BitmapTask", e);
+                if (DEVMODE) Log.e("InternetHelper.BitmapTask", e);
                 return null;
             }
         }
@@ -122,7 +121,7 @@ class InternetHelper {
                     builder.append(line);
                 }
                 stream.close();
-                if (devmode) Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") + "\nReceived: " + builder.toString());
+                if (DEVMODE) Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") + "\nReceived: " + builder.toString());
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {
@@ -130,11 +129,11 @@ class InternetHelper {
                     return new JSONObject().put("message", builder.toString());
                 }
             } catch (Throwable e) {
-                if (devmode) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
+                if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
                 try {
                     return new JSONObject().put("message", e.getMessage());
                 } catch (Throwable e2) {
-                    if (devmode) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
+                    if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
                     return new JSONObject();
                 }
             }

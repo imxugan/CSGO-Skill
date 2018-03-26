@@ -135,7 +135,7 @@ class Database(
             return 1
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) {
+            if (DEVMODE) {
                 if (e.message == "No connection")
                     Log.e("Database.checkVersion", "No connection")
                 else
@@ -171,7 +171,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.hasUser", e)
+            if (DEVMODE) Log.e("Database.hasUser", e)
         }
         return false
     }
@@ -197,7 +197,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.insertUser", e)
+            if (DEVMODE) Log.e("Database.insertUser", e)
         }
 
         return false
@@ -268,7 +268,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.updateUser", e)
+            if (DEVMODE) Log.e("Database.updateUser", e)
         }
 
         return false
@@ -313,7 +313,7 @@ class Database(
             }
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.getUserInfo", e)
+            if (DEVMODE) Log.e("Database.getUserInfo", e)
         }
 
         return JSONObject()
@@ -332,7 +332,7 @@ class Database(
             return grabData(steamId).getJSONObject("global")
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.getUserStats", e)
+            if (DEVMODE) Log.e("Database.getUserStats", e)
         }
 
         return null
@@ -353,7 +353,7 @@ class Database(
                     .put("monthly", result.getJSONArray("monthly"))
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.getUserStatsHistory", e)
+            if (DEVMODE) Log.e("Database.getUserStatsHistory", e)
         }
 
         return null
@@ -372,7 +372,7 @@ class Database(
             return grabData(steamId).getJSONObject("current")
         } catch (e: Throwable) {
             lastError = e
-            if (devmode) Log.e("Database.getUserAllTime", e)
+            if (DEVMODE) Log.e("Database.getUserAllTime", e)
         }
 
         return null

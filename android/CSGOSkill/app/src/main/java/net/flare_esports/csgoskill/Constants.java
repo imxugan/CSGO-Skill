@@ -9,7 +9,7 @@ package net.flare_esports.csgoskill;
 
 class Constants {
 
-    static final boolean devmode = true; // Set to false before release!!
+    static final boolean DEVMODE = true; // Set to false before release!!
 
     static final int C_MAJOR = 0;
     static final int C_MINOR = 8;
