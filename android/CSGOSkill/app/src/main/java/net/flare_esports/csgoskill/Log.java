@@ -9,10 +9,6 @@ class Log {
 
     private static final String PACK_NAME = "CSGO-Skill";
 
-    /*static void d(String message) {
-        Log.d(PACK_NAME, message);
-    }*/
-
     static void d(String location, String message) {
         android.util.Log.d(PACK_NAME, location + ": " + message);
     }

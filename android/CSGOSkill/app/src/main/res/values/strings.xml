@@ -1,6 +1,6 @@
 <!--
   ~ Created by the Dev Team for CSGO Skill.
-  ~ Copyright (c) 2017. All rights reserved.
+  ~ Copyright (c) 2018. All rights reserved.
   -->
 
 <resources>
@@ -17,10 +17,11 @@
     <string name="safe_error_title">Something happened</string>
     <string name="safe_error_content">Try doing that again. If this error persists, contact support at http://csgo-skill.com</string>
 
+    <string name="persona">Persona</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
-    <string name="login_almost_there">Almost There</string>
-    <string name="register_text">To access the features of the app, we require that you provide a unique username and email address.</string>
+    <string name="signup_title">Sign up</string>
+    <string name="signup_text">Unlock improved stat tracking features by signing up with a username and email. You get a new, custom persona, too!</string>
 
     <string name="tc_agreement">I agree to the\u0020</string>
     <string name="tc_agreement_span">Terms and Conditions</string>

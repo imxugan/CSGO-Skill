@@ -1,6 +1,6 @@
 /*
  * Created by the Dev Team for CSGO Skill.
- * Copyright (c) 2017. All rights reserved.
+ * Copyright (c) 2018. All rights reserved.
  */
 
 package net.flare_esports.csgoskill
@@ -172,15 +172,12 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     }
 
     private fun toMain() {
-        val intent = Intent(this@Intro, MainActivity::class.java)
+        val intent = Intent(this@Intro, Main::class.java)
 
         val users = db.users
         // Try to get the first Steam ID, and if the only entry, auto load it.
         if (users.size == 1) {
-            intent.putExtra(INAME_OPEN, HOME_FRAG)
-            intent.putExtra(INAME_USER, users[0].getString("steamid"))
-        } else {
-            intent.putExtra(INAME_OPEN, LOGIN_FRAG)
+            intent.putExtra(Main.STEAMID, users[0].steamId)
         }
 
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
@@ -199,11 +196,11 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         imageLogo.animation = slideUp
 
         connected = isOnline()
-        if (DEVMODE) Log.d("Intro.splashing", "Connection: " + connected)
+        if (DEVMODE) Log.d("Intro.splashing", "Connection: $connected")
         if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 
         val check = db.checkVersion()
-        if (DEVMODE) Log.d("Intro.splashing", "Checked: " + check)
+        if (DEVMODE) Log.d("Intro.splashing", "Checked: $check")
         when (check) {
             1 -> {
                 // Up to date, nothing to do

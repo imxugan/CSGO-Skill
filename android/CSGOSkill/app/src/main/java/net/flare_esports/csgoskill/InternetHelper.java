@@ -1,6 +1,6 @@
 /*
  * Created by the Dev Team for CSGO Skill.
- * Copyright (c) 2017. All rights reserved.
+ * Copyright (c) 2018. All rights reserved.
  */
 
 // Intentionally left as Java
@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static net.flare_esports.csgoskill.Constants.*;
 
@@ -43,36 +44,35 @@ class InternetHelper {
         return new BitmapTask().execute(url).get(5, TimeUnit.SECONDS);
     }
 
-    /*public static InputStream BitmapRequest(String url, int timeout) throws Throwable {
-        return new BitmapTask().execute(url).get(timeout, TimeUnit.SECONDS);
-    }*/
-
-
     public static String HTTPRequest(String url) throws Throwable {
-        JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(5, TimeUnit.SECONDS);
-        if (object == null) return "";
-        else if (object.has("message")) return object.getString("message");
-        else return object.toString();
+        try {
+            JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(5, TimeUnit.SECONDS);
+            if (object == null) return "";
+            else if (object.has("reason")) return object.getString("reason");
+            else return object.toString();
+        } catch (Throwable e) {
+            if (e instanceof TimeoutException) {
+                return "Request timed out";
+            } else {
+                throw e;
+            }
+        }
     }
-
-    /*public static String HTTPRequest(String url, int timeout) throws Throwable {
-        JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(timeout, TimeUnit.SECONDS);
-        if (object == null) return "";
-        else if (object.has("message")) return object.getString("message");
-        else return object.toString();
-    }*/
-
 
     public static JSONObject HTTPJsonRequest(JSONObject request) throws Throwable {
-        return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
+        try {
+            return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
+        } catch (Throwable e) {
+            if (e instanceof TimeoutException) {
+                return new JSONObject().put("success", false).put("reason", "timed-out");
+            } else {
+                throw e;
+            }
+        }
     }
 
-    /*public static JSONObject HTTPJsonRequest(JSONObject request, int timeout) throws Throwable {
-        return new HTTPJsonTask().execute(request).get(timeout, TimeUnit.SECONDS);
-    }*/
-
     /**
-     * Takes a URL and returns the InputStream for raw parsing.
+     * Takes a URL and returns the Bitmap image.
      */
     private static class BitmapTask extends AsyncTask<String, Integer, Bitmap> {
         @Override
@@ -125,16 +125,19 @@ class InternetHelper {
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {
-                    // No need to report the error, this is probably intended
-                    return new JSONObject().put("message", builder.toString());
+                    // No need to report the error, already logged output above
+                    if (builder.toString().length() > 0)
+                        return new JSONObject().put("success", false).put("reason", builder.toString());
+                    else
+                        return new JSONObject().put("success", false).put("reason", "no-response");
                 }
             } catch (Throwable e) {
                 if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
                 try {
-                    return new JSONObject().put("message", e.getMessage());
+                    return new JSONObject().put("success", false).put("reason", e.getMessage());
                 } catch (Throwable e2) {
                     if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
-                    return new JSONObject();
+                    return null; // Return null, easier to know if the request failed
                 }
             }
         }

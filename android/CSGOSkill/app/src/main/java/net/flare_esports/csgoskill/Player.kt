@@ -1,6 +1,6 @@
 /*
  * Created by the Dev Team for CSGO Skill.
- * Copyright (c) 2017. All rights reserved.
+ * Copyright (c) 2018. All rights reserved.
  */
 
 package net.flare_esports.csgoskill
@@ -41,7 +41,7 @@ class Player
                 self.dlAvatar = true
                 Thread().run {
                     try {
-                        self.avatarImg = BitmapRequest(self.avatarUrl)
+                        self.avatarImg = Player.downloadAvatar(self.avatarUrl)
                     } catch (e: Throwable) {
                         self.avatarImg = null
                         if (DEVMODE) Log.e("Player.getAvatarImg", e)
@@ -64,21 +64,22 @@ class Player
         get() = this._token.value
 
     // Extra stuff for users
-    var username:     String     = profile.optString("username", "")
+    var username:     String     = profile.optString("username")
         set(username) {
             val newName = Player.validUsername(username)
             if (newName.substring(0..2) == "ok")
                 field = newName.substring(3)
         }
-    var email:        String     = profile.optString("email", "")
+    var email:        String     = profile.optString("email")
         set(email) {
             if (Player.validEmail(email) == "ok")
                 field = email
         }
     var subscription: JSONObject = profile.optJSONObject("subscription") ?: JSONObject()
         private set
-    var verified:     Boolean    = profile.optBoolean("verified", false)
+    var verified:     Boolean    = profile.optBoolean("verified")
         private set
+    var notify:       String     = profile.optString("notify")
 
     // Determine if Player is a user
     val isUser get(): Boolean = this.accountType == "user"
@@ -88,6 +89,30 @@ class Player
 
     fun isTokenValid(): Boolean {
         return Token.isValid(this._token)
+    }
+
+    override fun toString(): String {
+        try {
+            return JSONObject()
+                    .put("steam_id", steamId)
+                    .put("persona", persona)
+                    .put("profileurl", profileUrl)
+                    .put("avatarurl", avatarUrl)
+                    .put("created", created)
+                    .put("status", status)
+                    .put("token", JSONObject()
+                            .put("value", _token.value)
+                            .put("time", _token.time))
+                    .put("username", username)
+                    .put("email", email)
+                    .put("subscription", subscription)
+                    .put("verified", verified)
+                    .put("notify", notify)
+                    .toString()
+        } catch (e: Throwable) {
+            if (DEVMODE) Log.e("Player.toString()", e)
+            return ""
+        }
     }
 
     companion object {
@@ -102,10 +127,20 @@ class Player
 
         @JvmStatic
         fun validUsername(username: String): String {
+            val newName = filterUsername(username)
+            return if (newName.length !in 3..35) {
+                "Username must be URL safe and be 3-35 characters"
+            } else {
+                "ok $newName"
+            }
+        }
+
+        @JvmStatic
+        fun filterUsername(username: String): String {
             val bannedChars: CharArray = charArrayOf(
-                '.', '~', ' ', ':', '/', '\\', '?', '&', '!', '#',
-                '[', ']', '@', '$', '\'', '"', '(', ')', '*', '+',
-                ',', ';', '=', '%', '^', '{', '}', '`', '<', '>', '|'
+                    '.', '~', ' ', ':', '/', '\\', '?', '&', '!', '#',
+                    '[', ']', '@', '$', '\'', '"', '(', ')', '*', '+',
+                    ',', ';', '=', '%', '^', '{', '}', '`', '<', '>', '|'
             )
             val newName = StringBuilder()
             var i = 0
@@ -117,11 +152,7 @@ class Player
                 }
                 i++
             }
-            return if (newName.length !in 3..35) {
-                "Username must be URL safe and be 3-35 characters"
-            } else {
-                "ok $newName"
-            }
+            return newName.toString()
         }
 
         @JvmStatic
@@ -134,6 +165,13 @@ class Player
                 "ok"
             }
         }
+
+        @JvmStatic
+        fun downloadAvatar(shortLink: String): Bitmap {
+            val link = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/${shortLink}_full.jpg"
+            return BitmapRequest(link)
+        }
+
     }
 
 }
