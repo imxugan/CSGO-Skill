@@ -1,6 +1,6 @@
 /*
  * Created by the Dev Team for CSGO Skill.
- * Copyright (c) 2017. All rights reserved.
+ * Copyright (c) 2018. All rights reserved.
  */
 
 // Intentionally left as Java
@@ -16,13 +16,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static net.flare_esports.csgoskill.Constants.*;
 
@@ -35,7 +35,7 @@ class InternetHelper {
             int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
         } catch (Throwable e) {
-            if (devmode) Log.e("InternetHelper.isOnline()", e);
+            if (DEVMODE) Log.e("InternetHelper.isOnline()", e);
         }
         return false;
     }
@@ -44,36 +44,35 @@ class InternetHelper {
         return new BitmapTask().execute(url).get(5, TimeUnit.SECONDS);
     }
 
-    /*public static InputStream BitmapRequest(String url, int timeout) throws Throwable {
-        return new BitmapTask().execute(url).get(timeout, TimeUnit.SECONDS);
-    }*/
-
-
     public static String HTTPRequest(String url) throws Throwable {
-        JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(5, TimeUnit.SECONDS);
-        if (object == null) return "";
-        else if (object.has("message")) return object.getString("message");
-        else return object.toString();
+        try {
+            JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(5, TimeUnit.SECONDS);
+            if (object == null) return "";
+            else if (object.has("reason")) return object.getString("reason");
+            else return object.toString();
+        } catch (Throwable e) {
+            if (e instanceof TimeoutException) {
+                return "Request timed out";
+            } else {
+                throw e;
+            }
+        }
     }
-
-    /*public static String HTTPRequest(String url, int timeout) throws Throwable {
-        JSONObject object = new HTTPJsonTask().execute(new JSONObject().put("url", url)).get(timeout, TimeUnit.SECONDS);
-        if (object == null) return "";
-        else if (object.has("message")) return object.getString("message");
-        else return object.toString();
-    }*/
-
 
     public static JSONObject HTTPJsonRequest(JSONObject request) throws Throwable {
-        return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
+        try {
+            return new HTTPJsonTask().execute(request).get(5, TimeUnit.SECONDS);
+        } catch (Throwable e) {
+            if (e instanceof TimeoutException) {
+                return new JSONObject().put("success", false).put("reason", "timed-out");
+            } else {
+                throw e;
+            }
+        }
     }
 
-    /*public static JSONObject HTTPJsonRequest(JSONObject request, int timeout) throws Throwable {
-        return new HTTPJsonTask().execute(request).get(timeout, TimeUnit.SECONDS);
-    }*/
-
     /**
-     * Takes a URL and returns the InputStream for raw parsing.
+     * Takes a URL and returns the Bitmap image.
      */
     private static class BitmapTask extends AsyncTask<String, Integer, Bitmap> {
         @Override
@@ -81,7 +80,7 @@ class InternetHelper {
             try {
                 return BitmapFactory.decodeStream(new java.net.URL(strings[0]).openStream());
             } catch (Throwable e) {
-                if (devmode) Log.e("InternetHelper.BitmapTask", e);
+                if (DEVMODE) Log.e("InternetHelper.BitmapTask", e);
                 return null;
             }
         }
@@ -122,20 +121,23 @@ class InternetHelper {
                     builder.append(line);
                 }
                 stream.close();
-                if (devmode) Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") + "\nReceived: " + builder.toString());
+                if (DEVMODE) Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") + "\nReceived: " + builder.toString());
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {
-                    // No need to report the error, this is probably intended
-                    return new JSONObject().put("message", builder.toString());
+                    // No need to report the error, already logged output above
+                    if (builder.toString().length() > 0)
+                        return new JSONObject().put("success", false).put("reason", builder.toString());
+                    else
+                        return new JSONObject().put("success", false).put("reason", "no-response");
                 }
             } catch (Throwable e) {
-                if (devmode) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
+                if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
                 try {
-                    return new JSONObject().put("message", e.getMessage());
+                    return new JSONObject().put("success", false).put("reason", e.getMessage());
                 } catch (Throwable e2) {
-                    if (devmode) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
-                    return new JSONObject();
+                    if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
+                    return null; // Return null, easier to know if the request failed
                 }
             }
         }

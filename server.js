@@ -41,8 +41,9 @@ try {
     skill.connect(MONGOURL)
     console.log('Mounting API Router')
     app.use(api)
-    skill.db('collection:Single', (err, col) => { if (err) throw err;
+    skill.db('collection:Single', (err, db, col) => { if (err) throw err;
         col.findOne({name:'test'}, (err, doc) => { if (err) throw err;
+            db.close()
             if (doc.test === 'abc123') {
                 console.log(`Successfully connected to MongoDB`)
             }
@@ -79,8 +80,9 @@ app.get('/activate', (req, res) => {
                 message: 'Failed to activate your account. You can try resending the email link.'
             })
         }
-        skill.db('collection:Players', (err, col) => {
+        skill.db('collection:Players', (err, db, col) => {
             if (assistant.e(501, err)) {
+                db.close()
                 return res.render('activate', {
                     page: { title: 'Failed!' },
                     message: 'Failed to activate your account. There was a server error, try again.'
@@ -88,6 +90,7 @@ app.get('/activate', (req, res) => {
             }
             col.find({'email-verify': token}).toArray((err, docs) => {
                 if (assistant.e(502, err)) {
+                    db.close()
                     return res.render('activate', {
                         page: { title: 'Failed!' },
                         message: 'Failed to activate your account. There was a server error, try again.'
@@ -106,6 +109,7 @@ app.get('/activate', (req, res) => {
                         }
                     }
                     col.findOneAndUpdate({'steam_id': player.steam_id}, ndoc, (err, result) => {
+                        db.close()
                         if (assistant.e(503, err)) {
                             return res.render('activate', {
                                 page: { title: 'Failed!' },
@@ -118,6 +122,7 @@ app.get('/activate', (req, res) => {
                         })
                     })
                 } else {
+                    db.close()
                     return res.render('activate', {
                         page: { title: 'Failed!' },
                         message: 'Failed to activate your account. There was a server error, try again.'
