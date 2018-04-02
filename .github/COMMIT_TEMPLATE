@@ -1,0 +1,47 @@
+type(scope): Imperative mood subject line
+
+Body text describing changes goes here. Note the blank like between the
+subject line and body text. You probably know the 50/72 rule, but since
+everyone is different, and most probably are reading commit messages on
+GitHub instead of in the terminal, I typically prefer wrapping at 100
+characters. But don't let me tell you what to do, wrap at your own will!
+
+The subject line starts with a specific "type." See the comment block
+below for what types you have at your disposal. In (parentheses) is the
+scope. It should be a single word that describes where the changes are
+mostly located. Again, see the comment block below for more info.
+
+You are encouraged to break up the description into paragraphs. It
+improves readability for longer commit messages. I especially enjoy
+hovering over the commit subject line link in the history on GitHub and
+it displays the full message as alt text, and it looks so nice when
+broken into paragraphs!
+
+- Use bullets to make rapid points!
+- Kapow! Bullets go fast, no time for blank lines!
+
+# Issue references if applicable
+# i.e. Even more progress on #18
+
+# == TYPES ==
+# Pick ONE.
+#
+# feat       New features or additions
+# fix        Bug fixes
+# docs       Documentation only
+# style      Formatting changes in code/ other
+# refactor   Code change that neither fixes a bug nor adds a feature
+# perf       Performance improvements
+# test       Additions or changes to tests
+# build      Build system changes or external dependencies
+# ci         Changes to the CI configuration files and scripts
+# chore      Other changes that don't modify src or test files
+#
+#
+# == EXAMPLE SUBJECT LINES ==
+#   fix(clock): Fix clock interval bug introduced in 163f0ee
+#   feat(login): Implement login functionality to API
+#   refactor(node_modules): Remove _args from all package.json files
+#   fix(commas): Fix the f***ing commas
+#
+# == END COMMIT TEMPLATE == 

@@ -41,7 +41,7 @@ class HomeFragment : BaseFragment() {
 
     override fun onBack(): Boolean {
         //TODO
-        return true
+        return false
     }
 
 }

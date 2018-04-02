@@ -164,12 +164,13 @@ class Database(
                 // Got the player!
                 val newPlayer = Player(request.getJSONObject("profile"))
                 val sql = writableDatabase
-                var values = ContentValues()
+                val values = ContentValues()
                 values.put(PROFILE, newPlayer.toString())
-                if (sql.update(USERS, values, "$STEAMID=?", arrayOf(newPlayer.steamId)) > 0) {
+                if (sql.update(USERS, values, "$STEAMID=?", arrayOf(newPlayer.steamId)) != 1) {
                     sql.close()
                     throw Throwable("update-fail")
                 }
+                sql.close()
                 return true
             }
         } catch (e: Throwable) {
@@ -193,6 +194,9 @@ class Database(
                     }
                     "bad-request" -> {
                         "Sorry, I sent the wrong stuff to the serv- What? How'd you do that?"
+                    }
+                    "update-fail" -> {
+                        "You were successfully logged in, but the device was unable to update your account data. Profile information and stats data may appear outdated, and clearing the app data cache and logging back in should fix this. Don't do it until you have an internet connection, however!"
                     }
                     else -> {
                         "Unexpected error. Please report this."
@@ -225,9 +229,9 @@ class Database(
             } else {
                 // Got stats!
                 val sql = writableDatabase
-                var values = ContentValues()
+                val values = ContentValues()
                 values.put(STATS, request.optJSONObject("stats").toString())
-                if (sql.update(USERS, values, "$STEAMID=?", arrayOf(player.steamId)) > 0) {
+                if (sql.update(USERS, values, "$STEAMID=?", arrayOf(player.steamId)) != 1) {
                     sql.close()
                     throw Throwable("update-fail")
                 }
@@ -242,6 +246,9 @@ class Database(
                 when (m) {
                     "not-found" -> {
                         "Who are you?"
+                    }
+                    "update-fail" -> {
+                        "You were successfully logged in, but the device was unable to update your account data. Profile information and stats data may appear outdated, and clearing the app data cache and logging back in should fix this. Don't do it until you have an internet connection, however!"
                     }
                     else -> {
                         "Unexpected error. Please report this."

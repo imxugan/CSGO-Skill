@@ -121,7 +121,16 @@ class InternetHelper {
                     builder.append(line);
                 }
                 stream.close();
-                if (DEVMODE) Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") + "\nReceived: " + builder.toString());
+                if (DEVMODE) {
+                    if (jsonObjects[0].has("post")) {
+                        Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") +
+                                "\nPosted: \n" + jsonObjects[0].getJSONObject("post").toString(4) +
+                                "\nRecieved: \n" + builder.toString());
+                    } else {
+                        Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") +
+                                "\nReceived: " + builder.toString());
+                    }
+                }
                 try {
                     return new JSONObject(builder.toString());
                 } catch (JSONException e) {
