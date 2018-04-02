@@ -51,7 +51,7 @@ class DynamicAlert {
     // include default message text.
     private void defaultSetup() {
         setPositive(R.string.got_it);
-        noCancel();
+        setCancelable(false);
     }
 
     /* CONSTRUCTORS */
@@ -202,15 +202,7 @@ class DynamicAlert {
     /* END ICON */
 
     /* CANCELABLE */
-    public DynamicAlert noCancel() { self.setCancelable(false); return this; }
-
-    /**
-     * You might as well be using a Toast message if your alert can be canceled.
-     */
-    public DynamicAlert allowCancel() {
-        self.setCancelable(true); // Are you sure about that?
-        return this;
-    }
+    public DynamicAlert setCancelable(boolean value) { self.setCancelable(value); return this; }
     /* END CANCEL */
 
     // Set Buttons

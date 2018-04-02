@@ -10,6 +10,7 @@ import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -33,6 +34,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private lateinit var handler: Handler
     private lateinit var fManager: FragmentManager
     private lateinit var context: Context
+    private lateinit var prefs: SharedPreferences
 
     private lateinit var slide1: Frag1
     private lateinit var slide2: Frag2
@@ -57,6 +59,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         handler = Handler()
         fManager = fragmentManager
         context = this
+        prefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
 
         hasAnimated = false
         connected = false
@@ -71,6 +74,10 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         window.exitTransition = Fade()
 
         Thread(splashing).start()
+    }
+
+    override fun onBackPressed() {
+        finishAndRemoveTask()
     }
 
     private fun startIntro() {
@@ -161,6 +168,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                 }
                 slide3 -> {
 
+                    prefs.edit().putBoolean("firstRun", false).apply()
                     slide3.exitTransition = fragExitFade
 
                     fragmentTransaction.remove(slide3)
@@ -213,7 +221,6 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             }
         }
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
         firstRun = DEVMODE || prefs.getBoolean("firstRun", true)
 
         if (firstRun && !connected) {

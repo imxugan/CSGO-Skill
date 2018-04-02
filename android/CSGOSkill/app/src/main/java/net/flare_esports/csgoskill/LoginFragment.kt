@@ -7,8 +7,10 @@ package net.flare_esports.csgoskill
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,10 +32,12 @@ class LoginFragment : BaseFragment() {
     override val name: String = "login"
 
     private var stage: String = "login"
+    private lateinit var prefs: SharedPreferences
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         main = context as Main
+        prefs = PreferenceManager.getDefaultSharedPreferences(main.baseContext)
         listener = context
     }
 
@@ -54,7 +58,7 @@ class LoginFragment : BaseFragment() {
     override fun onBack(): Boolean {
         when (stage) {
             "login" -> {
-                // TODO: Ask if user wants to close the app
+                return false // Unnecessary, but this reads easier
             }
             "web" -> {
                 // Close webview and show login button
@@ -82,7 +86,8 @@ class LoginFragment : BaseFragment() {
             return
         }
 
-        loginWebView.settings.javaScriptEnabled = true // Yes, I'm sure
+        loginWebView.settings.javaScriptEnabled = true  // Yes, I'm sure
+        loginWebView.settings.setAppCacheEnabled(false) // Saves storage space
         loginWebView.webViewClient = object: WebViewClient() { // This forces the webview layout
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 main.toggleLoader(true)
@@ -114,27 +119,27 @@ class LoginFragment : BaseFragment() {
                     onBack() // This brings us back to the login button
                     if (DEVMODE) Log.e("LoginFragment.login", e)
                     var m = e.message ?: ""
-                    if (m.startsWith("error code")) {
-                        m = "Login failed with error code " + m.substring(11)
+                    m = if (m.startsWith("error code")) {
+                        "Login failed with error code " + m.substring(11)
                     } else {
                         when(m) {
                             "auth-canceled" -> {
-                                m = "You successfully canceled the login"
+                                "You successfully canceled the login"
                             }
                             "validate-failed" -> {
-                                m = "Unable to validate your Steam Account, try logging in again"
+                                "Unable to validate your Steam Account, try logging in again"
                             }
                             "private-account" -> {
-                                m = "Your Steam Account must be public to login"
+                                "Your Steam Account must be public to login"
                             }
                             "no-game" -> {
-                                m = "You must own CS: GO to login"
+                                "You must own CS: GO to login"
                             }
                             "playtime" -> {
-                                m = "Sorry, but you must have played CS: GO for at least 10 hours before logging in. This requirement exists to reduce the use of alternate accounts or players who are unlikely to continue using CSGO Skill. Please play the game for at least 10 hours before trying again. No exceptions to this rule will be made. If you really want to improve in CS: GO, playing for 10 hours should not be hard!"
+                                "Sorry, but you must have played CS: GO for at least 10 hours before logging in. This requirement exists to reduce the use of alternate accounts or players who are unlikely to continue using CSGO Skill. Please play the game for at least 10 hours before trying again. No exceptions to this rule will be made. If you really want to improve in CS: GO, playing for 10 hours should not be hard!"
                             }
                             else -> {
-                                m = "There was an unexpected error. Please report this."
+                                "There was an unexpected error. Please report this."
                             }
                         }
                     }

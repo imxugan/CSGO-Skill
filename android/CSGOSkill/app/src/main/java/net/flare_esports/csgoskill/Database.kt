@@ -170,6 +170,7 @@ class Database(
                     sql.close()
                     throw Throwable("update-fail")
                 }
+                sql.close()
                 return true
             }
         } catch (e: Throwable) {

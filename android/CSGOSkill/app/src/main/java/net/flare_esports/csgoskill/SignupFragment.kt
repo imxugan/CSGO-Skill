@@ -66,7 +66,7 @@ class SignupFragment: BaseFragment() {
         personaInput.addTextChangedListener(Typer()
                 .afterChanged {
                     handler.removeMessages(0)
-                    handler.sendMessageDelayed(Message.obtain(handler, 0), 1000)
+                    handler.sendEmptyMessageDelayed(0, 1000)
                 }
         )
 
@@ -74,14 +74,14 @@ class SignupFragment: BaseFragment() {
                 .afterChanged {
                     handler.removeMessages(1)
                     // Send immediately so live filter works
-                    handler.sendMessage(Message.obtain(handler, 1))
+                    handler.sendEmptyMessage(1)
                 }
         )
 
         emailInput.addTextChangedListener(Typer()
                 .afterChanged {
                     handler.removeMessages(2)
-                    handler.sendMessageDelayed(Message.obtain(handler, 2), 1000)
+                    handler.sendEmptyMessageDelayed(2, 1000)
                 }
         )
 
