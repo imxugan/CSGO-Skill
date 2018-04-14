@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team for CSGO Skill.
+  ~ Copyright (c) 2018. All rights reserved.
+  -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/secondaryProgress">
+        <shape
+            android:useLevel="true"
+            android:innerRadiusRatio="3"
+            android:shape="ring"
+            android:thickness="9sp">
+            <gradient
+                android:centerColor="@color/transparent"
+                android:endColor="@color/shadowLight"
+                android:gradientRadius="65%"
+                android:type="radial" />
+        </shape>
+    </item>
+    <item android:id="@android:id/progress">
+        <shape
+            android:useLevel="true"
+            android:innerRadiusRatio="3"
+            android:shape="ring"
+            android:thickness="9sp">
+            <solid android:color="@color/colorAccent" />
+        </shape>
+    </item>
+</layer-list>

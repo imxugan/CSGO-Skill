@@ -34,4 +34,7 @@
 
     <string name="login_successful_but_error">Account created successfully, but you need to login again.</string>
 
+    <string name="kills">Kills</string>
+    <string name="deaths">Deaths</string>
+
 </resources>
