@@ -157,14 +157,15 @@ class SignupFragment: BaseFragment() {
             return
         }
         try {
+            var player1 = player ?: throw Throwable("not-found")
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/signup")
                     .put("post", JSONObject()
-                            .put("steamid", player?.steamId ?: "")
+                            .put("steamid", player1.steamId)
                             .put("persona", personaInput.toString())
                             .put("username", usernameInput.text.toString())
                             .put("email", emailInput.text.toString()))
-                    .put("token", player?.token ?: "")
+                    .put("token", player1.token)
 
             request = HTTPJsonRequest(request)
             if (request == null)
@@ -173,16 +174,15 @@ class SignupFragment: BaseFragment() {
                 throw Throwable(request.optString("reason"))
             } else {
                 // Success! Notify, then re-login with new info
-                player = Player(request.getJSONObject("profile"))
-                DynamicAlert(main)
-                        .setTitle("Congratulations!")
-                        .setMessage("${player?.persona ?: "Unknown"}, you are now a USER!\n\nPlease check your email (${player?.email ?: "missing email"}) for a verification link. You need to verify your email within 2 days, otherwise you will lose your USER status and everything you just did will be undone.\n\nIf that email address is incorrect, you can change it and resend the verification link by going to the Settings.")
-                        .setDismissAction {
-                            if (listener?.loginPlayer(player) == true) {
+                player1 = Player(request.getJSONObject("profile"))
+                if (listener?.loginPlayer(player1) == true)
+                    DynamicAlert(main)
+                            .setTitle("Congratulations!")
+                            .setMessage("${player1.persona}, you are now a USER!\n\nPlease check your email (${player1.email}) for a verification link. You need to verify your email within 2 days, otherwise you will lose your USER status and everything you just did will be undone.\n\nIf that email address is incorrect, you can change it and resend the verification link by going to the Settings.")
+                            .setDismissAction {
                                 main.switchFragment(Main.LOC_HOME)
                             }
-                        }
-                        .show()
+                            .show()
             }
 
 
