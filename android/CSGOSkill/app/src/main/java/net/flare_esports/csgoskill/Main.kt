@@ -8,17 +8,22 @@ package net.flare_esports.csgoskill
 import android.app.FragmentManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.preference.PreferenceManager
 import android.transition.Fade
+import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 
 import kotlinx.android.synthetic.main.include_progress_overlay.*
+import kotlinx.android.synthetic.main.activity_main.*
 import net.flare_esports.csgoskill.Constants.*
+import org.json.JSONObject
 
 class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
@@ -72,7 +77,16 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             switchFragment(LOC_LOGIN)
         else {
             switchFragment(LOC_HOME)
-            Handler().postDelayed({loadUser(steamId)}, 500)
+            handler.postDelayed({loadUser(steamId)}, 500)
+        }
+
+        bottomNavigation.setOnNavigationItemSelectedListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.nav_home -> switchFragment(LOC_HOME)
+                R.id.nav_stats -> { } // TODO
+                R.id.nav_settings -> { } // TODO
+            }
+            item.itemId != R.id.nav_settings
         }
 
     }
@@ -101,18 +115,31 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         return player
     }
 
-    override fun loginPlayer(player: Player?): Boolean {
+    override fun getHistoryStats(): JSONObject? {
+        val player1 = player ?: return null
+        return db.getHistoryStats(player1)
+    }
+
+    override fun getGrandStats(): JSONObject? {
+        val player1 = player ?: return null
+        return db.getGrandStats(player1)
+    }
+
+    override fun getCurrentStats(): JSONObject? {
+        val player1 = player ?: return null
+        return db.getCurrentStats(player1)
+    }
+
+    override fun loginPlayer(player: Player): Boolean {
         try {
-            if (player == null) return false
             if (db.getPlayer(player.steamId) == null) {
-                if (!db.insertUser(player)) {
+                if (!db.insertUser(player))
                     throw db.lastError ?: Throwable("unexpected")
-                }
             }
-            if (db.loginPlayer(player)) {
-                this.player = db.getPlayer(player.steamId)
-                return true
-            } else throw db.lastError ?: Throwable("unexpected")
+            if (!db.loginPlayer(player))
+                throw db.lastError ?: Throwable("unexpected")
+            this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            return updateStats()
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.loginPlayer", e)
             var m = e.message ?: ""
@@ -141,6 +168,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                     HomeFrag.enterTransition = fadeIn
                     fTransaction.replace(R.id.mainFragmentContainer, HomeFrag)
                     fTransaction.commit()
+                    bottomNavigation.visibility = View.VISIBLE
                 }
             }
             LOC_LOGIN -> {
@@ -148,6 +176,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                     LoginFrag.enterTransition = fadeIn
                     fTransaction.replace(R.id.mainFragmentContainer, LoginFrag)
                     fTransaction.commit()
+                    bottomNavigation.visibility = View.GONE
                 }
             }
             else -> {
@@ -161,11 +190,9 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         try {
             toggleLoader(true)
             val player = this.player ?: return false
-            if (db.loginPlayer(player)) {
-                this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-                return true
-            }
-            throw db.lastError ?: Throwable("unexpected")
+            if (!db.loginPlayer(player)) throw db.lastError ?: Throwable("unexpected")
+            this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            return true
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.updateStats", e)
             var m = e.message ?: ""
@@ -183,11 +210,11 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     override fun updateStats(): Boolean {
         try {
-            toggleLoader(true)
             val player = this.player ?: return false
-            if (db.updateStats(player))
-                return true
-            throw db.lastError ?: Throwable("unexpected")
+            if (!db.updateStats(player))
+                throw db.lastError ?: Throwable("unexpected")
+            this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            return true
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.updateStats", e)
             var m = e.message ?: ""
@@ -198,24 +225,19 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 else -> m
             }
             DynamicAlert(this, m).setTitle("Aw crap").show()
+            return false
         }
-        return false
     }
 
     private fun loadUser(steamId: String) {
         try{
-            val player = db.getPlayer(steamId)
-            if (player == null)
+            val player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            this.player = player
+            // Attempt auto login to create new token
+            if (!db.loginPlayer(player))
                 throw db.lastError ?: Throwable("unexpected")
-            else {
-                this.player = player
-                // Attempt auto login to create new token
-                if (db.loginPlayer(player)) {
-                    this.player = db.getPlayer(steamId)
-                } else {
-                    throw db.lastError ?: Throwable("unexpected")
-                }
-            }
+            this.player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            updateStats()
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.loadUser", e)
             var m = e.message ?: ""
@@ -247,18 +269,29 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     }
 
     fun toggleLoader(visible: Boolean) {
-        if (visible && progressOverlay.visibility == View.GONE) {
-            progressOverlay.visibility = View.VISIBLE
-            val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_medium)
-            progressOverlay.startAnimation(fadeIn)
+        fun run(visible: Boolean) {
+            if (visible && progressOverlay.visibility == View.GONE) {
+                progressOverlay.visibility = View.VISIBLE
+                val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_medium)
+                progressOverlay.startAnimation(fadeIn)
 
-        } else if (!visible && progressOverlay.visibility == View.VISIBLE) {
-            val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_fast)
-            fadeOut.setAnimationListener( Animer {
-                progressOverlay.visibility = View.GONE
-            })
-            progressOverlay.startAnimation(fadeOut)
+            } else if (!visible && progressOverlay.visibility == View.VISIBLE) {
+                val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_fast)
+                fadeOut.setAnimationListener( Animer {
+                    progressOverlay.visibility = View.GONE
+                })
+                progressOverlay.startAnimation(fadeOut)
+            }
         }
+        // Sneaky always-show-regardless-of-who-called-and-where function B-)
+        val isUiThread = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                Looper.getMainLooper().isCurrentThread
+            else
+                Thread.currentThread() === Looper.getMainLooper().thread
+        if (isUiThread)
+            run(visible)
+        else
+            Handler(Looper.getMainLooper()).post { run(visible) }
     }
 
     fun toggleFullscreen(fullscreen: Boolean) {

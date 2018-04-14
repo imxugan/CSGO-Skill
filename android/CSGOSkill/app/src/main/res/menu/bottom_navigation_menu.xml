@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team for CSGO Skill.
+  ~ Copyright (c) 2018. All rights reserved.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:enabled="true"
+        android:icon="@drawable/ic_home_white_48dp" />
+    <item
+        android:id="@+id/nav_stats"
+        android:enabled="true"
+        android:icon="@drawable/ic_timeline_white_48dp" />
+    <item
+        android:id="@+id/nav_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_settings_white_48dp" />
+</menu>
