@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_weight="2"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/graphLayout"
+        app:layout_constraintRight_toLeftOf="@id/graphKDLayout"
         app:layout_constraintTop_toTopOf="parent">
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/killsNumber"
@@ -45,14 +45,14 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/graphLayout"
+        android:id="@+id/graphKDLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintLeft_toRightOf="@id/killsLayout"
         app:layout_constraintRight_toLeftOf="@id/deathsLayout">
         <ProgressBar
-            android:id="@+id/graph"
+            android:id="@+id/graphKD"
             style="?android:attr/progressBarStyleHorizontal"
             android:progressDrawable="@drawable/progress_circular"
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
             android:secondaryProgress="1000"
             app:layout_constraintDimensionRatio="1:1" />
         <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/graphNumber"
+            android:id="@+id/graphKDNumber"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:gravity="center"
@@ -72,14 +72,14 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias=".46" />
         <TextView
-            android:id="@+id/graphLabel"
+            android:id="@+id/graphKDLabel"
             android:layout_width="match_parent"
             android:layout_height="15dp"
             android:gravity="center"
             android:text="K/D"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/graphNumber"
-            app:layout_constraintTop_toBottomOf="@id/graphNumber" />
+            app:layout_constraintBottom_toBottomOf="@id/graphKDNumber"
+            app:layout_constraintTop_toBottomOf="@id/graphKDNumber" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -89,7 +89,7 @@
         android:layout_marginRight="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintLeft_toRightOf="@id/graphLayout"
+        app:layout_constraintLeft_toRightOf="@id/graphKDLayout"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <android.support.v7.widget.AppCompatTextView

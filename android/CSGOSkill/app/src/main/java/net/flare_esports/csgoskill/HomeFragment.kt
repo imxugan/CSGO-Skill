@@ -18,6 +18,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
 
@@ -148,6 +151,22 @@ class HomeFragment : BaseFragment() {
                     setHasFixedSize(true)
                     layoutManager = viewManager
                     adapter = viewAdapter
+                    recyclerView.viewTreeObserver.addOnPreDrawListener(
+                            object : ViewTreeObserver.OnPreDrawListener {
+
+                                override fun onPreDraw(): Boolean {
+                                    recyclerView.viewTreeObserver.removeOnPreDrawListener(this)
+
+                                    for (j in 0 until recyclerView.childCount) {
+                                        val v = recyclerView.getChildAt(j)
+                                        val animation: Animation = AnimationUtils.loadAnimation(main, android.R.anim.slide_in_left)
+                                        animation.startOffset = j * 80L
+                                        v.startAnimation(animation)
+                                    }
+
+                                    return true
+                                }
+                            })
                 }
             }
         } catch (e: Throwable) {
