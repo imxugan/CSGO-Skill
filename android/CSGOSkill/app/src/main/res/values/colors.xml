@@ -5,15 +5,18 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#e09000</color>
+    <color name="colorPrimary">#E09000</color>
     <color name="colorPrimaryDark">#323232</color>
-    <color name="colorAccent">#1f5ae0</color>
-    <color name="colorWhite">#f4f7fb</color>
+    <color name="colorAccent">#1F5AE0</color>
+    <color name="colorAccentLight">#1FB0E0</color>
+    <color name="colorWhite">#F4F7FB</color>
     <color name="colorBlack">#262621</color>
-    <color name="colorLightGrey">#bdbdbd</color>
-    <color name="colorSteamBG">#1b2838</color>
+    <color name="colorLightGrey">#BDBDBD</color>
+    <color name="colorSteamBG">#1B2838</color>
+    <color name="colorRed">#A82C2C</color>
+    <color name="colorGreen">#28314E</color>
 
     <color name="transparent">#00000000</color>
-    <color name="textShadowLight">#77000000</color>
-    <color name="roundedBoxBackground">#b0ffffff</color>
+    <color name="shadowLight">#77000000</color>
+    <color name="roundedBoxBackground">#B0FFFFFF</color>
 </resources>

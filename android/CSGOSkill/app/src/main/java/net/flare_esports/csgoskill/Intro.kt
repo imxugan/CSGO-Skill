@@ -187,7 +187,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         if (users.size == 1) {
             intent.putExtra(Main.STEAMID, users[0].steamId)
         }
-
+        imageLogo.clearAnimation()
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
         handler.postDelayed({ finish() }, 1000)
     }
@@ -221,7 +221,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             }
         }
 
-        firstRun = DEVMODE || prefs.getBoolean("firstRun", true)
+        firstRun = prefs.getBoolean("firstRun", true) //|| DEVMODE
 
         if (firstRun && !connected) {
             // Request that first timers turn on the internet before using, but they don't HAVE to
@@ -231,7 +231,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         } else if (firstRun) {
             if (!hasAnimated) {
                 try {
-                    Thread.sleep(1250)
+                    Thread.sleep(2000)
                 } // Yeah, yeah so what it looks nicer
                 catch (e: Throwable) {
                     if (DEVMODE) Log.e("Intro.splashing", e)
@@ -239,6 +239,14 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             }
             handler.postDelayed(startIntro, 200)
         } else {
+            if (!hasAnimated) {
+                try {
+                    Thread.sleep(2000)
+                } // Yeah, yeah so what it looks nicer
+                catch (e: Throwable) {
+                    if (DEVMODE) Log.e("Intro.splashing", e)
+                }
+            }
             runOnUiThread(toMain)
         }
     }

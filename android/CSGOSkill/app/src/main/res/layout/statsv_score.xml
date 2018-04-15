@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team for CSGO Skill.
+  ~ Copyright (c) 2018. All rights reserved.
+  -->
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/mvpLayout"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/scoreLayout">
+        <android.support.constraint.Guideline
+            android:id="@+id/mvpLeftGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.12" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/mvpNumber"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:autoSizeTextType="uniform"
+            android:text="18"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/mvpBottomGuide"
+            app:layout_constraintLeft_toLeftOf="@id/mvpLeftGuide"
+            app:layout_constraintRight_toRightOf="@id/mvpRightGuide" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/mvpLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:autoSizeTextType="uniform"
+            android:text="mvps"
+            android:gravity="center"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <android.support.constraint.Guideline
+            android:id="@+id/mvpBottomGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9" />
+        <android.support.constraint.Guideline
+            android:id="@+id/mvpRightGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.88" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/scoreLayout"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintLeft_toRightOf="@id/mvpLayout"
+        app:layout_constraintRight_toRightOf="parent">
+        <android.support.constraint.Guideline
+            android:id="@+id/scoreLeftGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.12" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/scoreNumber"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:autoSizeTextType="uniform"
+            android:text="3742"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/scoreBottomGuide"
+            app:layout_constraintLeft_toLeftOf="@id/scoreLeftGuide"
+            app:layout_constraintRight_toRightOf="@id/scoreRightGuide" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/scoreLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:autoSizeTextType="uniform"
+            android:text="contribution score"
+            android:gravity="center"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <android.support.constraint.Guideline
+            android:id="@+id/scoreBottomGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9" />
+        <android.support.constraint.Guideline
+            android:id="@+id/scoreRightGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.88" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

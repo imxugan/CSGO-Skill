@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team for CSGO Skill.
+  ~ Copyright (c) 2018. All rights reserved.
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:color="@color/colorPrimaryDark" />
+    <item android:state_checked="true" android:color="@color/colorPrimary" />
+    <item android:color="@color/colorWhite" />
+</selector>

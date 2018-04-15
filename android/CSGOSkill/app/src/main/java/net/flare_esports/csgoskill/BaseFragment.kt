@@ -6,6 +6,7 @@
 package net.flare_esports.csgoskill
 
 import android.app.Fragment
+import org.json.JSONObject
 
 
 abstract class BaseFragment : Fragment() {
@@ -31,7 +32,7 @@ abstract class BaseFragment : Fragment() {
          * @param  player The generated Player object
          * @return True if Main Activity handled the login, false if account is not on device
          */
-        fun loginPlayer(player: Player?): Boolean
+        fun loginPlayer(player: Player): Boolean
 
         /**
          * Requests to change the current fragment.
@@ -60,6 +61,27 @@ abstract class BaseFragment : Fragment() {
          * @return the Player object
          */
         fun getPlayer(): Player?
+
+        /**
+         * Requests the Player's history stats.
+         *
+         * @return JSONObject of stat history
+         */
+        fun getHistoryStats(): JSONObject?
+
+        /**
+         * Requests the Player's grand stats.
+         *
+         * @return JSONObject of stat history
+         */
+        fun getGrandStats(): JSONObject?
+
+        /**
+         * Requests the Player's current stats.
+         *
+         * @return JSONObject of stat history
+         */
+        fun getCurrentStats(): JSONObject?
 
     }
 

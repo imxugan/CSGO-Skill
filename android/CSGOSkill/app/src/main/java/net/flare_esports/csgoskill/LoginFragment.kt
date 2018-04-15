@@ -65,6 +65,7 @@ class LoginFragment : BaseFragment() {
                 loginWebView.visibility = View.GONE
                 loginButton.visibility = View.VISIBLE
                 main.toggleFullscreen(false)
+                loginButton.isEnabled = true
                 stage = "login"
             }
             else -> return false
@@ -111,9 +112,8 @@ class LoginFragment : BaseFragment() {
                     }
 
                     // We got a profile, create the Player and let Main Activity login
-                    if (listener?.loginPlayer(Player(response.getJSONObject("profile"))) == true) {
+                    if (listener?.loginPlayer(Player(response.getJSONObject("profile"))) == true)
                         main.switchFragment(Main.LOC_HOME)
-                    }
 
                 } catch (e: Throwable) {
                     onBack() // This brings us back to the login button
@@ -137,6 +137,9 @@ class LoginFragment : BaseFragment() {
                             }
                             "playtime" -> {
                                 "Sorry, but you must have played CS: GO for at least 10 hours before logging in. This requirement exists to reduce the use of alternate accounts or players who are unlikely to continue using CSGO Skill. Please play the game for at least 10 hours before trying again. No exceptions to this rule will be made. If you really want to improve in CS: GO, playing for 10 hours should not be hard!"
+                            }
+                            "playtime-private", "private-stats-or-down" -> {
+                                "Looks like your Game Details are private! In order to use CSGO Skill, you must have set your Game Details to be Public. Simply login to Steam on your computer or mobile device, go to your Privacy Settings, and change \"Game Details\" to \"PUBLIC\", and then try logging into CSGO Skill again."
                             }
                             else -> {
                                 "There was an unexpected error. Please report this."

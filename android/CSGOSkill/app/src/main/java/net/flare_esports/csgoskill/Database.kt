@@ -65,9 +65,9 @@ class Database(
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
 
         sqLiteDatabase.execSQL("CREATE TABLE " + USERS + " (" +
-                STEAMID + " TEXT UNIQUE," +     // Steam ID
-                PROFILE + " TEXT" +             // All the Profile info
-                STATS + " TEXT)"                 // All the player's stats
+                STEAMID + " TEXT UNIQUE," + // Steam ID
+                PROFILE + " TEXT," +        // All the Profile info
+                STATS + " TEXT)"            // All the player's stats
         )
 
     }
@@ -284,13 +284,13 @@ class Database(
                 return result
             }
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Database.getPlayer", e)
             var m = e.message ?: ""
             m = when (m) {
                 "not-found" -> {
                     "Who are you?"
                 }
                 else -> {
+                    if (DEVMODE) Log.e("Database.getPlayer", e)
                     "Unexpected error. Please report this."
                 }
             }
