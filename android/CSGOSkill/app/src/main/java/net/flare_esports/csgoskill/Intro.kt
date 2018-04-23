@@ -46,6 +46,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private var hasAnimated: Boolean = false
     private var firstRun: Boolean = false
     private var connected: Boolean = false
+    private var closing: Boolean = false
+    private var switching: Boolean = false
 
     private val splashing = Runnable { this.splashing() }
     private val startIntro = Runnable { this.startIntro() }
@@ -95,8 +97,55 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        //finishAndRemoveTask()
+        val previous = fManager.findFragmentById(R.id.introFragmentContainer) as Slide?
+
+        if (previous != null && !switching && !closing) {
+            switching = true
+            // Disable and hide the NEXT button
+            continueButton.isEnabled = false
+            val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
+            fadeOut.setAnimationListener( Animer {
+                continueButton.visibility = View.GONE
+            })
+            continueButton.startAnimation(fadeOut)
+
+            val fragmentTransaction = fManager.beginTransaction()
+            when (previous.name) {
+                "slide2" -> {
+                    slide2.exitTransition = fragExitFade
+                    slide1.enterTransition = fragEnterFade
+
+                    fragmentTransaction.replace(introFragmentContainer.id, slide1)
+                }
+                "slide3" -> {
+                    continueButton.setImageResource(R.drawable.ic_arrow_forward_white_48dp)
+                    slide3.exitTransition = fragExitFade
+                    slide2.enterTransition = fragEnterFade
+
+                    fragmentTransaction.replace(introFragmentContainer.id, slide2)
+                }
+                else -> {
+                    switching = false
+                    closing = true // Signal app is closing
+                }
+            }
+            fragmentTransaction.commitAllowingStateLoss()
+            handler.postDelayed({switching = false}, 1450)
+        } else if (!switching && !closing) {
+            closing = true
+        }
+
+        if (closing && !switching) { // Using "switching" prevents BACK button spam
+            switching = true
+            handler.removeCallbacksAndMessages(null) // Remove pending stuff
+            val toast = Toast.makeText(this, R.string.closing_app_message, Toast.LENGTH_SHORT)
+            toast.show()
+            handler.postDelayed({
+                toast.cancel() // Hide the message sooner
+                finishAndRemoveTask() // Kindly kill the app completely
+            }, 2000)
+        }
+
     }
 
     private fun startIntro() {
@@ -111,9 +160,12 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         fadeIn.setAnimationListener( Animer().setStart {
             continueButton.isEnabled = true
         })
-        continueButton.animation = fadeIn
-        continueButton.visibility = View.VISIBLE
-        continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.colorPrimary)
+
+        if (!closing) {
+            continueButton.animation = fadeIn
+            continueButton.visibility = View.VISIBLE
+            continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.colorPrimary)
+        }
 
         // Set continueButton onClick method
         continueButton.setOnClickListener {
@@ -121,30 +173,33 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             // Disable button
             continueButton.isEnabled = false
 
-            // Fade out the stuff
-            val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
-            fadeOut.setAnimationListener( Animer {
-                imageLogo.visibility = View.GONE
+            if (!closing) {
+                switching = true
+                // Fade out the stuff
+                val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
+                fadeOut.setAnimationListener( Animer {
+                    imageLogo.visibility = View.GONE
 
-                continueButton.visibility = View.INVISIBLE
-                continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.colorWhite)
-            })
+                    continueButton.visibility = View.INVISIBLE
+                    continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.colorWhite)
+                })
 
-            continueButton.startAnimation(fadeOut)
-            imageLogo.startAnimation(fadeOut)
+                continueButton.startAnimation(fadeOut)
+                imageLogo.startAnimation(fadeOut)
 
-            // Open the first fragment after 800ms
-            val fragmentTransaction = fManager.beginTransaction()
-            slide1.enterTransition = Fade().setDuration(1000)
-            fragmentTransaction.add(R.id.introFragmentContainer, slide1)
-            handler.postDelayed ({ fragmentTransaction.commit() }, 800)
+                // Open the first fragment after 800ms
+                val fragmentTransaction = fManager.beginTransaction()
+                slide1.enterTransition = Fade().setDuration(1000)
+                fragmentTransaction.add(R.id.introFragmentContainer, slide1)
+                handler.postDelayed ({ fragmentTransaction.commit() }, 800)
+            }
         }
 
     }
 
     // Catch the fragment animation complete messages
     override fun animationComplete(currentFragment: Fragment) {
-
+        switching = false
         // Set the continueButton to a check mark for the last slide
         if (currentFragment == slide3) continueButton.setImageResource(R.drawable.ic_check_white_48dp)
 
@@ -157,8 +212,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
         continueButton.visibility = View.VISIBLE
         continueButton.startAnimation(fadeIn)
-        continueButton.setOnClickListener {
-
+        continueButton.setOnClickListener { if (!switching && !closing) {
+            switching = true
             // Disable and fade out the button
             continueButton.isEnabled = false
             if (currentFragment == slide1 || currentFragment == slide2 || currentFragment == slide3) {
@@ -195,7 +250,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                 }
             }
             fragmentTransaction.commitAllowingStateLoss()
-        }
+        } }
     }
 
     private fun toMain() {
@@ -207,8 +262,10 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             intent.putExtra(Main.STEAMID, users[0].steamId)
         }
         imageLogo.clearAnimation()
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
-        handler.postDelayed({ finish() }, 1000)
+        if (!closing) {
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
+            handler.postDelayed({ finish() }, 1000)
+        }
     }
 
     /* This is the meat of the operations done by Intro. It starts the animations for the views,
@@ -240,7 +297,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             }
         }
 
-        firstRun = prefs.getBoolean("firstRun", true) //|| DEVMODE
+        firstRun = prefs.getBoolean("firstRun", true) || DEVMODE
 
         if (firstRun && !connected) {
             // Request that first timers turn on the internet before using, but they don't HAVE to
@@ -248,25 +305,15 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                     R.string.first_run_no_internet_warning)
                     .setDismissAction{ handler.postDelayed(startIntro, 200) }.show()
         } else if (firstRun) {
-            if (!hasAnimated) {
-                try {
-                    Thread.sleep(2000)
-                } // Yeah, yeah so what it looks nicer
-                catch (e: Throwable) {
-                    if (DEVMODE) Log.e("Intro.splashing", e)
-                }
-            }
-            handler.postDelayed(startIntro, 200)
+            handler.postDelayed(startIntro,
+                    if (!hasAnimated) 2200L
+                    else 200L
+            )
         } else {
-            if (!hasAnimated) {
-                try {
-                    Thread.sleep(2000)
-                } // Yeah, yeah so what it looks nicer
-                catch (e: Throwable) {
-                    if (DEVMODE) Log.e("Intro.splashing", e)
-                }
-            }
-            runOnUiThread(toMain)
+            handler.postDelayed({runOnUiThread(toMain)},
+                    if (!hasAnimated) 2200L
+                    else 200L
+            )
         }
     }
 }

@@ -51,6 +51,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private lateinit var HomeFrag: HomeFragment
 
     private var shouldExit = false
+    private var closing = false
 
     private val toLogin = Runnable { shouldExit = false; switchFragment(LOC_LOGIN) }
 
@@ -121,12 +122,14 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     }
 
     override fun onBackPressed() {
+        if (closing) {return}
         if (shouldExit) {
-            handler.removeCallbacks(toLogin)
+            closing = true
+            handler.removeCallbacksAndMessages(null)
             finishAndRemoveTask()
         }
         val fragment = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
-                ?: return finish() // Close app if no fragment is in the view, if that ever happens.
+                ?: return finishAndRemoveTask() // Close app if no fragment is in the view, if that ever happens.
         if (fragment.onBack()) {return}
         else when (fragment.name) {
             "login" -> {
@@ -136,7 +139,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             }
             "home" -> {
                 shouldExit = true
-                handler.postDelayed(toLogin, 500)
+                handler.postDelayed(toLogin, 600)
             }
         }
     }
@@ -183,6 +186,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     }
 
     override fun switchFragment(nextFragment: Int) {
+        if (closing) {return}
         val fTransaction = fManager.beginTransaction()
         val previous = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
         if (previous != null) {

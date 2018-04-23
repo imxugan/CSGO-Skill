@@ -8,9 +8,11 @@
 
     <string name="first_run_no_internet_warning">This app functions better with the Power of the Internet™</string>
     <string name="no_internet_warning">No Internet Connection</string>
-    <string name="failed_server_connection">Failed to connect to CSGO-Skill server</string>
+    <string name="failed_server_connection">Failed to connect to CSGO Skill server</string>
 
     <string name="welcome_to">Welcome to</string>
+
+    <string name="closing_app_message">Closing CSGO Skill</string>
 
     <string name="got_it">GOT IT</string>
 

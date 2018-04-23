@@ -20,6 +20,7 @@ class Frag1 : Slide() {
     internal lateinit var view: View
     internal lateinit var context: Context
     override var slideListener: SlideListener? = null
+    override val name: String = "slide1"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
