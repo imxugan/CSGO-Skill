@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.transition.Fade
 import android.view.MenuItem
 import android.view.View
@@ -165,10 +166,8 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 if (!db.insertUser(player))
                     throw db.lastError ?: Throwable("unexpected")
             }
-            if (!db.loginPlayer(player))
-                throw db.lastError ?: Throwable("unexpected")
-            this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-            return updateStats()
+            loadUser(player.steamId)
+            return true
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.loginPlayer", e)
             var m = e.message ?: ""
@@ -262,13 +261,18 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     private fun loadUser(steamId: String) {
         try{
-            val player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            var player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
             this.player = player
             // Attempt auto login to create new token
             if (!db.loginPlayer(player))
                 throw db.lastError ?: Throwable("unexpected")
-            this.player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            this.player = player
             updateStats()
+            topPersonaView.text = player.persona
+            val avatar = RoundedBitmapDrawableFactory.create(resources, InternetHelper.BitmapRequest(player.avatarUrl))
+            avatar.cornerRadius = 10f
+            topAvatarView.setImageDrawable(avatar)
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.loadUser", e)
             var m = e.message ?: ""
