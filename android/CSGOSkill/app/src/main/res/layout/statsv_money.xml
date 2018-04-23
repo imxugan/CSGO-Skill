@@ -20,7 +20,7 @@
             android:layout_height="0dp"
             app:autoSizeTextType="uniform"
             android:gravity="center"
-            android:text="$500000"
+            android:text="@string/ph_money_earned"
             android:shadowColor="@color/shadowLight"
             android:shadowDx="0.0"
             android:shadowDy="1.2"
@@ -33,12 +33,12 @@
             android:layout_height="wrap_content"
             app:autoSizeTextType="uniform"
             android:gravity="center"
-            android:text="money earned"
+            android:text="@string/money_earned"
             android:textAllCaps="true"
             android:shadowColor="@color/shadowLight"
             android:shadowDx="0.0"
             android:shadowDy="1.2"
-            android:shadowRadius="8"
+            android:shadowRadius="5"
             app:layout_constraintBottom_toBottomOf="parent" />
         <android.support.constraint.Guideline
             android:id="@+id/moneyGuide"

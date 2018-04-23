@@ -83,9 +83,9 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                     hoursNumber.text = if (days.length > 1) days else "0$days"
                     minutesNumber.text = if (hours.length > 1) hours else "0$hours"
                     secondsNumber.text = if (minutes.length > 1) minutes else "0$minutes"
-                    hoursLabel.text = "days"
-                    minutesLabel.text = "hours"
-                    secondsLabel.text = "minutes"
+                    hoursLabel.text = main.getString(R.string.days)
+                    minutesLabel.text = main.getString(R.string.hours)
+                    secondsLabel.text = main.getString(R.string.minutes)
                 } else {
                     hoursNumber.text = if (hours.length > 1) hours else "0$hours"
                     minutesNumber.text = if (minutes.length > 1) minutes else "0$minutes"
@@ -137,8 +137,8 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                 val kills = Math.max(0, data.optInt("kills"))
                 val headshot = BigDecimal((heads * 1.0) / Math.max(1.0, heads + kills * 1.0) * 100).round(MathContext(3)).toDouble().toString()
 
-                accuracyNumber.text = "$accuracy%"
-                headshotNumber.text = "$headshot%"
+                accuracyNumber.text = main.getString(R.string.percent_format, accuracy)
+                headshotNumber.text = main.getString(R.string.percent_format, headshot)
 
                 container.addView(layout)
             }
@@ -164,11 +164,11 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
 
                 roundWinsNumber.text = roundWins.toString()
                 roundPlaysNumber.text = roundPlay.toString()
-                roundPercentNumber.text = "$roundPercent%"
+                roundPercentNumber.text = main.getString(R.string.percent_format, roundPercent)
 
                 matchWinsNumber.text = matchWins.toString()
                 matchPlaysNumber.text = matchPlay.toString()
-                matchPercentNumber.text = "$matchPercent%"
+                matchPercentNumber.text = main.getString(R.string.percent_format, matchPercent)
 
                 container.addView(layout)
             }
@@ -225,7 +225,7 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
 
                 val money = Math.max(0, data.optInt("money")).toString()
 
-                moneyNumber.text = "\$$money"
+                moneyNumber.text = main.getString(R.string.money_format, money)
 
                 container.addView(layout)
             }
