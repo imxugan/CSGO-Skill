@@ -18,7 +18,6 @@
         <activity
             android:name=".Intro"
             android:theme="@style/Theme.Flare.NoActionBar"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden">
             <intent-filter>
@@ -29,7 +28,6 @@
         </activity>
         <activity
             android:name=".Main"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden" />
     </application>

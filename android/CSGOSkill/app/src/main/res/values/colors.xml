@@ -16,6 +16,8 @@
     <color name="colorRed">#A82C2C</color>
     <color name="colorGreen">#28314E</color>
 
+    <color name="bottomNav">#A0262621</color>
+
     <color name="transparent">#00000000</color>
     <color name="shadowLight">#77000000</color>
     <color name="roundedBoxBackground">#B0FFFFFF</color>

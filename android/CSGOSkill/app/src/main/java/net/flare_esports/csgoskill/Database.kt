@@ -45,10 +45,9 @@ class Database(
         get() {
             val sql = writableDatabase
             val c = sql.rawQuery("SELECT $STEAMID FROM $USERS WHERE 1", null)
-            if (c.count <= 0) {
+            return if (c.count <= 0) {
                 c.close()
-                sql.close()
-                return emptyArray()
+                emptyArray()
             } else {
                 var users = emptyArray<Player>()
                 var user: Player?
@@ -57,8 +56,7 @@ class Database(
                     if (user != null) users = users.plus(user)
                 }
                 c.close()
-                sql.close()
-                return users
+                users
             }
         }
 
@@ -129,7 +127,6 @@ class Database(
             values.put(STEAMID, player.steamId)
             values.put(PROFILE, player.toString())
             if (sql.insertOrThrow(USERS, null, values) != -1L) {
-                sql.close()
                 return true
             }
         } catch (e: Throwable) {
@@ -167,10 +164,8 @@ class Database(
                 val values = ContentValues()
                 values.put(PROFILE, newPlayer.toString())
                 if (sql.update(USERS, values, "$STEAMID=?", arrayOf(newPlayer.steamId)) != 1) {
-                    sql.close()
                     throw Throwable("update-fail")
                 }
-                sql.close()
                 return true
             }
         } catch (e: Throwable) {
@@ -232,7 +227,6 @@ class Database(
                 val values = ContentValues()
                 values.put(STATS, request.optJSONObject("stats").toString())
                 if (sql.update(USERS, values, "$STEAMID=?", arrayOf(player.steamId)) != 1) {
-                    sql.close()
                     throw Throwable("update-fail")
                 }
                 return true
@@ -274,13 +268,11 @@ class Database(
             val c = sql.rawQuery("SELECT $PROFILE FROM $USERS WHERE $STEAMID = \"$steamId\"", null)
             if (c.count <= 0) {
                 c.close()
-                sql.close()
                 throw Throwable("not-found")
             } else {
                 c.moveToFirst()
                 val result = Player(JSONObject(c.getString(c.getColumnIndex(PROFILE))))
                 c.close()
-                sql.close()
                 return result
             }
         } catch (e: Throwable) {
@@ -386,18 +378,16 @@ class Database(
      * @throws Throwable if not found
      */
     @Throws(Throwable::class)
-    fun getStats(player: Player): JSONObject {
+    private fun getStats(player: Player): JSONObject {
         val sql = writableDatabase
         val c = sql.rawQuery("SELECT $STATS FROM $USERS WHERE $STEAMID = \"${player.steamId}\"", null)
         if (c.count <= 0) {
             c.close()
-            sql.close()
             throw Throwable("not-found")
         } else {
             c.moveToFirst()
             val result = JSONObject(c.getString(c.getColumnIndex(STATS)))
             c.close()
-            sql.close()
             return result
         }
     }

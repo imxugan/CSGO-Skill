@@ -24,7 +24,7 @@
             android:innerRadiusRatio="3"
             android:shape="ring"
             android:thickness="9sp">
-            <solid android:color="@color/colorAccent" />
+            <solid android:color="@color/colorPrimary" />
         </shape>
     </item>
 </layer-list>

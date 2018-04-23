@@ -29,10 +29,10 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
         @JvmStatic val TIME_PLAYED    = 0
         @JvmStatic val KILLS_DEATHS   = 1
         @JvmStatic val ACCURACY_HEADS = 2
-        @JvmStatic val DAMAGE         = 3
-        @JvmStatic val ROUND_MATCH    = 4
-        @JvmStatic val OBJECTIVE      = 5
-        @JvmStatic val SCORING        = 6
+        @JvmStatic val ROUND_MATCH    = 3
+        @JvmStatic val OBJECTIVE      = 4
+        @JvmStatic val SCORING        = 5
+        @JvmStatic val DAMAGE         = 6
         @JvmStatic val MONEY          = 7
         @JvmStatic val LIST_LENGTH    = 8
 
@@ -59,10 +59,12 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val inflater = main.layoutInflater
+        val container = holder.layout.findViewById<ConstraintLayout>(R.id.statsvBaseView)
+        val layout: View
         when (position) {
             TIME_PLAYED -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_time_played, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_time_played, container, false)
 
                 val hoursNumber = layout.findViewById<AppCompatTextView>(R.id.hoursNumber)
                 val minutesNumber = layout.findViewById<AppCompatTextView>(R.id.minutesNumber)
@@ -90,12 +92,11 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                     secondsNumber.text = if (seconds.length > 1) seconds else "0$seconds"
                 }
 
-                holder.layout.addView(layout)
+                container.addView(layout)
             }
 
             KILLS_DEATHS -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_kd, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_kd, container, false)
 
                 val killsNumber = layout.findViewById<AppCompatTextView>(R.id.killsNumber)
                 val deathsNumber = layout.findViewById<AppCompatTextView>(R.id.deathsNumber)
@@ -119,12 +120,11 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                 aP.setDuration(1000).start()
                 aR.setDuration(1000).start()
 
-                holder.layout.addView(layout)
+                container.addView(layout)
             }
 
             ACCURACY_HEADS -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_acc_hs, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_acc_hs, container, false)
 
                 val accuracyNumber = layout.findViewById<AppCompatTextView>(R.id.accuracyNumber)
                 val headshotNumber = layout.findViewById<AppCompatTextView>(R.id.headshotNumber)
@@ -140,25 +140,11 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                 accuracyNumber.text = "$accuracy%"
                 headshotNumber.text = "$headshot%"
 
-                holder.layout.addView(layout)
-            }
-
-            DAMAGE -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_damage, holder.layout, false)
-
-                val damageNumber = layout.findViewById<AppCompatTextView>(R.id.damageNumber)
-
-                val damage = Math.max(0, data.optInt("damage"))
-
-                damageNumber.text = damage.toString()
-
-                holder.layout.addView(layout)
+                container.addView(layout)
             }
 
             ROUND_MATCH -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_win, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_win, container, false)
 
                 val roundWinsNumber = layout.findViewById<AppCompatTextView>(R.id.roundWins)
                 val roundPlaysNumber = layout.findViewById<AppCompatTextView>(R.id.roundPlays)
@@ -184,12 +170,11 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                 matchPlaysNumber.text = matchPlay.toString()
                 matchPercentNumber.text = "$matchPercent%"
 
-                holder.layout.addView(layout)
+                container.addView(layout)
             }
 
             OBJECTIVE -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_objective, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_objective, container, false)
 
                 val plantNumber = layout.findViewById<AppCompatTextView>(R.id.plantNumber)
                 val defuseNumber = layout.findViewById<AppCompatTextView>(R.id.defuseNumber)
@@ -203,12 +188,11 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                 defuseNumber.text = defuse.toString()
                 hostageNumber.text = rescues.toString()
 
-                holder.layout.addView(layout)
+                container.addView(layout)
             }
 
             SCORING -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_score, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_score, container, false)
 
                 val mvpNumber = layout.findViewById<AppCompatTextView>(R.id.mvpNumber)
                 val scoreNumber = layout.findViewById<AppCompatTextView>(R.id.scoreNumber)
@@ -219,12 +203,23 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
                 mvpNumber.text = mvps.toString()
                 scoreNumber.text = score.toString()
 
-                holder.layout.addView(layout)
+                container.addView(layout)
+            }
+
+            DAMAGE -> {
+                layout = inflater.inflate(R.layout.statsv_damage, container, false)
+
+                val damageNumber = layout.findViewById<AppCompatTextView>(R.id.damageNumber)
+
+                val damage = Math.max(0, data.optInt("damage"))
+
+                damageNumber.text = damage.toString()
+
+                container.addView(layout)
             }
 
             MONEY -> {
-                val inflater = main.layoutInflater
-                val layout = inflater.inflate(R.layout.statsv_money, holder.layout, false)
+                layout = inflater.inflate(R.layout.statsv_money, container, false)
 
                 val moneyNumber = layout.findViewById<AppCompatTextView>(R.id.moneyNumber)
 
@@ -232,7 +227,7 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
 
                 moneyNumber.text = "\$$money"
 
-                holder.layout.addView(layout)
+                container.addView(layout)
             }
         }
         setAnimation(holder.layout, position)

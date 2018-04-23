@@ -12,12 +12,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/moneyLayout"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/moneyNumber"
             android:layout_width="match_parent"
@@ -25,6 +21,10 @@
             app:autoSizeTextType="uniform"
             android:gravity="center"
             android:text="$500000"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/moneyGuide" />
         <android.support.v7.widget.AppCompatTextView
@@ -35,6 +35,10 @@
             android:gravity="center"
             android:text="money earned"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintBottom_toBottomOf="parent" />
         <android.support.constraint.Guideline
             android:id="@+id/moneyGuide"

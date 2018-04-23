@@ -14,9 +14,10 @@
         android:id="@+id/roundLayout"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        app:layout_constraintWidth_percent="0.33"
+        app:layout_constraintWidth_percent="0.44"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/matchLayout">
+        app:layout_constraintRight_toLeftOf="@id/matchLayout"
+        app:layout_constraintHorizontal_chainStyle="spread_inside">
         <android.support.constraint.Guideline
             android:id="@+id/roundTopGuide"
             android:layout_width="wrap_content"
@@ -31,6 +32,10 @@
             android:text="43"
             android:gravity="center"
             android:textColor="@color/colorPrimary"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/roundSeparator" />
@@ -41,6 +46,10 @@
             app:autoSizeTextType="uniform"
             android:text="/"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/roundWins"
             app:layout_constraintRight_toLeftOf="@id/roundPlays"/>
@@ -51,6 +60,10 @@
             app:autoSizeTextType="uniform"
             android:text="77"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/roundSeparator"
             app:layout_constraintRight_toRightOf="parent" />
@@ -61,6 +74,10 @@
             app:autoSizeTextType="uniform"
             android:text="55.8%"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="@id/roundTopGuide"
             app:layout_constraintBottom_toBottomOf="@id/roundBottomGuide" />
         <android.support.v7.widget.AppCompatTextView
@@ -71,6 +88,10 @@
             android:gravity="center"
             android:text="round wins"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintBottom_toBottomOf="parent" />
         <android.support.constraint.Guideline
             android:id="@+id/roundBottomGuide"
@@ -84,7 +105,7 @@
         android:id="@+id/matchLayout"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        app:layout_constraintWidth_percent="0.33"
+        app:layout_constraintWidth_percent="0.44"
         app:layout_constraintLeft_toRightOf="@id/roundLayout"
         app:layout_constraintRight_toRightOf="parent">
         <android.support.constraint.Guideline
@@ -101,6 +122,10 @@
             android:text="8"
             android:gravity="center"
             android:textColor="@color/colorPrimary"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/matchSeparator" />
@@ -111,6 +136,10 @@
             app:autoSizeTextType="uniform"
             android:text="/"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/matchWins"
             app:layout_constraintRight_toLeftOf="@id/matchPlays"/>
@@ -121,6 +150,10 @@
             app:autoSizeTextType="uniform"
             android:text="13"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/matchSeparator"
             app:layout_constraintRight_toRightOf="parent" />
@@ -131,6 +164,10 @@
             app:autoSizeTextType="uniform"
             android:text="61.5%"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="@id/matchTopGuide"
             app:layout_constraintBottom_toBottomOf="@id/matchBottomGuide" />
         <android.support.v7.widget.AppCompatTextView
@@ -141,6 +178,10 @@
             android:gravity="center"
             android:text="match wins"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintBottom_toBottomOf="parent" />
         <android.support.constraint.Guideline
             android:id="@+id/matchBottomGuide"

@@ -49,7 +49,6 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private lateinit var LoginFrag: LoginFragment
     private lateinit var HomeFrag: HomeFragment
 
-    private var baseUiVisibility: Int = 0
     private var shouldExit = false
 
     private val toLogin = Runnable { shouldExit = false; switchFragment(LOC_LOGIN) }
@@ -60,7 +59,6 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
         window.allowEnterTransitionOverlap = true
         window.enterTransition = Fade()
-        baseUiVisibility = window.decorView.systemUiVisibility
 
         context = this
         fManager = fragmentManager
@@ -91,6 +89,36 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     }
 
+    override fun onWindowFocusChanged(hasFocus:Boolean) {
+            super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            window.decorView.systemUiVisibility = (
+                       View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val fragment = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
+                ?: return switchFragment(LOC_LOGIN) // Go to login if no fragment is in the view, if that ever happens.
+        when (fragment.name) {
+            "login" -> {
+                bottomNavigation.visibility = View.GONE
+                topBar.visibility = View.GONE
+            }
+            "home" -> {
+                bottomNavigation.visibility = View.VISIBLE
+                topBar.visibility = View.VISIBLE
+            }
+        }
+    }
+
     override fun onBackPressed() {
         if (shouldExit) {
             handler.removeCallbacks(toLogin)
@@ -103,6 +131,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             "login" -> {
                 Toast.makeText(this, "Press Back again to Exit.", Toast.LENGTH_SHORT).show()
                 shouldExit = true
+                handler.postDelayed({ shouldExit = false }, 2500)
             }
             "home" -> {
                 shouldExit = true
@@ -168,16 +197,18 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                     HomeFrag.enterTransition = fadeIn
                     fTransaction.replace(R.id.mainFragmentContainer, HomeFrag)
                     fTransaction.commit()
-                    bottomNavigation.visibility = View.VISIBLE
                 }
+                bottomNavigation.visibility = View.VISIBLE
+                topBar.visibility = View.VISIBLE
             }
             LOC_LOGIN -> {
                 if (previous == null || previous.name != "login") {
                     LoginFrag.enterTransition = fadeIn
                     fTransaction.replace(R.id.mainFragmentContainer, LoginFrag)
                     fTransaction.commit()
-                    bottomNavigation.visibility = View.GONE
                 }
+                bottomNavigation.visibility = View.GONE
+                topBar.visibility = View.GONE
             }
             else -> {
                 if (DEVMODE)
@@ -292,16 +323,6 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             run(visible)
         else
             Handler(Looper.getMainLooper()).post { run(visible) }
-    }
-
-    fun toggleFullscreen(fullscreen: Boolean) {
-        var newVis = baseUiVisibility
-        val decor = window.decorView
-        if (fullscreen)
-            newVis = newVis or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LOW_PROFILE
-        val changed = newVis != decor.systemUiVisibility
-        if (changed)
-            decor.systemUiVisibility = newVis
     }
 
 }

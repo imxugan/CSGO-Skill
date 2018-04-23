@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by the Dev Team for CSGO Skill.
+  ~ Copyright (c) 2018. All rights reserved.
+  -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="0"
+        android:startColor="@color/transparent"
+        android:centerColor="@color/shadowLight"
+        android:endColor="@color/transparent"
+        android:type="linear"/>
+</shape>

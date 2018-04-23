@@ -63,8 +63,7 @@ class LoginFragment : BaseFragment() {
             "web" -> {
                 // Close webview and show login button
                 loginWebView.visibility = View.GONE
-                loginButton.visibility = View.VISIBLE
-                main.toggleFullscreen(false)
+                loginButtonView.visibility = View.VISIBLE
                 loginButton.isEnabled = true
                 stage = "login"
             }
@@ -153,8 +152,7 @@ class LoginFragment : BaseFragment() {
             }
         }
         stage = "web"
-        main.toggleFullscreen(true)
-        loginButton.visibility = View.GONE
+        loginButtonView.visibility = View.GONE
         loginWebView.visibility = View.VISIBLE
         loginWebView.loadUrl("http://api.csgo-skill.com/login")
     }

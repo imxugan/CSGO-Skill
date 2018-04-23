@@ -8,7 +8,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingTop="20dp">
 
     <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
@@ -17,6 +18,10 @@
         app:autoSizeTextType="uniform"
         android:text="time played"
         android:textAllCaps="true"
+        android:shadowColor="@color/shadowLight"
+        android:shadowDx="0.0"
+        android:shadowDy="1.2"
+        android:shadowRadius="8"
         android:gravity="center"/>
 
     <android.support.constraint.ConstraintLayout
@@ -36,6 +41,10 @@
             android:gravity="center"
             android:text="00"
             android:fontFamily="monospace"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:autoSizeTextType="uniform"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -46,6 +55,10 @@
             android:gravity="center"
             android:text="hours"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent" />
     </android.support.constraint.ConstraintLayout>
@@ -58,6 +71,10 @@
         android:paddingBottom="10sp"
         android:text=":"
         android:gravity="center"
+        android:shadowColor="@color/shadowLight"
+        android:shadowDx="0.0"
+        android:shadowDy="1.2"
+        android:shadowRadius="8"
         app:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -80,6 +97,10 @@
             android:gravity="center"
             android:text="00"
             android:fontFamily="monospace"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:autoSizeTextType="uniform"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -90,6 +111,10 @@
             android:gravity="center"
             android:text="minutes"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent" />
     </android.support.constraint.ConstraintLayout>
@@ -103,6 +128,10 @@
         android:visibility="visible"
         android:gravity="center"
         android:text=":"
+        android:shadowColor="@color/shadowLight"
+        android:shadowDx="0.0"
+        android:shadowDy="1.2"
+        android:shadowRadius="8"
         app:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -126,6 +155,10 @@
             android:gravity="center"
             android:text="00"
             android:fontFamily="monospace"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:autoSizeTextType="uniform"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -136,6 +169,10 @@
             android:gravity="center"
             android:text="seconds"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent" />
     </android.support.constraint.ConstraintLayout>
