@@ -102,6 +102,7 @@ class LoginFragment : BaseFragment() {
 
                 if (!message.startsWith("SKILL-BOT:", true))
                     return false
+                loginWebView.visibility = View.GONE
                 main.toggleLoader(true)
                 try {
                     val response = JSONObject(message.substring(10))
