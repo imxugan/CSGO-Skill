@@ -5,20 +5,23 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#E09000</color>
-    <color name="colorPrimaryDark">#323232</color>
-    <color name="colorAccent">#1F5AE0</color>
-    <color name="colorAccentLight">#1FB0E0</color>
-    <color name="colorWhite">#F4F7FB</color>
-    <color name="colorBlack">#262621</color>
-    <color name="colorLightGrey">#BDBDBD</color>
-    <color name="colorSteamBG">#1B2838</color>
-    <color name="colorRed">#A82C2C</color>
-    <color name="colorGreen">#28314E</color>
+    <color name="primary">#E09000</color>
+    <color name="primaryDark">#323232</color>
+    <color name="accent">#1F5AE0</color>
+    <color name="accentLight">#1FB0E0</color>
+    <color name="white">#F4F7FB</color>
+    <color name="black">#262621</color>
+    <color name="jetBlack">#111111</color>
+    <color name="lightGrey">#BDBDBD</color>
+    <color name="steamBlue">#1B2838</color>
+    <color name="red">#A82C2C</color>
+    <color name="green">#2DA92D</color>
+    <color name="blue">#455587</color>
 
     <color name="bottomNav">#A0262621</color>
 
     <color name="transparent">#00000000</color>
     <color name="shadowLight">#77000000</color>
+    <color name="shadowDark">#CC000000</color>
     <color name="roundedBoxBackground">#B0FFFFFF</color>
 </resources>

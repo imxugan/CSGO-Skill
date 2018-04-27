@@ -21,7 +21,7 @@ import android.webkit.WebViewClient
 import android.widget.*
 
 import kotlinx.android.synthetic.main.fragment_login.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEVMODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 

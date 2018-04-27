@@ -23,7 +23,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 
 import net.flare_esports.csgoskill.InternetHelper.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEVMODE
 
 import kotlinx.android.synthetic.main.activity_intro.*
 import net.flare_esports.csgoskill.IntroFrags.*
@@ -164,7 +164,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         if (!closing) {
             continueButton.animation = fadeIn
             continueButton.visibility = View.VISIBLE
-            continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.colorPrimary)
+            continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.primary)
         }
 
         // Set continueButton onClick method
@@ -181,7 +181,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                     imageLogo.visibility = View.GONE
 
                     continueButton.visibility = View.INVISIBLE
-                    continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.colorWhite)
+                    continueButton.imageTintList = ContextCompat.getColorStateList(context, R.color.white)
                 })
 
                 continueButton.startAnimation(fadeOut)

@@ -23,7 +23,7 @@ import android.widget.Toast
 
 import kotlinx.android.synthetic.main.include_progress_overlay.*
 import kotlinx.android.synthetic.main.activity_main.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEVMODE
 import org.json.JSONObject
 
 class Main : AppCompatActivity(), BaseFragment.FragmentListener {
@@ -45,7 +45,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private lateinit var fManager: FragmentManager
     private lateinit var handler: Handler
     private lateinit var prefs: SharedPreferences
-    private var player: Player? = null
+    private lateinit var player: Player
 
     private lateinit var LoginFrag: LoginFragment
     private lateinit var HomeFrag: HomeFragment
@@ -54,6 +54,9 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private var closing = false
 
     private val toLogin = Runnable { shouldExit = false; switchFragment(LOC_LOGIN) }
+
+    var hasPlayer: Boolean = false
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,8 +79,15 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         if (steamId.isEmpty())
             switchFragment(LOC_LOGIN)
         else {
-            switchFragment(LOC_HOME)
-            handler.postDelayed({loadUser(steamId)}, 500)
+            val player = db.getPlayer(steamId)
+            if (player == null) {
+                switchFragment(LOC_LOGIN)
+            } else {
+                switchFragment(LOC_HOME)
+                handler.postDelayed({
+                    loginPlayer(player)
+                }, 500)
+            }
         }
 
         bottomNavigation.setOnNavigationItemSelectedListener { item: MenuItem ->
@@ -144,23 +154,20 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
-    override fun getPlayer(): Player? {
+    override fun getPlayer(): Player {
         return player
     }
 
     override fun getHistoryStats(): JSONObject? {
-        val player1 = player ?: return null
-        return db.getHistoryStats(player1)
+        return if (hasPlayer) { db.getHistoryStats(player) } else { null }
     }
 
     override fun getGrandStats(): JSONObject? {
-        val player1 = player ?: return null
-        return db.getGrandStats(player1)
+        return if (hasPlayer) { db.getGrandStats(player) } else { null }
     }
 
     override fun getCurrentStats(): JSONObject? {
-        val player1 = player ?: return null
-        return db.getCurrentStats(player1)
+        return if (hasPlayer) { db.getCurrentStats(player) } else { null }
     }
 
     override fun loginPlayer(player: Player): Boolean {
@@ -168,8 +175,14 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             if (db.getPlayer(player.steamId) == null) {
                 if (!db.insertUser(player))
                     throw db.lastError ?: Throwable("unexpected")
+            } else {
+                // Attempt auto login to create new token
+                if (!db.loginPlayer(player))
+                    throw db.lastError ?: Throwable("unexpected")
+                this.player = db.getPlayer(player.steamId) ?: throw (db.lastError ?: Throwable("unexpected"))
+                hasPlayer = true
             }
-            loadUser(player.steamId)
+            loadUser()
             return true
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.loginPlayer", e)
@@ -180,7 +193,9 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 }
                 else -> m
             }
-            DynamicAlert(this, m).setTitle("Aw crap").show()
+            DynamicAlert(this, m).setTitle("Aw crap").setDismissAction {
+                switchFragment(LOC_LOGIN) // Bring the user back to login
+            }.show()
             return false
         }
     }
@@ -223,7 +238,6 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     override fun updatePlayer(): Boolean {
         try {
             toggleLoader(true)
-            val player = this.player ?: return false
             if (!db.loginPlayer(player)) throw db.lastError ?: Throwable("unexpected")
             this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
             return true
@@ -244,10 +258,13 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     override fun updateStats(): Boolean {
         try {
-            val player = this.player ?: return false
             if (!db.updateStats(player))
                 throw db.lastError ?: Throwable("unexpected")
             this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+            val frag = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
+            if (frag != null && frag.name == "home") {
+                HomeFrag.displayStats()
+            }
             return true
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.updateStats", e)
@@ -263,20 +280,20 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
-    private fun loadUser(steamId: String) {
+    private fun loadUser() {
         try{
-            var player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-            this.player = player
-            // Attempt auto login to create new token
-            if (!db.loginPlayer(player))
-                throw db.lastError ?: Throwable("unexpected")
-            player = db.getPlayer(steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-            this.player = player
             updateStats()
             topPersonaView.text = player.persona
             val avatar = RoundedBitmapDrawableFactory.create(resources, InternetHelper.BitmapRequest(player.avatarUrl))
             avatar.cornerRadius = 10f
             topAvatarView.setImageDrawable(avatar)
+            if (player.notify.isNotEmpty()) {
+                when (player.notify) {
+                    "email-verify" -> {
+                        DynamicAlert(this, "You still haven't verified your email address, please make sure you verify ${player.email} soon or you're account will return to a player account!").setTitle("Notice!")
+                    }
+                }
+            }
         } catch (e: Throwable) {
             if (DEVMODE) Log.e("Main.loadUser", e)
             var m = e.message ?: ""

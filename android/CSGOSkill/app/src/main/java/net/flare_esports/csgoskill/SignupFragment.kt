@@ -17,7 +17,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
 import kotlinx.android.synthetic.main.fragment_signup.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEVMODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 

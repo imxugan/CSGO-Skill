@@ -24,7 +24,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static net.flare_esports.csgoskill.Constants.*;
+import static net.flare_esports.csgoskill.Constants.DEVMODE;
 
 class InternetHelper {
 

@@ -60,7 +60,7 @@ abstract class BaseFragment : Fragment() {
          *
          * @return the Player object
          */
-        fun getPlayer(): Player?
+        fun getPlayer(): Player
 
         /**
          * Requests the Player's history stats.

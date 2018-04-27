@@ -12,7 +12,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
 
 import net.flare_esports.csgoskill.InternetHelper.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEVMODE
+import net.flare_esports.csgoskill.Constants.VERSION
 import org.json.JSONArray
 import org.json.JSONObject
 

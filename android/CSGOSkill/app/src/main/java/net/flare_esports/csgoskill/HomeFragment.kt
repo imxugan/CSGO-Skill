@@ -26,7 +26,7 @@ import android.widget.ProgressBar
 
 import kotlinx.android.synthetic.main.fragment_home.*
 
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEVMODE
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,14 +42,12 @@ class HomeFragment : BaseFragment() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var handler: Handler? = null
-    private var player: Player? = null
     private val displayStats = Runnable { this.displayStats() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         main = context as Main
         listener = context
-        player = listener?.getPlayer()
         handler = Handler()
     }
 
@@ -82,7 +80,7 @@ class HomeFragment : BaseFragment() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun displayStats() {
+    fun displayStats() {
         Looper.prepare()
         var stats: JSONObject? = null
 
