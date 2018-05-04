@@ -33,6 +33,7 @@
     <string name="create">Create</string>
 
     <string name="loading">Loading…</string>
+    <string name="example">Example</string>
 
     <string name="login_successful_but_error">Account created successfully, but you need to login again.</string>
 
@@ -46,6 +47,8 @@
     <string name="percent_format">%1$s%%</string>
 
     <string name="round_wins">Round Wins</string>
+    <string name="rounds_won">Rounds Won</string>
+    <string name="rounds_lost">Rounds Lost</string>
     <string name="round_sep">/</string>
     <string name="ph_round_percent" formatted="false">55.8%</string>
     <string name="ph_round_play">77</string>

@@ -40,6 +40,7 @@ class Frag1 : Slide() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Handler().postDelayed({ slideListener?.animationComplete(this) }, 1500)
+        // Start earlier for the first slide only
+        Handler().postDelayed({ slideListener?.animationComplete(this) }, 1000)
     }
 }
