@@ -5,6 +5,7 @@
 
 package net.flare_esports.csgoskill
 
+import android.animation.Animator
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 
@@ -13,7 +14,7 @@ import android.view.animation.Animation.AnimationListener
  * every time we need to make one.
  */
 
-class Animer : AnimationListener {
+class Animer : AnimationListener, Animator.AnimatorListener {
 
     private var start: () -> Unit = {}
     private var end: () -> Unit = {}
@@ -57,5 +58,13 @@ class Animer : AnimationListener {
     override fun onAnimationEnd(animation: Animation) { end() }
 
     override fun onAnimationRepeat(animation: Animation) { repeat() }
+
+    override fun onAnimationStart(animation: Animator?) { start() }
+
+    override fun onAnimationEnd(animation: Animator?) { end() }
+
+    override fun onAnimationRepeat(animation: Animator?) { repeat() }
+
+    override fun onAnimationCancel(animation: Animator?) { end() }
 
 }
