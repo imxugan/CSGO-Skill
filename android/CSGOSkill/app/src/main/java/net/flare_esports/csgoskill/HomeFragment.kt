@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
 import net.flare_esports.csgoskill.Constants.DEVMODE
 import org.json.JSONObject
+import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,7 +82,13 @@ class HomeFragment : BaseFragment() {
 
     @SuppressLint("SimpleDateFormat")
     fun displayStats() {
-        Looper.prepare()
+        try {
+            Looper.prepare()
+        } catch (e: RuntimeException) {
+            // Don't worry about this, the Main fragment may have called this twice and would create
+            // RuntimeException: Only one Looper may be created per thread
+            Log.e("HomeFragment.displayStats()", e)
+        }
         var stats: JSONObject? = null
 
         // Attempt 3 times to get the stats
@@ -174,7 +181,7 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    fun animateProgressCircle(chart: ProgressBar, progress: Int, rotationOffset: Int, duration: Long = 1000) {
+    /* fun animateProgressCircle(chart: ProgressBar, progress: Int, rotationOffset: Int, duration: Long = 1000) {
         val rot = ((chart.max / 2f) - progress) / chart.max.toFloat() * 180f
         val aP = ObjectAnimator.ofInt(chart, "progress", chart.progress, progress)
         val aR = ObjectAnimator.ofFloat(chart, "rotation", 90f + rotationOffset, rot + rotationOffset)
@@ -182,6 +189,6 @@ class HomeFragment : BaseFragment() {
         aR.interpolator = DecelerateInterpolator()
         aP.setDuration(duration).start()
         aR.setDuration(duration).start()
-    }
+    } */
 
 }

@@ -47,6 +47,8 @@ class Frag2 : Slide() {
     override fun onDetach() {
         super.onDetach()
         slideListener = null
+        handler?.removeCallbacksAndMessages(null)
+        handler = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -144,17 +146,17 @@ class Frag2 : Slide() {
         bottomChart.setDrawValueAboveBar(false)
 
         handler?.postDelayed({
-            exampleChartHolderOne.addView(topChart)
-            exampleChartHolderOne.visibility = View.VISIBLE
-            exampleChartHolderOne.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in_medium))
+            exampleChartHolderOne?.addView(topChart)
+            exampleChartHolderOne?.visibility = View.VISIBLE
+            exampleChartHolderOne?.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in_medium))
             topChart.animateX(1500, Easing.EasingOption.Linear)
             topChart.moveViewToAnimated(8.5f, 0f, YAxis.AxisDependency.LEFT, 1650)
         }, 1200)
 
         handler?.postDelayed({
-            exampleChartHolderTwo.addView(bottomChart)
-            exampleChartHolderTwo.visibility = View.VISIBLE
-            exampleChartHolderTwo.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in_medium))
+            exampleChartHolderTwo?.addView(bottomChart)
+            exampleChartHolderTwo?.visibility = View.VISIBLE
+            exampleChartHolderTwo?.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in_medium))
             bottomChart.animateX(1500)
             bottomChart.moveViewToAnimated(6f, 0f, YAxis.AxisDependency.LEFT, 1650)
         }, 2000)
