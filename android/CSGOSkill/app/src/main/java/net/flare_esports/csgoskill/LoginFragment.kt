@@ -21,7 +21,7 @@ import android.webkit.WebViewClient
 import android.widget.*
 
 import kotlinx.android.synthetic.main.fragment_login.*
-import net.flare_esports.csgoskill.Constants.DEVMODE
+import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
@@ -117,7 +117,7 @@ class LoginFragment : BaseFragment() {
 
                 } catch (e: Throwable) {
                     onBack() // This brings us back to the login button
-                    if (DEVMODE) Log.e("LoginFragment.login", e)
+                    if (DEV_MODE) Log.e("LoginFragment.login", e)
                     var m = e.message ?: ""
                     m = if (m.startsWith("error code")) {
                         "Login failed with error code " + m.substring(11)

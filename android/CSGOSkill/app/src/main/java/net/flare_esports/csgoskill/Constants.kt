@@ -5,6 +5,7 @@
 
 package net.flare_esports.csgoskill
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
 import android.support.v4.content.ContextCompat.getColor
@@ -20,16 +21,28 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.listener.BarLineChartTouchListener
 import com.github.mikephil.charting.utils.ViewPortHandler
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
 
 
 internal object Constants {
 
-    const val DEVMODE = true // Set to false before release!!
+    const val DEV_MODE = true // Set to false before release!!
 
     //                      v0.1.0
     val VERSION = intArrayOf(0,1,0)
+
+    @SuppressLint("SimpleDateFormat")
+    val ServerTime: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+
+    init {
+        ServerTime.timeZone = TimeZone.getTimeZone("UTC")
+    }
+
+    fun getVersion(): String {
+        return "v${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+    }
 
     fun defaultBarLineChart(chartType: String, context: Context): BarLineChartBase<*> {
         // Setup chart
@@ -66,7 +79,7 @@ internal object Constants {
         chart.setNoDataText(context.getString(R.string.loading))
 
         // Set logging
-        chart.isLogEnabled = DEVMODE
+        chart.isLogEnabled = DEV_MODE
 
         // Disable highlighting
         chart.isHighlightPerDragEnabled = false
@@ -166,9 +179,9 @@ internal object Constants {
         return set
     }
 
-    fun defaultBarDataSet(context: Context, yVals: List<BarEntry>): BarDataSet {
+    fun defaultBarDataSet(context: Context, yValues: List<BarEntry>): BarDataSet {
         // No label, we'll use our won labels instead of the built-in ones
-        val set = BarDataSet(yVals, "")
+        val set = BarDataSet(yValues, "")
 
         // All graphs are left to right
         set.axisDependency = LEFT
@@ -224,7 +237,7 @@ internal object Constants {
 
     }
 
-    class KDValueFormatter(val killSet: LineDataSet, val deathSet: LineDataSet): IValueFormatter {
+    class KDValueFormatter(private val killSet: LineDataSet, private val deathSet: LineDataSet): IValueFormatter {
 
         override fun getFormattedValue(value: Float, entry: Entry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?): String {
 
@@ -244,7 +257,5 @@ internal object Constants {
         }
 
     }
-
-    class WinLossValueFormatter
 
 }

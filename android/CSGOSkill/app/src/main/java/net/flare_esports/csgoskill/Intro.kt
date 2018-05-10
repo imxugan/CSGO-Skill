@@ -23,7 +23,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 
 import net.flare_esports.csgoskill.InternetHelper.*
-import net.flare_esports.csgoskill.Constants.DEVMODE
+import net.flare_esports.csgoskill.Constants.DEV_MODE
 
 import kotlinx.android.synthetic.main.activity_intro.*
 import net.flare_esports.csgoskill.IntroFrags.*
@@ -259,7 +259,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         val users = db.users
         // Try to get the first Steam ID, and if the only entry, auto load it.
         if (users.size == 1) {
-            intent.putExtra(Main.STEAMID, users[0].steamId)
+            intent.putExtra(Main.STEAM_ID, users[0].steamId)
         }
         imageLogo.clearAnimation()
         if (!closing) {
@@ -280,11 +280,11 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         imageLogo.animation = slideUp
 
         connected = isOnline()
-        if (DEVMODE) Log.d("Intro.splashing", "Connection: $connected")
+        if (DEV_MODE) Log.d("Intro.splashing", "Connection: $connected")
         if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 
         val check = db.checkVersion()
-        if (DEVMODE) Log.d("Intro.splashing", "Checked: $check")
+        if (DEV_MODE) Log.d("Intro.splashing", "Checked: $check")
         when (check) {
             1 -> {
                 // Up to date, nothing to do
@@ -297,7 +297,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             }
         }
 
-        firstRun = prefs.getBoolean("firstRun", true) || DEVMODE
+        firstRun = prefs.getBoolean("firstRun", true)// || DEV_MODE
 
         if (firstRun && !connected) {
             // Request that first timers turn on the internet before using, but they don't HAVE to

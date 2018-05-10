@@ -94,4 +94,16 @@
     <string name="ph_minutes">38</string>
     <string name="ph_seconds">20</string>
 
+    <string-array name="time_options">
+        <item>Today</item>
+        <item>Yesterday</item>
+        <item>1 Week</item>
+        <item>2 Weeks</item>
+        <item>This Month</item>
+        <item>Last Month</item>
+        <item>30 Days</item>
+        <item>90 Days</item>
+        <item>This Year</item>
+    </string-array>
+
 </resources>

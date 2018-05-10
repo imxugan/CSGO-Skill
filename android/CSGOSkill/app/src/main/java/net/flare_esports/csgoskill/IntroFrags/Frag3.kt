@@ -78,7 +78,7 @@ class Frag3 : Slide() {
             animation.duration = 1200
             animation.addListener( Animer { tip_slider?.endFakeDrag(); adapter.currentOffset = 0 })
             animation.start()
-        }, 3750)
+        }, 3250)
     }
 
     inner class ViewPagerAdapter : PagerAdapter() {

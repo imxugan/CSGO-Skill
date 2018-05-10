@@ -6,7 +6,7 @@
 package net.flare_esports.csgoskill
 
 import android.graphics.Bitmap
-import net.flare_esports.csgoskill.Constants.DEVMODE
+import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
@@ -49,7 +49,7 @@ class Player
                         self.avatarImg = Player.downloadAvatar(self.avatarUrl)
                     } catch (e: Throwable) {
                         self.avatarImg = null
-                        if (DEVMODE) Log.e("Player.getAvatarImg", e)
+                        if (DEV_MODE) Log.e("Player.getAvatarImg", e)
                     }
                     self.dlAvatar = false
                 }
@@ -115,7 +115,7 @@ class Player
                     .put("notify", notify)
                     .toString()
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Player.toString()", e)
+            if (DEV_MODE) Log.e("Player.toString()", e)
             return ""
         }
     }

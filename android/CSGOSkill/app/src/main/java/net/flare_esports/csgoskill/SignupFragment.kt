@@ -17,7 +17,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
 import kotlinx.android.synthetic.main.fragment_signup.*
-import net.flare_esports.csgoskill.Constants.DEVMODE
+import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
@@ -187,7 +187,7 @@ class SignupFragment: BaseFragment() {
 
 
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("SignupFragment.signup", e)
+            if (DEV_MODE) Log.e("SignupFragment.signup", e)
             var m = e.message ?: ""
             m = if (m.startsWith("error code")) {
                 "Sign up failed with error code " + m.substring(11)

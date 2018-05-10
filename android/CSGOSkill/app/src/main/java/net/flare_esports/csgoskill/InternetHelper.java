@@ -24,7 +24,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static net.flare_esports.csgoskill.Constants.DEVMODE;
+import static net.flare_esports.csgoskill.Constants.DEV_MODE;
 
 class InternetHelper {
 
@@ -35,7 +35,7 @@ class InternetHelper {
             int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
         } catch (Throwable e) {
-            if (DEVMODE) Log.e("InternetHelper.isOnline()", e);
+            if (DEV_MODE) Log.e("InternetHelper.isOnline()", e);
         }
         return false;
     }
@@ -80,7 +80,7 @@ class InternetHelper {
             try {
                 return BitmapFactory.decodeStream(new java.net.URL(strings[0]).openStream());
             } catch (Throwable e) {
-                if (DEVMODE) Log.e("InternetHelper.BitmapTask", e);
+                if (DEV_MODE) Log.e("InternetHelper.BitmapTask", e);
                 return null;
             }
         }
@@ -121,7 +121,7 @@ class InternetHelper {
                     builder.append(line);
                 }
                 stream.close();
-                if (DEVMODE) {
+                if (DEV_MODE) {
                     if (jsonObjects[0].has("post")) {
                         Log.d("InternetHelper.HTTPJsonTask", "\nRequested: " + jsonObjects[0].getString("url") +
                                 "\nPosted: \n" + jsonObjects[0].getJSONObject("post").toString(4) +
@@ -141,11 +141,11 @@ class InternetHelper {
                         return new JSONObject().put("success", false).put("reason", "no-response");
                 }
             } catch (Throwable e) {
-                if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
+                if (DEV_MODE) Log.e("InternetHelper.HTTPJsonTask.catch1", e);
                 try {
                     return new JSONObject().put("success", false).put("reason", e.getMessage());
                 } catch (Throwable e2) {
-                    if (DEVMODE) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
+                    if (DEV_MODE) Log.e("InternetHelper.HTTPJsonTask.catch2", e2);
                     return null; // Return null, easier to know if the request failed
                 }
             }

@@ -47,9 +47,31 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/topAvatarView"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/topMenuSpinner"
             android:layout_marginLeft="8dp"
-            app:autoSizeTextType="uniform"/>
+            app:autoSizeTextType="uniform" />
+
+        <TextView
+            android:id="@+id/topVersionNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="4dp"
+            android:textSize="10sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <net.flare_esports.csgoskill.CustomSpinner
+            android:id="@+id/topMenuSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_horizontal"
+            android:dropDownWidth="160dp"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            app:layout_constraintBaseline_toBaselineOf="@id/topPersonaView"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="11dp"
+            android:background="@drawable/spinner_bg" />
 
     </android.support.constraint.ConstraintLayout>
 

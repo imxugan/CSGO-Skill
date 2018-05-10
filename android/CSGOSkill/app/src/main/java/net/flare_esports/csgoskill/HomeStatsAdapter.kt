@@ -20,8 +20,8 @@ import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.MathContext
 
-class StatsAdapter(private val data: JSONObject, private val main: Main) :
-        RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
+class HomeStatsAdapter(private val data: JSONObject, private val main: Main) :
+        RecyclerView.Adapter<HomeStatsAdapter.ViewHolder>() {
 
     companion object {
 
@@ -46,7 +46,7 @@ class StatsAdapter(private val data: JSONObject, private val main: Main) :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatsAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeStatsAdapter.ViewHolder {
         // Use the the base, we'll fill the insides later
         val layout = LayoutInflater.from(parent.context)
                 .inflate(R.layout.statsv_base, parent, false) as ConstraintLayout
