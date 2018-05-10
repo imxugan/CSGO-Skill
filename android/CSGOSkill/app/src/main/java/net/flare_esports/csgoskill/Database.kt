@@ -12,7 +12,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
 
 import net.flare_esports.csgoskill.InternetHelper.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEV_MODE
+import net.flare_esports.csgoskill.Constants.VERSION
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -45,10 +46,9 @@ class Database(
         get() {
             val sql = writableDatabase
             val c = sql.rawQuery("SELECT $STEAMID FROM $USERS WHERE 1", null)
-            if (c.count <= 0) {
+            return if (c.count <= 0) {
                 c.close()
-                sql.close()
-                return emptyArray()
+                emptyArray()
             } else {
                 var users = emptyArray<Player>()
                 var user: Player?
@@ -57,8 +57,7 @@ class Database(
                     if (user != null) users = users.plus(user)
                 }
                 c.close()
-                sql.close()
-                return users
+                users
             }
         }
 
@@ -104,7 +103,7 @@ class Database(
             return 1
         } catch (e: Throwable) {
             lastError = e
-            if (DEVMODE) {
+            if (DEV_MODE) {
                 if (e.message == "No connection")
                     Log.e("Database.checkVersion", "No connection")
                 else
@@ -129,12 +128,11 @@ class Database(
             values.put(STEAMID, player.steamId)
             values.put(PROFILE, player.toString())
             if (sql.insertOrThrow(USERS, null, values) != -1L) {
-                sql.close()
                 return true
             }
         } catch (e: Throwable) {
             lastError = e
-            if (DEVMODE) Log.e("Database.insertUser", e)
+            if (DEV_MODE) Log.e("Database.insertUser", e)
         }
 
         return false
@@ -167,14 +165,12 @@ class Database(
                 val values = ContentValues()
                 values.put(PROFILE, newPlayer.toString())
                 if (sql.update(USERS, values, "$STEAMID=?", arrayOf(newPlayer.steamId)) != 1) {
-                    sql.close()
                     throw Throwable("update-fail")
                 }
-                sql.close()
                 return true
             }
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Database.loginPlayer", e)
+            if (DEV_MODE) Log.e("Database.loginPlayer", e)
             var m = e.message ?: ""
             m = if (m.startsWith("error code")) {
                 "Login failed with error code " + m.substring(11)
@@ -217,7 +213,10 @@ class Database(
      */
     fun updateStats(player: Player): Boolean {
         try {
-            if (!isOnline()) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
+            if (!isOnline()) {
+                Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_LONG).show()
+                return true // Prevent more errors from being shown
+            }
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/stats/" + player.steamId)
             request = HTTPJsonRequest(request)
@@ -232,13 +231,12 @@ class Database(
                 val values = ContentValues()
                 values.put(STATS, request.optJSONObject("stats").toString())
                 if (sql.update(USERS, values, "$STEAMID=?", arrayOf(player.steamId)) != 1) {
-                    sql.close()
                     throw Throwable("update-fail")
                 }
                 return true
             }
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Database.updateStats", e)
+            if (DEV_MODE) Log.e("Database.updateStats", e)
             var m = e.message ?: ""
             m = if (m.startsWith("error code")) {
                 "Stat update failed with error code " + m.substring(11)
@@ -274,13 +272,11 @@ class Database(
             val c = sql.rawQuery("SELECT $PROFILE FROM $USERS WHERE $STEAMID = \"$steamId\"", null)
             if (c.count <= 0) {
                 c.close()
-                sql.close()
                 throw Throwable("not-found")
             } else {
                 c.moveToFirst()
                 val result = Player(JSONObject(c.getString(c.getColumnIndex(PROFILE))))
                 c.close()
-                sql.close()
                 return result
             }
         } catch (e: Throwable) {
@@ -290,7 +286,7 @@ class Database(
                     "Who are you?"
                 }
                 else -> {
-                    if (DEVMODE) Log.e("Database.getPlayer", e)
+                    if (DEV_MODE) Log.e("Database.getPlayer", e)
                     "Unexpected error. Please report this."
                 }
             }
@@ -310,7 +306,7 @@ class Database(
         try {
             return getStats(player).getJSONObject("grand")
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Database.getGrandStats", e)
+            if (DEV_MODE) Log.e("Database.getGrandStats", e)
             var m = e.message ?: ""
             m = when (m) {
                 "not-found" -> {
@@ -336,7 +332,7 @@ class Database(
         try {
             return getStats(player).getJSONObject("history")
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Database.getHistoryStats", e)
+            if (DEV_MODE) Log.e("Database.getHistoryStats", e)
             var m = e.message ?: ""
             m = when (m) {
                 "not-found" -> {
@@ -362,7 +358,7 @@ class Database(
         try {
             return getStats(player).getJSONObject("current")
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Database.getCurrentStats", e)
+            if (DEV_MODE) Log.e("Database.getCurrentStats", e)
             var m = e.message ?: ""
             m = when (m) {
                 "not-found" -> {
@@ -386,18 +382,16 @@ class Database(
      * @throws Throwable if not found
      */
     @Throws(Throwable::class)
-    fun getStats(player: Player): JSONObject {
+    private fun getStats(player: Player): JSONObject {
         val sql = writableDatabase
         val c = sql.rawQuery("SELECT $STATS FROM $USERS WHERE $STEAMID = \"${player.steamId}\"", null)
         if (c.count <= 0) {
             c.close()
-            sql.close()
             throw Throwable("not-found")
         } else {
             c.moveToFirst()
             val result = JSONObject(c.getString(c.getColumnIndex(STATS)))
             c.close()
-            sql.close()
             return result
         }
     }

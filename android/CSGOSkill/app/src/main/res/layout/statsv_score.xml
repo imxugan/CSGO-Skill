@@ -14,33 +14,35 @@
         android:id="@+id/mvpLayout"
         android:layout_width="0dp"
         android:layout_height="100dp"
+        app:layout_constraintWidth_percent="0.44"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/scoreLayout">
-        <android.support.constraint.Guideline
-            android:id="@+id/mvpLeftGuide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.12" />
+        app:layout_constraintRight_toLeftOf="@id/scoreLayout"
+        app:layout_constraintHorizontal_chainStyle="spread_inside">
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/mvpNumber"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             app:autoSizeTextType="uniform"
-            android:text="18"
+            android:text="@string/ph_mvps"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/mvpBottomGuide"
-            app:layout_constraintLeft_toLeftOf="@id/mvpLeftGuide"
-            app:layout_constraintRight_toRightOf="@id/mvpRightGuide" />
+            app:layout_constraintBottom_toBottomOf="@id/mvpBottomGuide" />
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/mvpLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:autoSizeTextType="uniform"
-            android:text="mvps"
+            android:text="@string/mvps"
             android:gravity="center"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="5"
             app:layout_constraintBottom_toBottomOf="parent" />
         <android.support.constraint.Guideline
             android:id="@+id/mvpBottomGuide"
@@ -48,45 +50,40 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.9" />
-        <android.support.constraint.Guideline
-            android:id="@+id/mvpRightGuide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.88" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/scoreLayout"
         android:layout_width="0dp"
         android:layout_height="100dp"
+        app:layout_constraintWidth_percent="0.44"
         app:layout_constraintLeft_toRightOf="@id/mvpLayout"
         app:layout_constraintRight_toRightOf="parent">
-        <android.support.constraint.Guideline
-            android:id="@+id/scoreLeftGuide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.12" />
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/scoreNumber"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             app:autoSizeTextType="uniform"
-            android:text="3742"
+            android:text="@string/ph_score"
             android:gravity="center"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="8"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/scoreBottomGuide"
-            app:layout_constraintLeft_toLeftOf="@id/scoreLeftGuide"
-            app:layout_constraintRight_toRightOf="@id/scoreRightGuide" />
+            app:layout_constraintBottom_toBottomOf="@id/scoreBottomGuide" />
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/scoreLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:autoSizeTextType="uniform"
-            android:text="contribution score"
+            android:text="@string/score"
             android:gravity="center"
             android:textAllCaps="true"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="5"
             app:layout_constraintBottom_toBottomOf="parent" />
         <android.support.constraint.Guideline
             android:id="@+id/scoreBottomGuide"
@@ -94,12 +91,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.9" />
-        <android.support.constraint.Guideline
-            android:id="@+id/scoreRightGuide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.88" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

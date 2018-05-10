@@ -10,7 +10,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/primary"
     tools:context="net.flare_esports.csgoskill.IntroFrags.Frag1">
 
     <TextView
@@ -20,8 +20,9 @@
         android:layout_marginBottom="@dimen/intro_fragment1_half_linespacing"
         android:text="@string/welcome_to"
         android:textAlignment="center"
-        android:textAppearance="@style/Theme.Flare.TextAppearance"
+        android:textSize="18sp"
         android:textAllCaps="true"
+        android:fontFamily="sans-serif-smallcaps"
         app:layout_constraintBottom_toTopOf="@+id/textAppName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -34,8 +35,9 @@
         android:layout_marginTop="@dimen/intro_fragment1_half_linespacing"
         android:text="@string/app_name"
         android:textAlignment="center"
-        android:textAppearance="@style/Theme.Flare.TextAppearance.Title"
         android:textAllCaps="true"
+        android:textSize="56sp"
+        android:fontFamily="sans-serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

@@ -12,11 +12,74 @@
     android:layout_height="match_parent"
     tools:context="net.flare_esports.csgoskill.Main">
 
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/season" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mainFragmentContainer">
+
+        <ImageView
+            android:id="@+id/topAvatarView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="8dp" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/topPersonaView"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/topAvatarView"
+            app:layout_constraintRight_toLeftOf="@id/topMenuSpinner"
+            android:layout_marginLeft="8dp"
+            app:autoSizeTextType="uniform" />
+
+        <TextView
+            android:id="@+id/topVersionNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="4dp"
+            android:textSize="10sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <net.flare_esports.csgoskill.CustomSpinner
+            android:id="@+id/topMenuSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_horizontal"
+            android:dropDownWidth="160dp"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            app:layout_constraintBaseline_toBaselineOf="@id/topPersonaView"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="11dp"
+            android:background="@drawable/spinner_bg" />
+
+    </android.support.constraint.ConstraintLayout>
+
     <FrameLayout
         android:id="@+id/mainFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation" />
 
     <android.support.design.widget.BottomNavigationView
@@ -24,14 +87,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:paddingBottom="36dp"
         android:elevation="10dp"
+        android:translationZ="10dp"
         android:background="@drawable/bottom_nav_background"
+        app:layout_constraintTop_toBottomOf="@id/mainFragmentContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu"
-        app:itemBackground="@color/colorBlack"
         app:itemIconTint="@drawable/item_color_state"
         app:itemTextColor="@drawable/item_color_state" />
+
+    <!-- This prevents options on the bottom nav being selected when dragging
+         up to show the hardware buttons -->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/bottomNavDragBlocker"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:elevation="15dp"
+        android:translationZ="15dp"
+        app:layout_constraintLeft_toLeftOf="@id/bottomNavigation"
+        app:layout_constraintRight_toRightOf="@id/bottomNavigation"
+        app:layout_constraintBottom_toBottomOf="@id/bottomNavigation"
+        android:background="@color/transparent"
+        android:clickable="true">
+
+    </android.support.constraint.ConstraintLayout>
 
     <!-- This must always be the last thing! -->
     <include layout="@layout/include_progress_overlay" />

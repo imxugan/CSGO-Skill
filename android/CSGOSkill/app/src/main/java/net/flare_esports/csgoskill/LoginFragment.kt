@@ -21,7 +21,7 @@ import android.webkit.WebViewClient
 import android.widget.*
 
 import kotlinx.android.synthetic.main.fragment_login.*
-import net.flare_esports.csgoskill.Constants.*
+import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
@@ -63,8 +63,7 @@ class LoginFragment : BaseFragment() {
             "web" -> {
                 // Close webview and show login button
                 loginWebView.visibility = View.GONE
-                loginButton.visibility = View.VISIBLE
-                main.toggleFullscreen(false)
+                loginButtonView.visibility = View.VISIBLE
                 loginButton.isEnabled = true
                 stage = "login"
             }
@@ -103,6 +102,7 @@ class LoginFragment : BaseFragment() {
 
                 if (!message.startsWith("SKILL-BOT:", true))
                     return false
+                loginWebView.visibility = View.GONE
                 main.toggleLoader(true)
                 try {
                     val response = JSONObject(message.substring(10))
@@ -117,7 +117,7 @@ class LoginFragment : BaseFragment() {
 
                 } catch (e: Throwable) {
                     onBack() // This brings us back to the login button
-                    if (DEVMODE) Log.e("LoginFragment.login", e)
+                    if (DEV_MODE) Log.e("LoginFragment.login", e)
                     var m = e.message ?: ""
                     m = if (m.startsWith("error code")) {
                         "Login failed with error code " + m.substring(11)
@@ -153,8 +153,7 @@ class LoginFragment : BaseFragment() {
             }
         }
         stage = "web"
-        main.toggleFullscreen(true)
-        loginButton.visibility = View.GONE
+        loginButtonView.visibility = View.GONE
         loginWebView.visibility = View.VISIBLE
         loginWebView.loadUrl("http://api.csgo-skill.com/login")
     }

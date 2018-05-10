@@ -6,7 +6,7 @@
 package net.flare_esports.csgoskill
 
 import android.graphics.Bitmap
-import net.flare_esports.csgoskill.Constants.DEVMODE
+import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
@@ -21,12 +21,17 @@ class Player
             if (Player.validPersona(persona) == "ok")
                 field = persona
         }
-    var profileUrl: String = profile.getString("profileurl")
+
+    private var _profileUrl: String = profile.getString("profileurl")
+    var profileUrl: String = _profileUrl
         private set
-        get() = "https://steamcommunity.com/$field"
-    var avatarUrl:  String = profile.getString("avatarurl")
+        get() = "https://steamcommunity.com/$_profileUrl"
+
+    private var _avatarUrl: String = profile.getString("avatarurl")
+    var avatarUrl:  String = _avatarUrl
         private set
-        get() = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/${field}_full.jpg"
+        get() = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/${_avatarUrl}_full.jpg"
+
     var created:    Int    = profile.getInt("created")
         private set
     var status:     JSONObject = profile.getJSONObject("status")
@@ -44,7 +49,7 @@ class Player
                         self.avatarImg = Player.downloadAvatar(self.avatarUrl)
                     } catch (e: Throwable) {
                         self.avatarImg = null
-                        if (DEVMODE) Log.e("Player.getAvatarImg", e)
+                        if (DEV_MODE) Log.e("Player.getAvatarImg", e)
                     }
                     self.dlAvatar = false
                 }
@@ -96,8 +101,8 @@ class Player
             return JSONObject()
                     .put("steam_id", steamId)
                     .put("persona", persona)
-                    .put("profileurl", profileUrl)
-                    .put("avatarurl", avatarUrl)
+                    .put("profileurl", _profileUrl)
+                    .put("avatarurl", _avatarUrl)
                     .put("created", created)
                     .put("status", status)
                     .put("token", JSONObject()
@@ -110,7 +115,7 @@ class Player
                     .put("notify", notify)
                     .toString()
         } catch (e: Throwable) {
-            if (DEVMODE) Log.e("Player.toString()", e)
+            if (DEV_MODE) Log.e("Player.toString()", e)
             return ""
         }
     }

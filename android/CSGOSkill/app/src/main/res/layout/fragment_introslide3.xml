@@ -10,34 +10,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/accent"
     tools:context="net.flare_esports.csgoskill.IntroFrags.Frag3">
 
     <TextView
-        android:id="@+id/textTop"
-        android:layout_width="wrap_content"
+        android:id="@+id/textTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/intro_fragment1_half_linespacing"
-        android:text="This is"
-        android:textAlignment="center"
-        android:textAppearance="@style/Theme.Flare.TextAppearance"
-        app:layout_constraintBottom_toTopOf="@+id/textAppName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="50dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:text="Make Your Stats PUBLIC!"
+        android:gravity="center"
+        android:textSize="28sp"
+        android:fontFamily="sans-serif-smallcaps"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tip_slider"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textTitle"
+        app:layout_constraintBottom_toTopOf="@id/textDesc"
+        app:layout_constraintDimensionRatio="H,12:8" />
 
     <TextView
-        android:id="@+id/textAppName"
-        android:layout_width="wrap_content"
+        android:id="@+id/textDesc"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/intro_fragment1_half_linespacing"
-        android:text="Slide 3"
-        android:textAlignment="center"
-        android:textAppearance="@style/Theme.Flare.TextAppearance.Title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="124dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:text="Don't forget to make your profile stats PUBLIC! You can't use CSGO Skill unless your game stats and playtime are both public."
+        android:gravity="center"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-smallcaps"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

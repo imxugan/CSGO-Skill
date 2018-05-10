@@ -20,6 +20,7 @@ class Frag1 : Slide() {
     internal lateinit var view: View
     internal lateinit var context: Context
     override var slideListener: SlideListener? = null
+    override val name: String = "slide1"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -39,6 +40,7 @@ class Frag1 : Slide() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Handler().postDelayed({ slideListener?.animationComplete(this) }, 1500)
+        // Start earlier for the first slide only
+        Handler().postDelayed({ slideListener?.animationComplete(this) }, 1000)
     }
 }

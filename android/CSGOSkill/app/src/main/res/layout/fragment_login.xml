@@ -25,29 +25,47 @@
         android:id="@+id/loginWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorSteamBG"
+        android:background="@color/steamBlue"
         android:visibility="gone" />
 
-    <Button
-        android:visibility="visible"
-        android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:paddingStart="32dp"
-        android:paddingEnd="32dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/login_button"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:shadowColor="@color/shadowLight"
-        android:shadowDx="0.0"
-        android:shadowDy="1.2"
-        android:shadowRadius="16"
-        android:background="@color/colorPrimaryDark" />
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/loginButtonView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/loginButton"
+            app:layout_constraintLeft_toLeftOf="@id/loginButton"
+            app:layout_constraintRight_toRightOf="@id/loginButton"
+            android:text="CSGO Skill is not associated with Valve Corp."
+            android:textSize="12sp"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:background="@color/shadowLight"
+            android:translationZ="5dp"/>
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="36dp"
+            android:paddingLeft="36dp"
+            android:paddingRight="36dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/login_button"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:shadowColor="@color/shadowLight"
+            android:shadowDx="0.0"
+            android:shadowDy="1.2"
+            android:shadowRadius="16"
+            android:background="@color/primaryDark" />
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

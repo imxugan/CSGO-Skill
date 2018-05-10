@@ -8,9 +8,11 @@
 
     <string name="first_run_no_internet_warning">This app functions better with the Power of the Internet™</string>
     <string name="no_internet_warning">No Internet Connection</string>
-    <string name="failed_server_connection">Failed to connect to CSGO-Skill server</string>
+    <string name="failed_server_connection">Failed to connect to CSGO Skill server</string>
 
     <string name="welcome_to">Welcome to</string>
+
+    <string name="closing_app_message">Closing CSGO Skill</string>
 
     <string name="got_it">GOT IT</string>
 
@@ -25,16 +27,83 @@
 
     <string name="tc_agreement">I agree to the\u0020</string>
     <string name="tc_agreement_span">Terms and Conditions</string>
-    <string name="tc_full"></string>
+    <string name="tc_full">todo</string>
 
     <string name="login_button">Login with Steam</string>
     <string name="create">Create</string>
 
     <string name="loading">Loading…</string>
+    <string name="example">Example</string>
 
     <string name="login_successful_but_error">Account created successfully, but you need to login again.</string>
 
+    <string name="money_earned">Money Earned</string>
+    <string name="money_format">$%1$s</string>
+    <string name="ph_money_earned">$987654</string>
+
+    <string name="damage_dealt">Damage Dealt</string>
+    <string name="ph_damage_dealt">543210</string>
+
+    <string name="percent_format">%1$s%%</string>
+
+    <string name="round_wins">Round Wins</string>
+    <string name="rounds_won">Rounds Won</string>
+    <string name="rounds_lost">Rounds Lost</string>
+    <string name="round_sep">/</string>
+    <string name="ph_round_percent" formatted="false">55.8%</string>
+    <string name="ph_round_play">77</string>
+    <string name="ph_round_win">43</string>
+
+    <string name="match_wins">Match Wins</string>
+    <string name="match_sep">/</string>
+    <string name="ph_match_percent" formatted="false">61.5%</string>
+    <string name="ph_match_play">13</string>
+    <string name="ph_match_win">8</string>
+
     <string name="kills">Kills</string>
     <string name="deaths">Deaths</string>
+    <string name="kills_to_deaths">K/D</string>
+    <string name="ph_kills">183</string>
+    <string name="ph_deaths">147</string>
+    <string name="ph_kd_ratio">1.24</string>
+
+    <string name="accuracy">Accuracy</string>
+    <string name="headshot_perc" formatted="false">Headshot %</string>
+    <string name="ph_accuracy_perc" formatted="false">21.4%</string>
+    <string name="ph_headshot_perc" formatted="false">30.2%</string>
+
+    <string name="planted">Planted</string>
+    <string name="defused">Defused</string>
+    <string name="hostage">Hostage</string>
+    <string name="ph_planted">18</string>
+    <string name="ph_defused">5</string>
+    <string name="ph_rescue">3</string>
+
+    <string name="mvps">MVPs</string>
+    <string name="score">Score</string>
+    <string name="ph_mvps">18</string>
+    <string name="ph_score">2552</string>
+
+    <string name="time_played">Time Played</string>
+    <string name="days">Days</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="time_sep">:</string>
+    <string name="ph_hours">3</string>
+    <string name="ph_minutes">38</string>
+    <string name="ph_seconds">20</string>
+
+    <string-array name="time_options">
+        <item>Today</item>
+        <item>Yesterday</item>
+        <item>1 Week</item>
+        <item>2 Weeks</item>
+        <item>This Month</item>
+        <item>Last Month</item>
+        <item>30 Days</item>
+        <item>90 Days</item>
+        <item>This Year</item>
+    </string-array>
 
 </resources>
