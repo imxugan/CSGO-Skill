@@ -8,7 +8,6 @@ package net.flare_esports.csgoskill
 import android.animation.ObjectAnimator
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.AppCompatTextView
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +19,7 @@ import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.MathContext
 
-class HomeStatsAdapter(private val data: JSONObject, private val main: Main) :
-        RecyclerView.Adapter<HomeStatsAdapter.ViewHolder>() {
+class HomeStatsAdapter constructor(val data: JSONObject, val main: Main) : StatsAdapter() {
 
     companion object {
 
@@ -40,22 +38,12 @@ class HomeStatsAdapter(private val data: JSONObject, private val main: Main) :
 
     private var lastPosition: Int = -1
 
-    inner class ViewHolder(val layout: ConstraintLayout) : RecyclerView.ViewHolder(layout) {
-        fun clearAnimation() {
-            layout.clearAnimation()
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeStatsAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatsAdapter.ViewHolder {
         // Use the the base, we'll fill the insides later
         val layout = LayoutInflater.from(parent.context)
                 .inflate(R.layout.statsv_base, parent, false) as ConstraintLayout
 
         return ViewHolder(layout)
-    }
-
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        holder.clearAnimation()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

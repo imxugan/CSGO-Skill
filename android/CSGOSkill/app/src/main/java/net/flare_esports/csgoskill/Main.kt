@@ -347,7 +347,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         try {
             val frag = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
             if (frag != null && frag.name == "home") {
-                HomeFrag.displayStats(getCurrentTimeRange(), topMenuSpinner.selectedItemPosition)
+                HomeFrag.displayStats(getCurrentTimeRange())
             }
         } catch (e: Throwable) {
             if (DEV_MODE) Log.e("Main.refreshStats", e)
@@ -356,39 +356,47 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
-    private fun getCurrentTimeRange() : TimeRange? {
+    private fun getCurrentTimeRange() : TimeRange {
         return when (topMenuSpinner.selectedItemPosition) {
-            TIME_TODAY -> null // Special case
+            TIME_TODAY -> TimeRange(0)
             TIME_YESTERDAY -> TimeRange(1, 0)
             TIME_WEEK -> TimeRange(7)
             TIME_WEEK2 -> TimeRange(14)
             TIME_MONTH -> { // Start of this month to now
                 // Start is the beginning of the month
-                val start = Calendar.getInstance()
-                val end = Calendar.getInstance()
-                start.set(start.get(Calendar.YEAR), start.get(Calendar.MONTH), 0, 0, 0, 0)
+                val start = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                val end = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                start.set(start.get(Calendar.YEAR), start.get(Calendar.MONTH), 1, 0, 0, 0)
 
                 TimeRange(start, end)
             }
             TIME_MONTH_LAST -> { // The previous month
-                val start = Calendar.getInstance()
-                val end = Calendar.getInstance()
+                val start = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                val end = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
                 // Start is the beginning of the previous month
-                start.set(start.get(Calendar.YEAR), start.get(Calendar.MONTH) - 1, 0, 0, 0, 0)
+                start.set(start.get(Calendar.YEAR), start.get(Calendar.MONTH) - 1, 1, 0, 0, 0)
                 // Sync end to start
                 end.timeInMillis = start.timeInMillis
 
                 // Snap to end of last day of month
                 end.add(Calendar.MONTH, 1)
                 end.add(Calendar.DAY_OF_MONTH, -1)
-                end.set(end.get(Calendar.YEAR), start.get(Calendar.MONTH), start.get(Calendar.DAY_OF_MONTH), 23, 59, 0)
+                end.set(end.get(Calendar.YEAR), end.get(Calendar.MONTH), end.get(Calendar.DAY_OF_MONTH), 23, 59, 0)
 
                 TimeRange(start, end)
             }
             TIME_30DAYS -> TimeRange(30)
             TIME_90DAYS -> TimeRange(90)
-            TIME_YEAR -> null // Special case
+            TIME_YEAR -> {
+                val start = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                val end = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+
+                // Start is beginning of the year
+                start.set(start.get(Calendar.YEAR), 0, 1, 0, 0, 0)
+
+                TimeRange(start, end)
+            }
             else -> TimeRange() // Everything
         }
     }
