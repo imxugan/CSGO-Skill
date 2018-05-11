@@ -7,6 +7,23 @@ class ProcessStats {
 
     var lastError: Throwable? = null
 
+    private val keys: Array<String> = arrayOf(
+            "kills", "deaths", "time", "heads", "rwins", "rounds", "mwins", "matches", "shots", "hits",
+            "damage", "plants", "defuse", "hostage", "contrib", "money", "mvps", "knife", "nades",
+            "fires", "flash", "csnipe", "backfire", "doms", "revs", "overkill", "pistolwin", "donation",
+            "wins_cbble", "wins_dust2", "wins_inferno", "wins_nuke", "wins_train", "rnds_cbble",
+            "rnds_dust2", "rnds_inferno", "rnds_nuke", "rnds_train",
+
+            "g0s", "g0h", "g0k", "g2s", "g2h", "g2k", "g3s", "g3h", "g3k", "g4s", "g4h", "g4k",
+            "g5s", "g5h", "g5k", "g6s", "g6h", "g6k", "g8s", "g8h", "g8k", "g10s", "g10h", "g10k",
+            "g11s", "g11h", "g11k", "g12s", "g12h", "g12k", "g14s", "g14h", "g14k", "g15s", "g15h", "g15k",
+            "g16s", "g16h", "g16k", "g17s", "g17h", "g17k", "g18s", "g18h", "g18k", "g19s", "g19h", "g19k",
+            "g20s", "g20h", "g20k", "g21s", "g21h", "g21k", "g22s", "g22h", "g22k", "g23s", "g23h", "g23k",
+            "g24s", "g24h", "g24k", "g25s", "g25h", "g25k", "g26s", "g26h", "g26k", "g27s", "g27h", "g27k",
+            "g28s", "g28h", "g28k", "g29s", "g29h", "g29k", "g30s", "g30h", "g30k", "g31s", "g31h", "g31k",
+            "g32s", "g32h", "g32k", "g35s", "g35k"
+    )
+
     fun run(timeRange: TimeRange, main: Main) : JSONObject? {
 
         try {
@@ -17,12 +34,11 @@ class ProcessStats {
                 return a.optInt(v) + b.optInt(v)
             }
 
-            fun combine(current: JSONObject, entries: JSONArray): JSONObject {
+            fun combine(current: JSONObject, entries: JSONArray) {
                 val size = entries.length()
                 var flag = false
                 var entry: JSONObject
                 var i = 0
-                var result = current
 
                 while (i < size) {
                     entry = entries.getJSONObject(i)
@@ -39,35 +55,35 @@ class ProcessStats {
 
                     flag = true
 
-                    result = result
-                            .put("time", add("time", current, entry))
-                            .put("kills", add("kills", current, entry))
-                            .put("deaths", add("deaths", current, entry))
-                            .put("shots", add("shots", current, entry))
-                            .put("hits", add("hits", current, entry))
-                            .put("heads", add("heads", current, entry))
-                            .put("damage", add("damage", current, entry))
-                            .put("rounds", add("rounds", current, entry))
-                            .put("matches", add("matches", current, entry))
-                            .put("rwins", add("rwins", current, entry))
-                            .put("mwins", add("mwins", current, entry))
-                            .put("plants", add("plants", current, entry))
-                            .put("defuse", add("defuse", current, entry))
-                            .put("hostage", add("hostage", current, entry))
-                            .put("mvps", add("mvps", current, entry))
-                            .put("contrib", add("contrib", current, entry))
-                            .put("money", add("money", current, entry))
+                    for(key in keys) {
+                        current.put(key, add(key, current, entry))
+                    }
+
                 }
 
-                return result
 
             }
 
             val stats: JSONObject = main.getHistoryStats() ?: throw Throwable("Unable to get player stats. Please report this.")
 
-            var total = JSONObject()
-            total = combine(total, stats.getJSONArray("daily"))
-            total = combine(total, stats.getJSONArray("monthly"))
+            val total = JSONObject()
+
+            // Add data representing today, if in range
+            val current: JSONObject = main.getCurrentStats() ?: JSONObject()
+            val now: JSONObject = current.optJSONObject("now") ?: JSONObject()
+            val recent: JSONObject = current.optJSONObject("recent") ?: JSONObject()
+
+            if (timeRange.inRange(now.optLong("updated")) && timeRange.inRange(recent.optLong("updated"))) {
+                var temp: Int
+                for (key in keys) {
+                    // Recent >= Now
+                    temp = now.optInt(key)
+                    total.put(key, Math.max(recent.optInt(key), temp) - temp)
+                }
+            }
+
+            combine(total, stats.getJSONArray("daily"))
+            combine(total, stats.getJSONArray("monthly"))
 
             return total
 

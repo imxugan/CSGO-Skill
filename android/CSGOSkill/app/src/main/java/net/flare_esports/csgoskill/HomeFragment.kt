@@ -111,8 +111,6 @@ class HomeFragment : BaseFragment() {
                 val result = process.run(timeRange, me.main) ?:
                 (throw process.lastError ?: Throwable("Unexpected error while calculating stats. Please report this."))
 
-                Log.d("HomeFragment:result", result.toString(4))
-
                 me.viewAdapter = HomeStatsAdapter(result, me.main)
                 me.main.runOnUiThread {
                     me.recyclerView = me.recyclerView.apply {
