@@ -5,17 +5,16 @@
 
 package net.flare_esports.csgoskill
 
+import android.annotation.SuppressLint
 import android.app.FragmentManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
-import android.os.Build
+import android.os.*
 import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.preference.PreferenceManager
 import android.support.annotation.ArrayRes
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.transition.Fade
 import android.view.*
@@ -79,6 +78,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     @Suppress("PrivatePropertyName")
     private lateinit var HomeFrag: HomeFragment
 
+    private var loading = false
     private var shouldExit = false
     private var closing = false
 
@@ -93,7 +93,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         setContentView(R.layout.activity_main)
 
         window.allowEnterTransitionOverlap = true
-        window.enterTransition = Fade()
+        window.enterTransition = Fade().setDuration(700)
         // Prevents status bar being shown when spinner is selected
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
 
@@ -144,9 +144,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 switchFragment(LOC_LOGIN)
             } else {
                 switchFragment(LOC_HOME)
-                handler.postDelayed({
-                    loginPlayer(player)
-                }, 200)
+                loginPlayer(player)
             }
         }
 
@@ -243,7 +241,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 this.player = db.getPlayer(player.steamId) ?: throw (db.lastError ?: Throwable("unexpected"))
                 hasPlayer = true
             }
-            loadUser()
+            LoadUser().execute()
             return true
         } catch (e: Throwable) {
             if (DEV_MODE) Log.e("Main.loginPlayer", e)
@@ -281,7 +279,8 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 topBar.visibility = View.VISIBLE
                 topMenuSpinner.itemSelectedListener = { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                     if (DEV_MODE) Log.d("Main.topMenuSpinner.itemSelectedListener", "Item $position selected!")
-                    refreshStats()
+                    // Small delay to disguise UI lag
+                    handler.postDelayed({refreshStats()}, 200)
                 }
             }
             LOC_LOGIN -> {
@@ -322,24 +321,13 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     }
 
-    override fun updateStats(): Boolean {
+    override fun updateStats() {
         try {
-            if (!db.updateStats(player))
-                throw db.lastError ?: Throwable("unexpected")
-            this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-            refreshStats()
-            return true
+            UpdateStats().execute()
         } catch (e: Throwable) {
             if (DEV_MODE) Log.e("Main.updateStats", e)
-            var m = e.message ?: ""
-            m = when (m) {
-                "unexpected" -> {
-                    "Unexpected error while logging in. Please report this."
-                }
-                else -> m
-            }
+            val m = e.message ?: "Unexpected error while getting stats. Please report this."
             DynamicAlert(this, m).setTitle("Aw crap").show()
-            return false
         }
     }
 
@@ -401,31 +389,88 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
-    private fun loadUser() {
-        try{
+    @SuppressLint("StaticFieldLeak")
+    private inner class LoadUser : AsyncTask<Void?, Int, RoundedBitmapDrawable?>() {
+
+        override fun onPostExecute(result: RoundedBitmapDrawable?) {
+            // Do this after the avatar request, in case it failed
             updateStats()
+
             topPersonaView.text = player.persona
-            val avatar = RoundedBitmapDrawableFactory.create(resources, InternetHelper.BitmapRequest(player.avatarUrl))
-            avatar.cornerRadius = 10f
-            topAvatarView.setImageDrawable(avatar)
+            topAvatarView.setImageDrawable(result)
             if (player.notify.isNotEmpty()) {
-                when (player.notify) {
+                val m = when (player.notify) {
                     "email-verify" -> {
-                        DynamicAlert(this, "You still haven't verified your email address, please make sure you verify ${player.email} soon or you're account will return to a player account!").setTitle("Notice!")
+                        "You still haven't verified your email address, please make sure you verify ${player.email} soon or you're account will return to a player account!"
+                    }
+                    "private-account" -> {
+                        "Looks like your Steam account has been set to private! Unless you make it fully public again, your persona and avatar won't be updated, and stat tracking will not work!"
+                    }
+                    "no-game" -> {
+                        "Looks like you no longer own CS: GO. How did that happen? Until you have it, your persona and avatar cannot be updated."
+                    }
+                    "playtime-private", "private-stats-or-down" -> {
+                        "Looks like your Game Details are private! In order to use CSGO Skill, you must have set your Game Details to be Public. Simply login to Steam on your computer or mobile device, go to your Privacy Settings, and change \"Game Details\" to \"PUBLIC\", and then try logging into CSGO Skill again."
+                    }
+                    else -> {
+                        "Something went wrong while logging you in! The app should still function normally for the most part, but your profile information and stats might not properly sync. Steam servers could just be offline for a moment. Wait for while and this error will probably go away."
                     }
                 }
+                DynamicAlert(this@Main, m).setTitle("Notice!").show()
             }
-        } catch (e: Throwable) {
-            if (DEV_MODE) Log.e("Main.loadUser", e)
-            var m = e.message ?: ""
-            m = when (m) {
-                "unexpected" -> {
-                    "Unexpected error while logging in. Please report this."
-                }
-                else -> m
-            }
-            DynamicAlert(this, m).setTitle("Aw crap").show()
         }
+
+        override fun doInBackground(vararg params: Void?): RoundedBitmapDrawable? {
+            try{
+                val avatar = RoundedBitmapDrawableFactory.create(resources, InternetHelper.HardBitmapRequest(player.avatarUrl))
+                avatar.cornerRadius = 10f
+                return avatar
+            } catch (e: Throwable) {
+                if (DEV_MODE) Log.e("Main.LoadUser", e)
+                var m = e.message ?: ""
+                m = when (m) {
+                    "unexpected" -> {
+                        "Unexpected error while logging in. Please report this."
+                    }
+                    else -> m
+                }
+                runOnUiThread {
+                    DynamicAlert(this@Main, m).setTitle("Aw crap").show()
+                }
+                return null
+            }
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private inner class UpdateStats : AsyncTask<Void?, Int, String?>() {
+
+        override fun onPostExecute(result: String?) {
+            if (result == null)
+                refreshStats()
+            else
+                DynamicAlert(this@Main, result).setTitle("Aw crap").show()
+        }
+
+        override fun doInBackground(vararg params: Void?): String? {
+            try {
+                if (!db.updateStats(player))
+                    throw db.lastError ?: Throwable("unexpected")
+                player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
+                return null
+            } catch (e: Throwable) {
+                if (DEV_MODE) Log.e("Main.UpdateStats", e)
+                var m = e.message ?: ""
+                m = when (m) {
+                    "unexpected" -> {
+                        "Unexpected error while logging in. Please report this."
+                    }
+                    else -> m
+                }
+                return m
+            }
+        }
+
     }
 
     fun canHasServer(): Boolean {
@@ -447,12 +492,14 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     fun toggleLoader(visible: Boolean) {
         fun run(visible: Boolean) {
-            if (visible && progressOverlay.visibility == View.GONE) {
+            if (visible && !loading) {
+                loading = true
                 progressOverlay.visibility = View.VISIBLE
                 val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_medium)
                 progressOverlay.startAnimation(fadeIn)
 
-            } else if (!visible && progressOverlay.visibility == View.VISIBLE) {
+            } else if (!visible && loading) {
+                loading = false
                 val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_fast)
                 fadeOut.setAnimationListener( Animer {
                     progressOverlay.visibility = View.GONE

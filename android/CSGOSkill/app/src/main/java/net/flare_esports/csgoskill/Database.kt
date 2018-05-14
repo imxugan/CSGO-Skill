@@ -219,7 +219,7 @@ class Database(
             }
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/stats/" + player.steamId)
-            request = HTTPJsonRequest(request)
+            request = HardHTTPJsonRequest(request)
             if (request == null) {
                 throw Throwable("null")
             }
@@ -253,7 +253,7 @@ class Database(
                     }
                 }
             }
-            lastError = Throwable(m)
+            lastError = Throwable(m, e)
         }
 
         return false

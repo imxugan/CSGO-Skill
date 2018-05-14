@@ -49,11 +49,9 @@ abstract class BaseFragment : Fragment() {
         fun updatePlayer(): Boolean
 
         /**
-         * Request to update the user stats.
-         *
-         * @return True if successful, false + alert otherwise
+         * Request to update the user stats. Might fail, might not.
          */
-        fun updateStats(): Boolean
+        fun updateStats()
 
         /**
          * Requests the Player object for the logged in account.

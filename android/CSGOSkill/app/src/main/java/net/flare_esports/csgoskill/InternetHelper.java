@@ -40,8 +40,21 @@ class InternetHelper {
         return false;
     }
 
+    public static Bitmap HardBitmapRequest(String url) {
+        return new BitmapTask().doInBackground(url);
+    }
+
     public static Bitmap BitmapRequest(String url) throws Throwable {
-        return new BitmapTask().execute(url).get(5, TimeUnit.SECONDS);
+        try {
+            return new BitmapTask().execute(url).get(3, TimeUnit.SECONDS);
+        } catch (Throwable e) {
+            if (e instanceof TimeoutException) {
+                // Don't worry about failed image requests
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     public static String HTTPRequest(String url) throws Throwable {
@@ -57,6 +70,10 @@ class InternetHelper {
                 throw e;
             }
         }
+    }
+
+    public static JSONObject HardHTTPJsonRequest(JSONObject request) {
+        return new HTTPJsonTask().doInBackground(request);
     }
 
     public static JSONObject HTTPJsonRequest(JSONObject request) throws Throwable {

@@ -48,6 +48,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private var connected: Boolean = false
     private var closing: Boolean = false
     private var switching: Boolean = false
+    private var shouldFinish: Boolean = false
 
     private val splashing = Runnable { this.splashing() }
     private val startIntro = Runnable { this.startIntro() }
@@ -78,9 +79,16 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         fragEnterFade.duration = 700
         fragEnterFade.startDelay = 750
 
-        window.exitTransition = Fade()
+        window.exitTransition = fragExitFade
 
         Thread(splashing).start()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (shouldFinish) {
+            finish()
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
@@ -264,7 +272,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         imageLogo.clearAnimation()
         if (!closing) {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
-            handler.postDelayed({ finish() }, 1000)
+            shouldFinish = true
         }
     }
 
