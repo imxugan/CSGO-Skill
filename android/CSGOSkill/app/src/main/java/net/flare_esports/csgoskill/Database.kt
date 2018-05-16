@@ -146,7 +146,10 @@ class Database(
      */
     fun loginPlayer(player: Player): Boolean {
         try {
-            if (!isOnline()) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
+            if (!isOnline()) {
+                lastError = Throwable("no-internet")
+                return false
+            }
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/login")
                     .put("post", JSONObject()
@@ -174,6 +177,8 @@ class Database(
             var m = e.message ?: ""
             m = if (m.startsWith("error code")) {
                 "Login failed with error code " + m.substring(11)
+            } else if (m.startsWith("unable to resolve", true)) {
+                "no-api"
             } else {
                 when (m) {
                     "bad-steamid" -> {
@@ -214,8 +219,8 @@ class Database(
     fun updateStats(player: Player): Boolean {
         try {
             if (!isOnline()) {
-                Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_LONG).show()
-                return true // Prevent more errors from being shown
+                lastError = Throwable("no-internet")
+                return false
             }
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/stats/" + player.steamId)
@@ -240,6 +245,8 @@ class Database(
             var m = e.message ?: ""
             m = if (m.startsWith("error code")) {
                 "Stat update failed with error code " + m.substring(11)
+            } else if (m.startsWith("unable to resolve", true)) {
+                "no-api"
             } else {
                 when (m) {
                     "not-found" -> {

@@ -192,10 +192,25 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     override fun onBackPressed() {
         if (closing) {return}
-        if (shouldExit) {
-            closing = true
+        if (shouldExit && prefs.getBoolean("quickExit", true)) {
+            this.shouldExit = false
             handler.removeCallbacksAndMessages(null)
-            finishAndRemoveTask()
+            if (!prefs.getBoolean("quickExitNotice", false)) {
+                DynamicAlert(this)
+                        .setTitle("Notice!")
+                        .setMessage("Double tapping BACK on the Home Screen will quick-exit CSGO Skill. We won't exit right now, since this is your first time. In the future, double tapping BACK will quick-exit CSGO Skill!")
+                        .setDismissAction {
+                            prefs.edit()
+                                    .putBoolean("quickExit", true)
+                                    .putBoolean("quickExitNotice", true)
+                                    .apply()
+                        }
+                        .show()
+            } else {
+                closing = true
+                finishAndRemoveTask()
+            }
+            return
         }
         val fragment = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
                 ?: return finishAndRemoveTask() // Close app if no fragment is in the view, if that ever happens.
@@ -203,12 +218,23 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         else when (fragment.name) {
             "login" -> {
                 Toast.makeText(this, "Press Back again to Exit.", Toast.LENGTH_SHORT).show()
-                shouldExit = true
-                handler.postDelayed({ shouldExit = false }, 2500)
+                this.shouldExit = true
+                handler.postDelayed({ this.shouldExit = false }, 2500)
             }
             "home" -> {
-                shouldExit = true
-                handler.postDelayed(toLogin, 600)
+                this.shouldExit = true
+                handler.postDelayed({
+                    if (closing || !this.shouldExit) return@postDelayed
+                    this.shouldExit = false
+                    DynamicAlert(this)
+                            .setTitle("Logout?")
+                            .setMessage("Pressing back on the Home screen logs you out. Are you sure you want to logout?")
+                            .setPositive({ ->
+                                handler.postDelayed(toLogin, 100)
+                            })
+                            .setNegative()
+                            .show()
+                }, 500)
             }
         }
     }
@@ -231,16 +257,32 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     override fun loginPlayer(player: Player): Boolean {
         try {
-            if (db.getPlayer(player.steamId) == null) {
-                if (!db.insertUser(player))
-                    throw db.lastError ?: Throwable("unexpected")
-            } else {
-                // Attempt auto login to create new token
-                if (!db.loginPlayer(player))
-                    throw db.lastError ?: Throwable("unexpected")
-                this.player = db.getPlayer(player.steamId) ?: throw (db.lastError ?: Throwable("unexpected"))
-                hasPlayer = true
+            val tPlayer = db.getPlayer(player.steamId)
+
+            // Insert player if not in DB, failing if unable to insert
+            if (tPlayer == null && !db.insertUser(player))
+                throw db.lastError ?: Throwable("unexpected")
+
+            // Attempt to login, showing error if present, but continuing regardless
+            if (!db.loginPlayer(player)) {
+                val m = when((db.lastError ?: Throwable("unexpected")).message) {
+                    "no-internet" -> {
+                        "No internet connection. Player information may be outdated."
+                    }
+                    "no-api" -> {
+                        "Failed to connect to the CSGO Skill servers. Player information may be outdated."
+                    }
+                    else -> {
+                        "Unexpected error while logging in. Player information may be outdated. Please report this."
+                    }
+                }
+                DynamicAlert(this, m).setTitle("Aw crap").show()
             }
+
+            // Collect the player, failing otherwise
+            this.player = tPlayer ?: (db.getPlayer(player.steamId) ?: throw (db.lastError ?: Throwable("unexpected")))
+            hasPlayer = true
+
             LoadUser().execute()
             return true
         } catch (e: Throwable) {
@@ -421,10 +463,10 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
 
         override fun doInBackground(vararg params: Void?): RoundedBitmapDrawable? {
-            try{
+            return try{
                 val avatar = RoundedBitmapDrawableFactory.create(resources, InternetHelper.HardBitmapRequest(player.avatarUrl))
                 avatar.cornerRadius = 10f
-                return avatar
+                avatar
             } catch (e: Throwable) {
                 if (DEV_MODE) Log.e("Main.LoadUser", e)
                 var m = e.message ?: ""
@@ -437,7 +479,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 runOnUiThread {
                     DynamicAlert(this@Main, m).setTitle("Aw crap").show()
                 }
-                return null
+                null
             }
         }
     }
@@ -446,18 +488,14 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private inner class UpdateStats : AsyncTask<Void?, Int, String?>() {
 
         override fun onPostExecute(result: String?) {
-            if (result == null)
-                refreshStats()
-            else
+            if (result != null)
                 DynamicAlert(this@Main, result).setTitle("Aw crap").show()
         }
 
         override fun doInBackground(vararg params: Void?): String? {
-            try {
-                if (!db.updateStats(player))
-                    throw db.lastError ?: Throwable("unexpected")
-                player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-                return null
+            return try {
+                db.updateStats(player)
+                null
             } catch (e: Throwable) {
                 if (DEV_MODE) Log.e("Main.UpdateStats", e)
                 var m = e.message ?: ""
@@ -467,7 +505,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                     }
                     else -> m
                 }
-                return m
+                m
             }
         }
 
