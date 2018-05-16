@@ -86,9 +86,9 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
     override fun onStop() {
         super.onStop()
-        if (shouldFinish) {
+        if (DEV_MODE) Log.d("Intro", "STOPPED")
+        if (shouldFinish)
             finish()
-        }
     }
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
@@ -271,8 +271,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         }
         imageLogo.clearAnimation()
         if (!closing) {
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
             shouldFinish = true
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
         }
     }
 

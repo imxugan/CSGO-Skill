@@ -14,10 +14,8 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.ConsoleMessage
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
+import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.widget.*
 
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -88,12 +86,70 @@ class LoginFragment : BaseFragment() {
 
         loginWebView.settings.javaScriptEnabled = true  // Yes, I'm sure
         loginWebView.settings.setAppCacheEnabled(false) // Saves storage space
+        loginWebView.settings.cacheMode = LOAD_NO_CACHE // Force no-cache
+
         loginWebView.webViewClient = object: WebViewClient() { // This forces the webview layout
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 main.toggleLoader(true)
             }
             override fun onPageFinished(view: WebView?, url: String?) {
                 main.toggleLoader(false)
+                // This fixes the UI glitch where the Two-factor Authentication box is displayed
+                // too far down the page, hiding the input box behind the keyboard.
+                // Here, we detect when it is created and then change it's location
+                loginWebView?.evaluateJavascript("""
+                    // Disable the stupid form autocompletion bullshit
+                    document.getElementById("steamAccountName").setAttribute("autocomplete", "off")
+
+                    var mu = function(mutationsList) {
+                        console.log("something happened")
+
+                        for (var mutation of mutationsList) {
+                            if (mutation.type == "childList") {
+
+                                var list = mutation.addedNodes
+
+                                // Make sure the proper node was created
+                                for (var item of list) {
+
+                                    // Find the background div
+                                    if (item.classList.contains("newmodal_background")) {
+                                        console.log("found a newmodal_background element")
+                                        // Get the previous sibling with proper class, and change it's style
+                                        var modal = item.previousElementSibling
+                                        if (modal) {
+                                            console.log("got the previous sibling!")
+                                            // Set up Steam style rules for the modal
+                                            var w = window.outerWidth
+                                            var h = window.outerHeight
+                                            var l = (w - modal.offsetWidth) / 2
+                                            var t = 10 // Set the top higher on the page
+
+                                            var style = "position:fixed;z-index:1000;"
+                                            style += "max-width:" + (w - 20) + "px;"
+                                            style += "left:" + l + "px;"
+                                            style += "top:" + t + "px;"
+
+                                            modal.setAttribute("style", style)
+
+                                            // Scroll back to top of page
+                                            window.scrollTo(0,0)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    var target = document.body
+
+                    var config = { childList: true }
+
+                    var observer = new MutationObserver(mu)
+                    observer.observe(target, config)
+                """.trimIndent(), {_ ->
+                    if (DEV_MODE) Log.d("LoginFragment.WV.evaluateJavascript", "Updated the page with JS!")
+                })
             }
         }
         loginWebView.webChromeClient = object: WebChromeClient() {

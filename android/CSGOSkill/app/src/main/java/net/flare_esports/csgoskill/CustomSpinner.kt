@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.support.v7.widget.AppCompatSpinner
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Spinner
 
 class CustomSpinner : AppCompatSpinner {
     private val TAG = "CustomSpinner"
@@ -51,6 +52,8 @@ class CustomSpinner : AppCompatSpinner {
     }
 
     override fun performClick(): Boolean {
+        val click = super.performClick()
+
         // register that the Spinner was opened so we have a status
         // indicator for the activity(which may lose focus for some other
         // reasons)
@@ -58,7 +61,21 @@ class CustomSpinner : AppCompatSpinner {
         if (mListener != null) {
             mListener!!.onSpinnerOpened()
         }
-        return super.performClick()
+
+        try {
+            val popup = Spinner::class.java.getDeclaredField("mPopup")
+            popup.isAccessible = true
+
+            // Get private mPopup member variable and try cast to ListPopupWindow
+            val popupWindow = popup.get(this) as android.widget.ListPopupWindow
+
+            // Always show scroll bar
+            popupWindow.listView.isScrollbarFadingEnabled = false
+        } catch (e: Throwable) {
+            // Silently fail...
+        }
+
+        return click
     }
 
     fun setSpinnerEventsListener(onSpinnerEventsListener: OnSpinnerEventsListener) {
