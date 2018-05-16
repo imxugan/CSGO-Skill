@@ -30,7 +30,7 @@ class Frag3 : Slide() {
     private var adapter: ViewPagerAdapter = ViewPagerAdapter()
     private var handler: Handler? = null
     private var images: IntArray = intArrayOf(R.drawable.intro_tip1, R.drawable.intro_tip2)
-
+    private var switch: Boolean = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -60,24 +60,43 @@ class Frag3 : Slide() {
 
         tip_slider.adapter = adapter
 
+        val touchAlphaA = ObjectAnimator.ofFloat(touch_circle, "alpha", 0f, 1f)
+        val touchAlphaB = ObjectAnimator.ofFloat(touch_circle, "alpha", 1f, 0f)
+        touchAlphaA.duration = 100
+        touchAlphaB.duration = 100
+
         // Simulate drag to next image
         handler?.postDelayed({
             tip_slider?.beginFakeDrag()
 
-            val animation = ObjectAnimator.ofInt(adapter, "fakeDrag", 0, -300)
-            animation.duration = 1200
-            animation.addListener( Animer { tip_slider?.endFakeDrag(); adapter.currentOffset = 0 })
-            animation.start()
+            val slideAnimation = ObjectAnimator.ofInt(adapter, "fakeDrag", 0, -50)
+
+            slideAnimation.duration = 300
+            slideAnimation.addListener( Animer {
+                tip_slider?.fakeDragBy((tip_slider?.width ?: 0) * -0.05f)
+                tip_slider?.endFakeDrag()
+                adapter.currentOffset = 0
+                touchAlphaB.start()
+            })
+            slideAnimation.start()
+            touchAlphaA.start()
         }, 1800)
 
         // Simulate drag back to first image
         handler?.postDelayed({
             tip_slider?.beginFakeDrag()
 
-            val animation = ObjectAnimator.ofInt(adapter, "fakeDrag", 0, 300)
-            animation.duration = 1200
-            animation.addListener( Animer { tip_slider?.endFakeDrag(); adapter.currentOffset = 0 })
-            animation.start()
+            switch = true
+            val slideAnimation = ObjectAnimator.ofInt(adapter, "fakeDrag", 0, 50)
+            slideAnimation.duration = 300
+            slideAnimation.addListener( Animer {
+                tip_slider?.fakeDragBy((tip_slider?.width ?: 0) * 0.05f)
+                tip_slider?.endFakeDrag()
+                adapter.currentOffset = 0
+                touchAlphaB.start()
+            })
+            slideAnimation.start()
+            touchAlphaA.start()
         }, 3250)
     }
 
@@ -90,8 +109,13 @@ class Frag3 : Slide() {
             if (tip_slider?.isFakeDragging == true) {
                 val offset = (((tip_slider?.width ?: 0) / 100.0) * progress).toInt()
                 val dragBy = offset - currentOffset
+                val touchOffset: Int = (tip_slider?.width ?: 0) / 3
 
                 tip_slider?.fakeDragBy(dragBy.toFloat())
+                if (switch)
+                    touch_circle?.translationX = (currentOffset - touchOffset).toFloat()
+                else
+                    touch_circle?.translationX = (currentOffset + touchOffset).toFloat()
 
                 currentOffset = offset
             }
