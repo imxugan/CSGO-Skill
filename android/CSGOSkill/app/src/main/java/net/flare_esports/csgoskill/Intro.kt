@@ -6,7 +6,6 @@
 package net.flare_esports.csgoskill
 
 import android.app.ActivityOptions
-import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Context
 import android.content.Intent
@@ -24,10 +23,15 @@ import android.widget.Toast
 
 import net.flare_esports.csgoskill.InternetHelper.*
 import net.flare_esports.csgoskill.Constants.DEV_MODE
+import net.flare_esports.csgoskill.Database.Updating.*
 
 import kotlinx.android.synthetic.main.activity_intro.*
 import net.flare_esports.csgoskill.IntroFrags.*
 
+/**
+ * Splash screen activity, responsible for also auto-logging in the player from the device. It only
+ * uses the internet to check if connection is available, and does not login to the server.
+ */
 class Intro : AppCompatActivity(), Slide.SlideListener {
 
     private lateinit var db: Database
@@ -48,11 +52,15 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private var connected: Boolean = false
     private var closing: Boolean = false
     private var switching: Boolean = false
+    private var shouldFinish: Boolean = false
 
     private val splashing = Runnable { this.splashing() }
     private val startIntro = Runnable { this.startIntro() }
     private val toMain = Runnable { this.toMain() }
 
+    /**
+     * onCreate() function for the activity. Sets up the fade animations and starts [splashing]
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
@@ -78,11 +86,24 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         fragEnterFade.duration = 700
         fragEnterFade.startDelay = 750
 
-        window.exitTransition = Fade()
+        window.exitTransition = fragExitFade
 
         Thread(splashing).start()
     }
 
+    /**
+     * onStop() function for the activity. Calls [finish] when the Intro starts the Main activity
+     */
+    override fun onStop() {
+        super.onStop()
+        if (DEV_MODE) Log.d("Intro", "STOPPED")
+        if (shouldFinish)
+            finish()
+    }
+
+    /**
+     * Responsible for hiding the navigation when this activity is in focus
+     */
     override fun onWindowFocusChanged(hasFocus:Boolean) {
             super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
@@ -96,6 +117,10 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         }
     }
 
+    /**
+     * Handles BACK button presses, going backwards in the intro slides if applicable, or closing
+     * the app completely otherwise.
+     */
     override fun onBackPressed() {
         val previous = fManager.findFragmentById(R.id.introFragmentContainer) as Slide?
 
@@ -197,11 +222,14 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
     }
 
-    // Catch the fragment animation complete messages
-    override fun animationComplete(currentFragment: Fragment) {
+    /**
+     * Captures the fragment slides' "animationComplete" message, signalling to show the continue
+     * button and load the next slide, or calls [toMain] when on the last slide
+     */
+    override fun animationComplete(currentFragment: Slide) {
         switching = false
         // Set the continueButton to a check mark for the last slide
-        if (currentFragment == slide3) continueButton.setImageResource(R.drawable.ic_check_white_48dp)
+        if (currentFragment.name == "slide3") continueButton.setImageResource(R.drawable.ic_check_white_48dp)
 
         // Fade in the button and enable it
 
@@ -216,31 +244,29 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             switching = true
             // Disable and fade out the button
             continueButton.isEnabled = false
-            if (currentFragment == slide1 || currentFragment == slide2 || currentFragment == slide3) {
-                val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
-                fadeOut.setAnimationListener( Animer {
-                    continueButton.visibility = View.GONE
-                })
-                continueButton.startAnimation(fadeOut)
-            }
+            val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_medium)
+            fadeOut.setAnimationListener( Animer {
+                continueButton.visibility = View.GONE
+            })
+            continueButton.startAnimation(fadeOut)
 
             val fragmentTransaction = fManager.beginTransaction()
-            when (currentFragment) {
-                slide1 -> {
+            when (currentFragment.name) {
+                "slide1" -> {
 
                     slide1.exitTransition = fragExitFade
                     slide2.enterTransition = fragEnterFade
 
                     fragmentTransaction.replace(introFragmentContainer.id, slide2)
                 }
-                slide2 -> {
+                "slide2" -> {
 
                     slide2.exitTransition = fragExitFade
                     slide3.enterTransition = fragEnterFade
 
                     fragmentTransaction.replace(introFragmentContainer.id, slide3)
                 }
-                slide3 -> {
+                "slide3" -> {
 
                     prefs.edit().putBoolean("firstRun", false).apply()
                     slide3.exitTransition = fragExitFade
@@ -263,8 +289,8 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         }
         imageLogo.clearAnimation()
         if (!closing) {
+            shouldFinish = true
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this@Intro).toBundle())
-            handler.postDelayed({ finish() }, 1000)
         }
     }
 
@@ -286,13 +312,13 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         val check = db.checkVersion()
         if (DEV_MODE) Log.d("Intro.splashing", "Checked: $check")
         when (check) {
-            1 -> {
+            UP_TO_DATE -> {
                 // Up to date, nothing to do
             }
-            0 -> {
+            UPDATES_AVAILABLE -> {
                 // TODO, updates available
             }
-            -1 -> {
+            FAILED -> {
                 Toast.makeText(context, R.string.failed_server_connection, Toast.LENGTH_LONG).show()
             }
         }

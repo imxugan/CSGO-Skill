@@ -29,16 +29,28 @@ class Typer : TextWatcher {
     private var after: (s: Editable?) -> Unit = { _: Editable? -> }
     private var on: (s: CharSequence?, start: Int, before: Int, count: Int) -> Unit = { _: CharSequence?, _: Int, _: Int, _: Int -> }
 
+    /**
+     * For validating text after you type it. Be careful about changing text here, because it will
+     * cause the function to be called again!
+     */
     fun afterChanged(after: (s: Editable?) -> Unit): Typer {
         this.after = after
         return this
     }
 
+    /**
+     * For seeing what text is about to be inserted and where in the [Editable]. It is an error to
+     * attempt to make changes to <code>s</code> from this callback.
+     */
     fun beforeChanged(before: (s: CharSequence?, start: Int, count: Int, after: Int) -> Unit): Typer {
         this.before = before
         return this
     }
 
+    /**
+     * For seeing what text has just been added and where in the [Editable]. It is an error to
+     * attempt to make changes to <code>s</code> from this callback.
+     */
     fun onChanged(on: (s: CharSequence?, start: Int, before: Int, count: Int) -> Unit): Typer {
         this.on = on
         return this

@@ -9,10 +9,18 @@ import android.app.Fragment
 import org.json.JSONObject
 
 
+/**
+ * The abstract class that all fragments used by [Main] inherit from.
+ */
 abstract class BaseFragment : Fragment() {
 
+    /** Gives every fragment a reference to its [Main] creator */
     abstract val main: Main
+
+    /** The listener that fragments can use to call certain [Main] methods */
     abstract val listener: FragmentListener?
+
+    /** Names the fragment so that [Main] can better keep track of them */
     abstract val name: String
 
     /**
@@ -23,6 +31,9 @@ abstract class BaseFragment : Fragment() {
      */
     abstract fun onBack(): Boolean
 
+    /**
+     * Methods that fragments can call on the [Main] activity
+     */
     interface FragmentListener {
 
         /**
@@ -30,56 +41,54 @@ abstract class BaseFragment : Fragment() {
          * user needs to be logged in.</p>
          *
          * @param  player The generated Player object
-         * @return True if Main Activity handled the login, false if account is not on device
+         * @return <code>true</code> if Main Activity handled the login, <code>false</code> if account is not on device
          */
         fun loginPlayer(player: Player): Boolean
 
         /**
-         * Requests to change the current fragment.
+         * Requests to change the current fragment
          *
          * @param nextFragment The id of the fragment to load
          */
         fun switchFragment(nextFragment: Int)
 
         /**
-         * Request to update the user information.
+         * Request to update the user information
          *
-         * @return True if successful, false + alert otherwise
+         * @return <code>true</code> if successful, <code>false</code> otherwise
          */
         fun updatePlayer(): Boolean
 
         /**
-         * Request to update the user stats.
-         *
-         * @return True if successful, false + alert otherwise
+         * Request to update the user stats. Might fail, might not.
          */
-        fun updateStats(): Boolean
+        fun updateStats()
 
         /**
-         * Requests the Player object for the logged in account.
+         * Requests the [Player] object for the logged in account
          *
-         * @return the Player object
+         * @return the [Player] object
          */
         fun getPlayer(): Player
 
         /**
-         * Requests the Player's history stats.
+         * Requests the Player's history stats
          *
-         * @return JSONObject of stat history
+         * @return [JSONObject] of stat history
          */
         fun getHistoryStats(): JSONObject?
 
         /**
-         * Requests the Player's grand stats.
+         * Requests the Player's grand stats
          *
-         * @return JSONObject of stat history
+         * @return [JSONObject] of stat history
          */
         fun getGrandStats(): JSONObject?
 
         /**
-         * Requests the Player's current stats.
+         * Requests the Player's current stats
          *
-         * @return JSONObject of stat history
+         * @return [JSONObject] of stat history
          */
         fun getCurrentStats(): JSONObject?
 

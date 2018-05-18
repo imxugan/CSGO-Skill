@@ -18,9 +18,19 @@ import android.view.animation.AnimationUtils
 
 import kotlinx.android.synthetic.main.fragment_signup.*
 import net.flare_esports.csgoskill.Constants.DEV_MODE
+import net.flare_esports.csgoskill.Constants.NOT_FOUND
+import net.flare_esports.csgoskill.Constants.NO_RESPONSE
+import net.flare_esports.csgoskill.Constants.REQUEST_FAIL
+import net.flare_esports.csgoskill.Constants.REQUEST_TIMEOUT
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
+/**
+ * Signs up unsuspecting players to a wonderful app, giving them increased stat tracking and better
+ * stats anonymity (if they really want it).
+ *
+ * Wait, why am I pitching this feature?
+ */
 class SignupFragment: BaseFragment() {
 
     override lateinit var main: Main
@@ -157,7 +167,7 @@ class SignupFragment: BaseFragment() {
             return
         }
         try {
-            var player1 = player ?: throw Throwable("not-found")
+            var player1 = player ?: throw Throwable(NOT_FOUND)
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/signup")
                     .put("post", JSONObject()
@@ -168,10 +178,10 @@ class SignupFragment: BaseFragment() {
                     .put("token", player1.token)
 
             request = HTTPJsonRequest(request)
-            if (request == null)
-                throw Throwable("null")
+            if (request.optString("response", "not empty").isEmpty())
+                throw Throwable(NO_RESPONSE)
             if (!request.optBoolean("success")) {
-                throw Throwable(request.optString("reason"))
+                throw Throwable(request.optString("reason", REQUEST_FAIL))
             } else {
                 // Success! Notify, then re-login with new info
                 player1 = Player(request.getJSONObject("profile"))
@@ -193,10 +203,10 @@ class SignupFragment: BaseFragment() {
                 "Sign up failed with error code " + m.substring(11)
             } else {
                 when (m) {
-                    "no-response" -> {
+                    NO_RESPONSE -> {
                         "Failed to communicate with server.\nThe response was empty."
                     }
-                    "timed-out" -> {
+                    REQUEST_TIMEOUT -> {
                         "Failed to communicate with the server.\nThe request timed out."
                     }
                     "bad-steamid" -> {
@@ -226,11 +236,8 @@ class SignupFragment: BaseFragment() {
                     "name-in-use,email-in-use" -> {
                         "Both the username and email you picked already exists. Please contact us if you need to change your linked Steam account."
                     }
-                    "not-found" -> {
+                    NOT_FOUND -> {
                         "The account you are trying to sign up with wasn't found, you need to login with it first. Please go back and login again (press Back)\nWait, what?"
-                    }
-                    "null" -> {
-                        "Failed to communicate with server.\nNULL request."
                     }
                     else -> {
                         "Unexpected error. Please report this."

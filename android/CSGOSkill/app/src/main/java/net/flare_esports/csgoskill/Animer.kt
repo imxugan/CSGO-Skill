@@ -38,16 +38,34 @@ class Animer : AnimationListener, Animator.AnimatorListener {
         this.repeat = repeat
     }
 
+    /**
+     * Makes the given [start] the new [onAnimationStart] listener function, chainable
+     *
+     * @param start function to run when the animation starts
+     * @return this [Animer]
+     */
     fun setStart(start: () -> Unit): Animer {
         this.start = start
         return this
     }
 
+    /**
+     * Makes the given [end] the new [onAnimationEnd] listener function, chainable
+     *
+     * @param end function to run when the animation ends
+     * @return this [Animer]
+     */
     fun setEnd(end: () -> Unit): Animer {
         this.start = end
         return this
     }
 
+    /**
+     * Makes the given [repeat] the new [onAnimationRepeat] listener function, chainable
+     *
+     * @param repeat function to run when the animation repeats
+     * @return this [Animer]
+     */
     fun setRepeat(repeat: () -> Unit): Animer {
         this.repeat = repeat
         return this

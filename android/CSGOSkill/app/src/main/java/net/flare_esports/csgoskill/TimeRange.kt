@@ -5,17 +5,20 @@ import java.util.Calendar.DAY_OF_MONTH
 import java.util.Calendar.MONTH
 import java.util.Calendar.YEAR
 
+/**
+ * A custom object for creating time ranges for checking stat times
+ */
 class TimeRange {
 
     private val start: Calendar
     private val end: Calendar
 
     constructor() {
-        start = Calendar.getInstance()
+        start = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         // Fix to earliest time
         start.timeInMillis = 0
 
-        end = Calendar.getInstance()
+        end = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         // Fix to start of next day
         end.add(DAY_OF_MONTH, 1)
         end.set(
@@ -42,7 +45,7 @@ class TimeRange {
      * @param range range of days
      */
     constructor(daysInPast: Int, range: Int) {
-        start = Calendar.getInstance()
+        start = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
         // Make days negative
         val days: Int = if (daysInPast > 0) -daysInPast else daysInPast
@@ -64,7 +67,7 @@ class TimeRange {
                 0
         )
 
-        end = Calendar.getInstance()
+        end = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         // Fix to end of last day
         end.add(DAY_OF_MONTH, days + rng)
         end.set(
@@ -82,6 +85,9 @@ class TimeRange {
         this.end = end
     }
 
+    /**
+     * Checks if a given time falls inside the TimeRange object
+     */
     fun inRange(time: Long): Boolean {
         return time in start.timeInMillis..end.timeInMillis
     }

@@ -38,6 +38,17 @@
         app:layout_constraintBottom_toTopOf="@id/textDesc"
         app:layout_constraintDimensionRatio="H,12:8" />
 
+    <ImageView
+        android:id="@+id/touch_circle"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/touch_circle"
+        app:layout_constraintLeft_toLeftOf="@id/tip_slider"
+        app:layout_constraintRight_toRightOf="@id/tip_slider"
+        app:layout_constraintTop_toTopOf="@id/tip_slider"
+        app:layout_constraintBottom_toBottomOf="@id/tip_slider"
+        android:alpha="0" />
+
     <TextView
         android:id="@+id/textDesc"
         android:layout_width="0dp"
