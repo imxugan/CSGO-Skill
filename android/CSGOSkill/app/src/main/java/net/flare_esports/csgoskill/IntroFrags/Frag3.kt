@@ -20,6 +20,10 @@ import kotlinx.android.synthetic.main.fragment_introslide3.*
 import net.flare_esports.csgoskill.Animer
 import net.flare_esports.csgoskill.R
 
+/**
+ * Informs the user that they need to make their stats public for the app to work, and shows two
+ * images in a slider demonstrating the steps needed to do so.
+ */
 class Frag3 : Slide() {
 
     internal lateinit var view: View
@@ -100,11 +104,18 @@ class Frag3 : Slide() {
         }, 3250)
     }
 
+    /**
+     * Special class that lets us simulate drag gestures on the slider so the user knows it is a slider
+     */
     inner class ViewPagerAdapter : PagerAdapter() {
+
+        /** Used to maintain the current drag position, so that [setFakeDrag] knows how to animate */
         var currentOffset: Int = 0
 
-        // This method is used by the ObjectAnimator created to demonstrate the view pager
-        @Suppress("unused")
+        /**
+         * Special function used by the ObjectAnimator to simulate drag gestures
+         */
+        @Suppress("unused", "MemberVisibilityCanBePrivate")
         fun setFakeDrag(progress: Int) {
             if (tip_slider?.isFakeDragging == true) {
                 val offset = (((tip_slider?.width ?: 0) / 100.0) * progress).toInt()

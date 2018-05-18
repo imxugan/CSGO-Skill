@@ -13,8 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 
 import net.flare_esports.csgoskill.R
-import kotlinx.android.synthetic.main.fragment_introslide1.*
 
+/**
+ * This slide shows some simple text welcoming the user to the app
+ */
 class Frag1 : Slide() {
 
     internal lateinit var view: View

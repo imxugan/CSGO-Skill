@@ -7,12 +7,22 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.Spinner
 
+/**
+ * A custom spinner that has a few more features built into it, compared to the regular spinner class.
+ */
 class CustomSpinner : AppCompatSpinner {
+
     private val TAG = "CustomSpinner"
     private var mListener: OnSpinnerEventsListener? = null
     private var mOpenInitiated = false
+
+
+    /** A public variable Unit to set a listener for when an item is selected */
     var itemSelectedListener: ((parent: AdapterView<*>?, view: View?, position: Int, id: Long) -> Unit)? = null
+
+    /** A public variable Unit to set a listener for when nothing is selected */
     var nothingSelectedListener: ((parent: AdapterView<*>?) -> Unit)? = null
+
 
     init {
         this.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -43,8 +53,14 @@ class CustomSpinner : AppCompatSpinner {
         nothingSelectedListener?.invoke(parent)
     }
 
+    /**
+     * An interface for special spinner events, specifically when it's been opened and closed
+     */
     interface OnSpinnerEventsListener {
 
+        /**
+         * Called when the spinner is initially opened, however it may fade in so
+         */
         fun onSpinnerOpened()
 
         fun onSpinnerClosed()
@@ -78,6 +94,9 @@ class CustomSpinner : AppCompatSpinner {
         return click
     }
 
+    /**
+     * Sets an event listener for this spinner
+     */
     fun setSpinnerEventsListener(onSpinnerEventsListener: OnSpinnerEventsListener) {
         mListener = onSpinnerEventsListener
     }

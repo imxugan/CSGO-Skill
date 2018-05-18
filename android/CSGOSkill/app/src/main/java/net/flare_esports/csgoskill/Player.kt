@@ -10,35 +10,49 @@ import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
-class Player
-(profile: JSONObject) {
+/**
+ * A general Player object to make working with the user account easier
+ */
+@Suppress("MemberVisibilityCanBePrivate")
+class Player (profile: JSONObject) {
+
+    private var _profileUrl: String = profile.getString("profileurl")
+    private var _avatarUrl: String = profile.getString("avatarurl")
+    private var _token: Token = Token(profile.getJSONObject("token"))
+    private var dlAvatar: Boolean = false
 
     // Basic profile stuff
-    var steamId:    String = profile.getString("steam_id")
+
+    /** The player's Steam ID */
+    var steamId: String = profile.getString("steam_id")
         private set
-    var persona:    String = profile.getString("persona")
+
+    /** The player's Persona name */
+    var persona: String = profile.getString("persona")
         set(persona) {
             if (Player.validPersona(persona) == "ok")
                 field = persona
         }
 
-    private var _profileUrl: String = profile.getString("profileurl")
+    /** The player's profile link */
     var profileUrl: String = _profileUrl
         private set
-        get() = "https://steamcommunity.com/$_profileUrl"
+        get()="https://steamcommunity.com/$_profileUrl"
 
-    private var _avatarUrl: String = profile.getString("avatarurl")
-    var avatarUrl:  String = _avatarUrl
+    /** The player's avatar url */
+    var avatarUrl: String = _avatarUrl
         private set
-        get() = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/${_avatarUrl}_full.jpg"
+        get()="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/${_avatarUrl}_full.jpg"
 
-    var created:    Int    = profile.getInt("created")
-        private set
-    var status:     JSONObject = profile.getJSONObject("status")
+    /** The time this account was created */
+    var created: Int = profile.getInt("created")
         private set
 
-    // Avatar stuff
-    private var dlAvatar: Boolean = false
+    /** The profile status object */
+    var status: JSONObject = profile.getJSONObject("status")
+        private set
+
+    /** Stores the player's avatar, only downloading it when requested */
     var avatarImg: Bitmap? = null
         get() {
             val self = this
@@ -57,8 +71,8 @@ class Player
             return field
         }
 
-    // Token stuff
-    private var _token: Token = Token(profile.getJSONObject("token"))
+    /** Holds the full JSONObject token, however it returns only the token value when requested
+     * @see isTokenValid */
     var token: Any
         set(token) {
             if (token is JSONObject)
@@ -69,29 +83,44 @@ class Player
         get() = this._token.value
 
     // Extra stuff for users
-    var username:     String     = profile.optString("username")
+
+    /** The custom username for the player */
+    var username: String = profile.optString("username")
         set(username) {
             val newName = Player.validUsername(username)
             if (newName.substring(0..2) == "ok")
                 field = newName.substring(3)
         }
-    var email:        String     = profile.optString("email")
+
+    /** The email associated with the player */
+    var email: String = profile.optString("email")
         set(email) {
             if (Player.validEmail(email) == "ok")
                 field = email
         }
+
+    /** Email subscriptions, a future feature! */
     var subscription: JSONObject = profile.optJSONObject("subscription") ?: JSONObject()
         private set
-    var verified:     Boolean    = profile.optBoolean("verified")
-        private set
-    var notify:       String     = profile.optString("notify")
 
-    // Determine if Player is a user
+    /** The player's verified status */
+    var verified: Boolean = profile.optBoolean("verified")
+        private set
+
+    /** Special notifications from the server */
+    var notify: String = profile.optString("notify")
+
+    /** Returns <code>true</code> if <code>accountType == "user"</code> */
     val isUser get(): Boolean = this.accountType == "user"
 
-    // Quickly get account type
+    /** The player's account type */
     val accountType get(): String = this.status.getString("level")
 
+    /**
+     * Checks if the player's token is still valid
+     *
+     * @return <code>true</code> if the token is valid, <code>false</code> otherwise
+     */
     fun isTokenValid(): Boolean {
         return Token.isValid(this._token)
     }
@@ -121,6 +150,12 @@ class Player
     }
 
     companion object {
+        /**
+         * Validates a persona
+         *
+         * @param persona name to validate
+         * @return "ok" if good, error message otherwise
+         */
         @JvmStatic
         fun validPersona(persona: String): String {
             return if (persona.length !in 3..35) {
@@ -130,6 +165,12 @@ class Player
             }
         }
 
+        /**
+         * Filters and validates a username
+         *
+         * @param username name to validate
+         * @return "ok" followed by the filtered username if good, error message otherwise
+         */
         @JvmStatic
         fun validUsername(username: String): String {
             val newName = filterUsername(username)
@@ -140,6 +181,12 @@ class Player
             }
         }
 
+        /**
+         * Filters a username
+         *
+         * @param username name to filter
+         * @return the filtered username
+         */
         @JvmStatic
         fun filterUsername(username: String): String {
             val bannedChars: CharArray = charArrayOf(
@@ -160,19 +207,29 @@ class Player
             return newName.toString()
         }
 
+        /**
+         * VERY roughly validates an email address
+         *
+         * @param email address to validate
+         * @return "ok" if good, error message otherwise
+         */
         @JvmStatic
         fun validEmail(email: String): String {
-            return if (email.length !in 4..50) {
-                "Email must be between 4-50 characters"
-            } else if (email.indexOf('@') < 1) {
-                "Email does not seem to be valid"
-            } else {
-                "ok"
+            return when {
+                (email.length !in 4..50) -> "Email must be between 4-50 characters"
+                (email.indexOf('@') < 1) -> "Email does not seem to be valid"
+                else -> "ok"
             }
         }
 
+        /**
+         * Gets a [Bitmap] image from a shortened Steam avatar url. You should not call this!
+         *
+         * @param shortLink shortened avatar link
+         * @return [Bitmap] image, may be null
+         */
         @JvmStatic
-        fun downloadAvatar(shortLink: String): Bitmap {
+        fun downloadAvatar(shortLink: String): Bitmap? {
             val link = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/${shortLink}_full.jpg"
             return BitmapRequest(link)
         }

@@ -21,6 +21,9 @@ import android.view.animation.AnimationUtils
 import net.flare_esports.csgoskill.Constants.DEV_MODE
 import java.lang.ref.WeakReference
 
+/**
+ * Gives the player a quick glance of all their stat changes in a nifty list
+ */
 class HomeFragment : BaseFragment() {
 
     override lateinit var main: Main
@@ -61,6 +64,11 @@ class HomeFragment : BaseFragment() {
         return false
     }
 
+    /**
+     * Just pass a [TimeRange] and watch as the stats appear before your eyes!
+     *
+     * @param timeRange a TimeRange object for selecting stats
+     */
     fun displayStats(timeRange: TimeRange) {
         DisplayStats(this).execute(timeRange)
         if (DEV_MODE) Log.d("Home.displayStats", "Running stats with $timeRange")
@@ -107,9 +115,8 @@ class HomeFragment : BaseFragment() {
                 val timeRange: TimeRange = if (params.isNotEmpty()) params[0] ?: TimeRange()
                 else TimeRange()
 
-                val process = ProcessStats()
-                val result = process.run(timeRange, me.main) ?:
-                (throw process.lastError ?: Throwable("Unexpected error while calculating stats. Please report this."))
+                val result = ProcessStats.run(timeRange, me.main) ?:
+                (throw ProcessStats.lastError ?: Throwable("Unexpected error while calculating stats. Please report this."))
 
                 me.viewAdapter = HomeStatsAdapter(result, me.main)
                 me.main.runOnUiThread {

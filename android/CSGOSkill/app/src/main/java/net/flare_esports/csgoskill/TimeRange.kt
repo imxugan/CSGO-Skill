@@ -5,6 +5,9 @@ import java.util.Calendar.DAY_OF_MONTH
 import java.util.Calendar.MONTH
 import java.util.Calendar.YEAR
 
+/**
+ * A custom object for creating time ranges for checking stat times
+ */
 class TimeRange {
 
     private val start: Calendar
@@ -82,6 +85,9 @@ class TimeRange {
         this.end = end
     }
 
+    /**
+     * Checks if a given time falls inside the TimeRange object
+     */
     fun inRange(time: Long): Boolean {
         return time in start.timeInMillis..end.timeInMillis
     }

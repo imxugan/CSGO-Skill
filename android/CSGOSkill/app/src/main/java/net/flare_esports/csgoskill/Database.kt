@@ -9,16 +9,25 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.widget.Toast
 
 import net.flare_esports.csgoskill.InternetHelper.*
 import net.flare_esports.csgoskill.Constants.DEV_MODE
+import net.flare_esports.csgoskill.Constants.NOT_FOUND
+import net.flare_esports.csgoskill.Constants.NO_API
+import net.flare_esports.csgoskill.Constants.NO_INTERNET
+import net.flare_esports.csgoskill.Constants.NO_RESPONSE
+import net.flare_esports.csgoskill.Constants.REQUEST_FAIL
+import net.flare_esports.csgoskill.Constants.UPDATE_FAIL
 import net.flare_esports.csgoskill.Constants.VERSION
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * Handles all database interactions both on the device and with the CSGO Skill servers, mainly for
+ * working with player profiles.
+ */
 class Database(
-        private var context: Context,
+        context: Context,
         factory: SQLiteDatabase.CursorFactory?
 ) : SQLiteOpenHelper(context, NAME, factory, DB_VERSION) {
 
@@ -27,25 +36,43 @@ class Database(
         private const val NAME = "csgoskill.db"
         private const val USERS = "Users"
 
-        private const val STEAMID = "steamID"
+        private const val STEAM_ID = "steamID"
         private const val PROFILE = "profile"
         private const val STATS = "stats"
     }
 
-    var newVersion = emptyArray<Int>()
+    /**
+     * Enumeration for checking app updates
+     */
+    enum class Updating {
+        /** Updates are available */
+        UPDATES_AVAILABLE,
+
+        /** App is up-to-date */
+        UP_TO_DATE,
+
+        /** Update check failed */
+        FAILED
+    }
+
+    /** Contains the newest available version, initially the current app version */
+    @Suppress("MemberVisibilityCanBePrivate")
+    var newVersion: IntArray = Constants.VERSION
         private set
+
+    /** Holds the most recently thrown DB error */
     var lastError: Throwable? = null
         private set
 
     /**
-     * Uses getPlayer() to return a list of all users on the device.
+     * Uses [getPlayer] to return a list of all users on the device.
      *
-     * @return Array<Player> of all users, using getPlayer()
+     * @return [Array] of all users
      */
     val users: Array<Player>
         get() {
             val sql = writableDatabase
-            val c = sql.rawQuery("SELECT $STEAMID FROM $USERS WHERE 1", null)
+            val c = sql.rawQuery("SELECT $STEAM_ID FROM $USERS WHERE 1", null)
             return if (c.count <= 0) {
                 c.close()
                 emptyArray()
@@ -53,7 +80,7 @@ class Database(
                 var users = emptyArray<Player>()
                 var user: Player?
                 while (c.moveToNext()) {
-                    user = getPlayer(c.getString(c.getColumnIndex(STEAMID)))
+                    user = getPlayer(c.getString(c.getColumnIndex(STEAM_ID)))
                     if (user != null) users = users.plus(user)
                 }
                 c.close()
@@ -61,16 +88,31 @@ class Database(
             }
         }
 
+    /**
+     * Runs once when the app if first started, creating the database to hold all player information.
+     * The process is automatic, so please don't call directly
+     *
+     * @param sqLiteDatabase database object to initialize
+     */
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
 
         sqLiteDatabase.execSQL("CREATE TABLE " + USERS + " (" +
-                STEAMID + " TEXT UNIQUE," + // Steam ID
+                STEAM_ID + " TEXT UNIQUE," + // Steam ID
                 PROFILE + " TEXT," +        // All the Profile info
                 STATS + " TEXT)"            // All the player's stats
         )
 
     }
 
+    /**
+     * Updates previous database versions to the current version. Since the current database
+     * structure is not planned to be changed, only added to, there should be no reason to ever do
+     * anything inside this function.
+     *
+     * @param sqLiteDatabase database object to upgrade
+     * @param oldVersion previous database version
+     * @param newVersion new database version
+     */
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
         // Currently there are no plans to change the structure of the DB, so nothing is here
@@ -82,50 +124,50 @@ class Database(
      * it will set a variable called 'newVersion' to the response before
      * returning.</p>
      *
-     * @return 1 if up-to-date, 0 if updates available, -1 if error
+     * @return [Updating] enum item
      */
-    fun checkVersion(): Int {
+    fun checkVersion(): Updating {
         try {
-            if (!isOnline()) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
+            if (!isOnline()) {
+                lastError = Throwable(NO_INTERNET)
+                return Updating.FAILED
+            }
             val response = HTTPRequest("http://api.csgo-skill.com/version")
             if (response.isEmpty()) {
-                throw Throwable("No response")
-            } else if (response == "Unable to resolve host \"api.csgo-skill.com\": No address associated with hostname") {
-                throw Throwable("No connection")
+                throw Throwable(NO_RESPONSE)
+            } else if (response.startsWith("unable to resolve host", true)) {
+                throw Throwable(NO_API)
             }
             val version = JSONArray(response)
-            newVersion = arrayOf(version[0] as Int, version[1] as Int, version[2] as Int)
+            newVersion = intArrayOf(version[0] as Int, version[1] as Int, version[2] as Int)
             if (VERSION[0] < newVersion[0] ||
                 (VERSION[0] == newVersion[0] && VERSION[1] < newVersion[1]) ||
                 (VERSION[0] == newVersion[0] && VERSION[1] == newVersion[1] && VERSION[2] < newVersion[2])) {
-                return 0
+                return Updating.UPDATES_AVAILABLE
             }
-            return 1
+            // Reset newVersion
+            newVersion = VERSION
+            return Updating.UP_TO_DATE
         } catch (e: Throwable) {
             lastError = e
-            if (DEV_MODE) {
-                if (e.message == "No connection")
-                    Log.e("Database.checkVersion", "No connection")
-                else
-                    Log.e("Database.checkVersion", e)
-            }
+            if (DEV_MODE)  Log.d("Database.checkVersion", e.message)
         }
 
-        return -1
+        return Updating.FAILED
     }
 
     /**
      * <p>Inserts the given user (Username, Steam ID, Email, Secret),
-     * updatePlayer() should be called immediately after.</p>
+     * [Main.updatePlayer] should be called immediately after.</p>
      *
-     * @param player The Player object to insert
-     * @return True if successful, false otherwise.
+     * @param player The [Player] to insert
+     * @return <code>true</code> if successful, <code>false</code> otherwise
      */
     fun insertUser(player: Player): Boolean {
         try {
             val sql = writableDatabase
             val values = ContentValues()
-            values.put(STEAMID, player.steamId)
+            values.put(STEAM_ID, player.steamId)
             values.put(PROFILE, player.toString())
             if (sql.insertOrThrow(USERS, null, values) != -1L) {
                 return true
@@ -139,15 +181,16 @@ class Database(
     }
 
     /**
-     * Effectively logs the player in, updating to match the server.
+     * Logs the [player] into the server, and syncs profile information.
      *
-     * @param player The Player to update
-     * @return True if successful, false if failed
+     * @param player The [Player] to update
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     * @see updateStats
      */
     fun loginPlayer(player: Player): Boolean {
         try {
             if (!isOnline()) {
-                lastError = Throwable("no-internet")
+                lastError = Throwable(NO_INTERNET)
                 return false
             }
             var request = JSONObject()
@@ -157,47 +200,50 @@ class Database(
                             .put("token", player.token)
                     )
             request = HTTPJsonRequest(request)
-            if (request == null)
-                throw Throwable("null")
+            if (request.optString("response", "not empty").isEmpty())
+                throw Throwable(NO_RESPONSE)
             if (!request.optBoolean("success")) {
-                throw Throwable(request.optString("reason"))
+                throw Throwable(request.optString("reason", REQUEST_FAIL))
             } else {
                 // Got the player!
                 val newPlayer = Player(request.getJSONObject("profile"))
                 val sql = writableDatabase
                 val values = ContentValues()
                 values.put(PROFILE, newPlayer.toString())
-                if (sql.update(USERS, values, "$STEAMID=?", arrayOf(newPlayer.steamId)) != 1) {
-                    throw Throwable("update-fail")
+                if (sql.update(USERS, values, "$STEAM_ID=?", arrayOf(newPlayer.steamId)) != 1) {
+                    throw Throwable(UPDATE_FAIL)
                 }
                 return true
             }
         } catch (e: Throwable) {
             if (DEV_MODE) Log.e("Database.loginPlayer", e)
             var m = e.message ?: ""
-            m = if (m.startsWith("error code")) {
-                "Login failed with error code " + m.substring(11)
-            } else if (m.startsWith("unable to resolve", true)) {
-                "no-api"
-            } else {
-                when (m) {
+            m = when {
+                m.startsWith("error code") ->
+                    "Login failed with error code " + m.substring(11)
+                m.startsWith("unable to resolve", true) ->
+                    NO_API
+                else -> when (m) {
                     "bad-steamid" -> {
                         "Your Steam ID wasn't accepted, please logout and login again. What? How'd you do that?"
                     }
                     "bad-token" -> {
                         "Your login token wasn't accepted, please logout and login again. What? How'd you do that?"
                     }
+                    "bad-request" -> {
+                        "Sorry, I sent the wrong stuff to the server. What? How'd you do that?"
+                    }
                     "login-required" -> {
                         "Been a while? Your login has expired, please logout and login again."
                     }
-                    "not-found" -> {
+                    NOT_FOUND -> {
                         "Who are you?"
                     }
-                    "bad-request" -> {
-                        "Sorry, I sent the wrong stuff to the serv- What? How'd you do that?"
-                    }
-                    "update-fail" -> {
+                    UPDATE_FAIL -> {
                         "You were successfully logged in, but the device was unable to update your account data. Profile information and stats data may appear outdated, and clearing the app data cache and logging back in should fix this. Don't do it until you have an internet connection, however!"
+                    }
+                    REQUEST_FAIL -> {
+                        "Request failed spectacularly."
                     }
                     else -> {
                         "Unexpected error. Please report this."
@@ -211,49 +257,56 @@ class Database(
     }
 
     /**
-     * Pulls all current player stats from server and updates them.
+     * Syncs the [player] stats with the server.
      *
-     * @param player The Player to update
-     * @return True if successful, false if failed
+     * @param player The [Player] to update
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     * @see loginPlayer
      */
     fun updateStats(player: Player): Boolean {
         try {
             if (!isOnline()) {
-                lastError = Throwable("no-internet")
+                lastError = Throwable(NO_INTERNET)
                 return false
             }
             var request = JSONObject()
                     .put("url", "http://api.csgo-skill.com/stats/" + player.steamId)
             request = HardHTTPJsonRequest(request)
-            if (request == null) {
-                throw Throwable("null")
+            if (request.optString("response").isEmpty()) {
+                throw Throwable(NO_RESPONSE)
             }
             if (!request.optBoolean("success")) {
-                throw Throwable(request.optString("reason"))
+                throw Throwable(request.optString("reason", REQUEST_FAIL))
             } else {
                 // Got stats!
                 val sql = writableDatabase
                 val values = ContentValues()
                 values.put(STATS, request.optJSONObject("stats").toString())
-                if (sql.update(USERS, values, "$STEAMID=?", arrayOf(player.steamId)) != 1) {
-                    throw Throwable("update-fail")
+                if (sql.update(USERS, values, "$STEAM_ID=?", arrayOf(player.steamId)) != 1) {
+                    throw Throwable(UPDATE_FAIL)
                 }
                 return true
             }
         } catch (e: Throwable) {
             if (DEV_MODE) Log.e("Database.updateStats", e)
             var m = e.message ?: ""
-            m = if (m.startsWith("error code")) {
-                "Stat update failed with error code " + m.substring(11)
-            } else if (m.startsWith("unable to resolve", true)) {
-                "no-api"
-            } else {
-                when (m) {
-                    "not-found" -> {
+            m = when {
+                m.startsWith("error code") ->
+                    "Stat update failed with error code " + m.substring(11)
+                m.startsWith("unable to resolve", true) ->
+                    NO_API
+                else -> when (m) {
+                    NOT_FOUND -> {
                         "Who are you?"
                     }
-                    "update-fail" -> {
+                    UPDATE_FAIL -> {
                         "You were successfully logged in, but the device was unable to update your account data. Profile information and stats data may appear outdated, and clearing the app data cache and logging back in should fix this. Don't do it until you have an internet connection, however!"
+                    }
+                    NO_RESPONSE -> {
+                        "Received an empty response."
+                    }
+                    REQUEST_FAIL -> {
+                        "Request failed spectacularly."
                     }
                     else -> {
                         "Unexpected error. Please report this."
@@ -276,10 +329,10 @@ class Database(
         try {
             // Grab stuff
             val sql = writableDatabase
-            val c = sql.rawQuery("SELECT $PROFILE FROM $USERS WHERE $STEAMID = \"$steamId\"", null)
+            val c = sql.rawQuery("SELECT $PROFILE FROM $USERS WHERE $STEAM_ID = \"$steamId\"", null)
             if (c.count <= 0) {
                 c.close()
-                throw Throwable("not-found")
+                throw Throwable(NOT_FOUND)
             } else {
                 c.moveToFirst()
                 val result = Player(JSONObject(c.getString(c.getColumnIndex(PROFILE))))
@@ -289,7 +342,7 @@ class Database(
         } catch (e: Throwable) {
             var m = e.message ?: ""
             m = when (m) {
-                "not-found" -> {
+                NOT_FOUND -> {
                     "Who are you?"
                 }
                 else -> {
@@ -316,7 +369,7 @@ class Database(
             if (DEV_MODE) Log.e("Database.getGrandStats", e)
             var m = e.message ?: ""
             m = when (m) {
-                "not-found" -> {
+                NOT_FOUND -> {
                     "Who are you?"
                 }
                 else -> {
@@ -342,7 +395,7 @@ class Database(
             if (DEV_MODE) Log.e("Database.getHistoryStats", e)
             var m = e.message ?: ""
             m = when (m) {
-                "not-found" -> {
+                NOT_FOUND -> {
                     "Who are you?"
                 }
                 else -> {
@@ -368,7 +421,7 @@ class Database(
             if (DEV_MODE) Log.e("Database.getCurrentStats", e)
             var m = e.message ?: ""
             m = when (m) {
-                "not-found" -> {
+                NOT_FOUND -> {
                     "Who are you?"
                 }
                 else -> {
@@ -391,10 +444,10 @@ class Database(
     @Throws(Throwable::class)
     private fun getStats(player: Player): JSONObject {
         val sql = writableDatabase
-        val c = sql.rawQuery("SELECT $STATS FROM $USERS WHERE $STEAMID = \"${player.steamId}\"", null)
+        val c = sql.rawQuery("SELECT $STATS FROM $USERS WHERE $STEAM_ID = \"${player.steamId}\"", null)
         if (c.count <= 0) {
             c.close()
-            throw Throwable("not-found")
+            throw Throwable(NOT_FOUND)
         } else {
             c.moveToFirst()
             val result = JSONObject(c.getString(c.getColumnIndex(STATS)))

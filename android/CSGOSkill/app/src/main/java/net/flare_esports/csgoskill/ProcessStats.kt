@@ -3,10 +3,17 @@ package net.flare_esports.csgoskill
 import org.json.JSONArray
 import org.json.JSONObject
 
-class ProcessStats {
+/**
+ * Generic stats processor, stuffs all stats in a single JSONObject that fall in the given timeRange.
+ * This is a singleton because... um... it kinda uses the CPU? And it uses [Main], the daddy activity.
+ */
+object ProcessStats {
 
+    /** Holds the most recently thrown error */
     var lastError: Throwable? = null
 
+    /** All the keys for stats that we track on the server */
+    @JvmStatic
     private val keys: Array<String> = arrayOf(
             "kills", "deaths", "time", "heads", "rwins", "rounds", "mwins", "matches", "shots", "hits",
             "damage", "plants", "defuse", "hostage", "contrib", "money", "mvps", "knife", "nades",
@@ -24,6 +31,13 @@ class ProcessStats {
             "g32s", "g32h", "g32k", "g35s", "g35k"
     )
 
+    /**
+     * Takes the current [Main.player] and collates all the stats according to the [timeRange]
+     *
+     * @param timeRange the [TimeRange] to check stats with
+     * @param main used to get [Main.player]
+     * @return JSONObject containing all the stats
+     */
     fun run(timeRange: TimeRange, main: Main) : JSONObject? {
 
         try {
@@ -44,7 +58,7 @@ class ProcessStats {
                     entry = entries.getJSONObject(i)
                     i++
 
-                    if (!timeRange.inRange(Constants.ServerTime.parse(entry.getString("date")).time)) {
+                    if (!timeRange.inRange(Constants.ServerTimeFormat.parse(entry.getString("date")).time)) {
                         // This makes it so that if we go inRange(), and then back out, it will stop
                         // processing because no other dates should be within the time range.
                         if (flag) {

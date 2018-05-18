@@ -23,6 +23,9 @@ import net.flare_esports.csgoskill.Constants.DEV_MODE
 import net.flare_esports.csgoskill.InternetHelper.*
 import org.json.JSONObject
 
+/**
+ * Handles user login with a custom WebView
+ */
 class LoginFragment : BaseFragment() {
 
     override lateinit var main: Main
@@ -78,7 +81,7 @@ class LoginFragment : BaseFragment() {
             // We won't return yet, just alert that there is (((likely))) no internet
         }
 
-        if (!main.canHasServer()) {
+        if (!main.checkApi()) {
             Toast.makeText(main, R.string.failed_server_connection, Toast.LENGTH_LONG).show()
             // We definitely shouldn't try anything if the version script failed
             return

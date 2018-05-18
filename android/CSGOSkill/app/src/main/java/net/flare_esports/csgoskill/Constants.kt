@@ -6,10 +6,17 @@
 package net.flare_esports.csgoskill
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
+import android.support.annotation.ArrayRes
 import android.support.v4.content.ContextCompat.getColor
+import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.TextView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
@@ -32,16 +39,94 @@ internal object Constants {
 
     //                      v0.1.0
     val VERSION = intArrayOf(0,1,0)
-
-    @SuppressLint("SimpleDateFormat")
-    val ServerTime: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-
-    init {
-        ServerTime.timeZone = TimeZone.getTimeZone("UTC")
-    }
-
     fun getVersion(): String {
         return "v${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+    }
+
+    /* // ERROR CONSTANTS // */
+
+    /** No internet connection is available */
+    const val NO_INTERNET = "no-internet"
+
+    /** Internet may be available, but CSGO Skill servers aren't responding */
+    const val NO_API = "no-api"
+
+    /** Internet request returned an empty response */
+    const val NO_RESPONSE = "no-response"
+
+    /** Indicates a profile was not found, either on the device or on the server */
+    const val NOT_FOUND = "not-found"
+
+    /** An update failed, typically in the database */
+    const val UPDATE_FAIL = "update-fail"
+
+    /** An internet request failed so spectacularly that we have no information about what happened */
+    const val REQUEST_FAIL = "request-fail"
+
+    /** A plain internet request timed out */
+    const val REQUEST_TIMEOUT = "request-timeout"
+
+
+    @SuppressLint("SimpleDateFormat")
+    val ServerTimeFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+
+    init {
+        if (DEV_MODE) Log.d("Constants", "initializing Constants.kt")
+
+        ServerTimeFormat.timeZone = TimeZone.getTimeZone("UTC")
+    }
+
+    /**
+     * A basic spinner class for the app, dark theme
+     */
+    class DarkSpinner : BaseAdapter {
+
+        private val items: Array<String>
+        private val size: Int
+        private val inflater: LayoutInflater
+
+        private val dropdown: Int = R.layout.spinner_dropdown
+        private val listItem: Int = R.layout.spinner_view
+
+        @Suppress("ConvertSecondaryConstructorToPrimary")
+        constructor(activity: Activity, @ArrayRes arrayRes: Int) {
+            items = activity.resources.getStringArray(arrayRes)
+            size = items.size
+            inflater = activity.layoutInflater
+        }
+
+        override fun getCount(): Int = size
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            return createView(position, convertView, parent, dropdown)
+        }
+
+        override fun getItem(position: Int): Any {
+            return items[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            return createView(position, convertView, parent, listItem)
+        }
+
+        private fun createView(position: Int, convertView: View?, parent: ViewGroup?, resource: Int): View {
+            val view: View = convertView ?: inflater.inflate(resource, parent, false)
+            val text = view as TextView
+
+            val item: Any = getItem(position)
+            if (item is String) {
+                text.text = item
+            } else {
+                text.text = item.toString()
+            }
+
+            return view
+        }
+
     }
 
     fun defaultBarLineChart(chartType: String, context: Context): BarLineChartBase<*> {

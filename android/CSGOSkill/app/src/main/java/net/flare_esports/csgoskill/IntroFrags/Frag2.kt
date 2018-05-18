@@ -25,6 +25,9 @@ import kotlinx.android.synthetic.main.fragment_introslide2.*
 import net.flare_esports.csgoskill.Constants
 import java.util.*
 
+/**
+ * Shows two example charts to demonstrate the tracking function of the app
+ */
 class Frag2 : Slide() {
 
     internal lateinit var view: View

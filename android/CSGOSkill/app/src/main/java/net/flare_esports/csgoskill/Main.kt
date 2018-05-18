@@ -13,7 +13,6 @@ import android.content.res.Resources
 import android.os.*
 import android.support.v7.app.AppCompatActivity
 import android.preference.PreferenceManager
-import android.support.annotation.ArrayRes
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.transition.Fade
@@ -23,45 +22,67 @@ import android.widget.*
 
 import kotlinx.android.synthetic.main.include_progress_overlay.*
 import kotlinx.android.synthetic.main.activity_main.*
+import net.flare_esports.csgoskill.Constants.DarkSpinner
 import net.flare_esports.csgoskill.Constants.DEV_MODE
+import net.flare_esports.csgoskill.Database.Updating.*
 import org.json.JSONObject
 import java.util.*
 
 
+/**
+ * The only real activity in the entire app. I find it easier to manage the app UI by having a single
+ * master activity which just flips between all the various fragments.
+ */
 class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     companion object {
 
-        // Fragment selection options for switchFragment()
+        /* switchFragment() options */
+
+        /** Login screen constant for [switchFragment] */
         @JvmStatic val LOC_LOGIN  = 0
+
+        /** Home screen constant for [switchFragment] */
         @JvmStatic val LOC_HOME   = 1
+
+        /** Signup screen constant for [switchFragment] */
         @JvmStatic val LOC_SIGNUP = 2
 
-        // Intent options from Intro
+
+        /* Intent options */
+
+        /** Field holding the Steam ID when launched from [Intro] */
         @JvmStatic val STEAM_ID    = "steam_id"
 
-        // Spinner time options
-        @JvmStatic val TIME_TODAY = 0
-        @JvmStatic val TIME_YESTERDAY = 1
-        @JvmStatic val TIME_WEEK = 2
-        @JvmStatic val TIME_WEEK2 = 3
-        @JvmStatic val TIME_MONTH = 4
-        @JvmStatic val TIME_MONTH_LAST = 5
-        @JvmStatic val TIME_30DAYS = 6
-        @JvmStatic val TIME_90DAYS = 7
-        @JvmStatic val TIME_YEAR = 8
 
-        /*
-        <item>Today</item>
-        <item>Yesterday</item>
-        <item>1 Week</item>
-        <item>2 Weeks</item>
-        <item>This Month</item>
-        <item>Last Month</item>
-        <item>30 Days</item>
-        <item>90 Days</item>
-        <item>This Year</item>
-         */
+        /* Spinner option list for stat ranges */
+
+        /** Stat changes for today */
+        @JvmStatic val TIME_TODAY = 0
+
+        /** Stat changes for yesterday */
+        @JvmStatic val TIME_YESTERDAY = 1
+
+        /** Stat changes for the last 7 days */
+        @JvmStatic val TIME_WEEK = 2
+
+        /** Stat changes for the last 14 days */
+        @JvmStatic val TIME_WEEK2 = 3
+
+        /** Stat changes for this month */
+        @JvmStatic val TIME_MONTH = 4
+
+        /** Stat changes for the previous month */
+        @JvmStatic val TIME_MONTH_LAST = 5
+
+        /** Stat changes for the last 30 days */
+        @JvmStatic val TIME_30DAYS = 6
+
+        /** Stat changes for the last 90 days */
+        @JvmStatic val TIME_90DAYS = 7
+
+        /** Stat changes for the year-to-date */
+        @JvmStatic val TIME_YEAR = 8
 
     }
 
@@ -72,10 +93,8 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private lateinit var prefs: SharedPreferences
     private lateinit var player: Player
 
-    @Suppress("PrivatePropertyName")
-    private lateinit var LoginFrag: LoginFragment
 
-    @Suppress("PrivatePropertyName")
+    private lateinit var LoginFrag: LoginFragment
     private lateinit var HomeFrag: HomeFragment
 
     private var loading = false
@@ -85,9 +104,17 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private val toLogin = Runnable { shouldExit = false; switchFragment(LOC_LOGIN) }
     private val hideVersionNumber = Runnable { hideVersionNumber() }
 
+    /** Whether or not the [player] property has been set */
     var hasPlayer: Boolean = false
         private set
 
+    /**
+     * onCreate() function for the activity. Initializes all fragments, the database, and other UI
+     * elements. If [Intro] gave a Steam ID, it will attempt to login the player, otherwise it will
+     * launch the [LoginFragment] so the user can login.
+     *
+     * If everything goes well, it should start the [HomeFragment] and load up the [TIME_WEEK2] stats.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -110,7 +137,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         topVersionNumber.text = Constants.getVersion()
         handler.postDelayed(hideVersionNumber, 5000)
 
-        topMenuSpinner.adapter = TimeSpinner(R.array.time_options)
+        topMenuSpinner.adapter = DarkSpinner(this, R.array.time_options)
         topMenuSpinner.setSelection(TIME_WEEK2)
 
         // Reflection hack to set custom popup height
@@ -159,9 +186,11 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     }
 
+    /**
+     * Responsible for hiding the navigation when this activity is in focus
+     */
     override fun onWindowFocusChanged(hasFocus:Boolean) {
-            //super.onWindowFocusChanged(hasFocus)
-        Log.d("Main", "Window has focus: $hasFocus")
+            super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
             window.decorView.systemUiVisibility = (
                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -173,6 +202,10 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
+    /**
+     * Hides/ shows UI elements based on the current open fragment. Because, for some reason, the
+     * activity "forgets" the visibility state of anything originally hidden because f*** you.
+     */
     override fun onResume() {
         super.onResume()
 
@@ -190,6 +223,10 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
+    /**
+     * Handles all BACK button presses, delegating to the current fragment if necessary. Also holds
+     * logic for a quick-exit feature, closing the app if the back button is double tapped.
+     */
     override fun onBackPressed() {
         if (closing) {return}
         if (shouldExit && prefs.getBoolean("quickExit", true)) {
@@ -229,7 +266,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                     DynamicAlert(this)
                             .setTitle("Logout?")
                             .setMessage("Pressing back on the Home screen logs you out. Are you sure you want to logout?")
-                            .setPositive({ ->
+                            .setPositive(Runnable{
                                 handler.postDelayed(toLogin, 100)
                             })
                             .setNegative()
@@ -464,6 +501,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
         override fun doInBackground(vararg params: Void?): RoundedBitmapDrawable? {
             return try{
+                // We use the HardBitmapRequest because we are already in an AsyncTask thread
                 val avatar = RoundedBitmapDrawableFactory.create(resources, InternetHelper.HardBitmapRequest(player.avatarUrl))
                 avatar.cornerRadius = 10f
                 avatar
@@ -511,23 +549,35 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     }
 
-    fun canHasServer(): Boolean {
+    /**
+     * Checks for app updates and alerts the user about the current version status
+     */
+    fun checkUpdates() {
         val check = db.checkVersion()
-        if (DEV_MODE) Log.d("Main.canHasServer", "Server connection checked")
         when (check) {
-            1 -> {
+            UP_TO_DATE -> {
                 // Up to date, nothing to do
             }
-            0 -> {
-                //TODO, updates available
+            UPDATES_AVAILABLE -> {
+                // TODO, updates available
             }
-            -1 -> {
-                return false
+            FAILED -> {
+                // TODO, display message
             }
         }
-        return true
     }
 
+    /**
+     * Plainly checks for a connection to the CSGO Skill server
+     */
+    fun checkApi(): Boolean {
+        return db.checkVersion() != FAILED
+    }
+
+    /**
+     * Enables/ disables a UI blocking loading spinner, useful for performing intensive tasks where
+     * further interaction is not necessary.
+     */
     fun toggleLoader(visible: Boolean) {
         fun run(visible: Boolean) {
             if (visible && !loading) {
@@ -573,56 +623,6 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             topVersionNumber.visibility = View.GONE
         })
         topVersionNumber.startAnimation(anim)
-    }
-
-    inner class TimeSpinner : BaseAdapter {
-
-        private val items: Array<String>
-        private val size: Int
-        private val inflater: LayoutInflater
-
-        private val dropdown: Int = R.layout.spinner_dropdown//android.R.layout.simple_spinner_dropdown_item
-        private val listItem: Int = R.layout.spinner_view//android.R.layout.simple_spinner_item
-
-        @Suppress("ConvertSecondaryConstructorToPrimary")
-        constructor(@ArrayRes arrayRes: Int) {
-            items = this@Main.resources.getStringArray(arrayRes)
-            size = items.size
-            inflater = this@Main.layoutInflater
-        }
-
-        override fun getCount(): Int = size
-
-        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            return createView(position, convertView, parent, dropdown)
-        }
-
-        override fun getItem(position: Int): Any {
-            return items[position]
-        }
-
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            return createView(position, convertView, parent, listItem)
-        }
-
-        private fun createView(position: Int, convertView: View?, parent: ViewGroup?, resource: Int): View {
-            val view: View = convertView ?: inflater.inflate(resource, parent, false)
-            val text = view as TextView
-
-            val item: Any = getItem(position)
-            if (item is String) {
-                text.text = item
-            } else {
-                text.text = item.toString()
-            }
-
-            return view
-        }
-
     }
 
 }
