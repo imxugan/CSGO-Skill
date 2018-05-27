@@ -8,11 +8,10 @@ package net.flare_esports.csgoskill
 import android.annotation.SuppressLint
 import android.app.FragmentManager
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.Intent
 import android.content.res.Resources
 import android.os.*
 import android.support.v7.app.AppCompatActivity
-import android.preference.PreferenceManager
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.transition.Fade
@@ -24,7 +23,11 @@ import kotlinx.android.synthetic.main.include_progress_overlay.*
 import kotlinx.android.synthetic.main.activity_main.*
 import net.flare_esports.csgoskill.Constants.DarkSpinner
 import net.flare_esports.csgoskill.Constants.DEV_MODE
+import net.flare_esports.csgoskill.Constants.NO_API
+import net.flare_esports.csgoskill.Constants.NO_INTERNET
 import net.flare_esports.csgoskill.Database.Updating.*
+import net.flare_esports.csgoskill.Preferences.QUICK_EXIT
+import net.flare_esports.csgoskill.Preferences.QUICK_EXIT_NOTICE
 import org.json.JSONObject
 import java.util.*
 
@@ -37,7 +40,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     companion object {
 
-        /* switchFragment() options */
+        /* // switchFragment() options // */
 
         /** Login screen constant for [switchFragment] */
         @JvmStatic val LOC_LOGIN  = 0
@@ -49,10 +52,22 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         @JvmStatic val LOC_SIGNUP = 2
 
 
-        /* Intent options */
+        /* // Intent options // */
 
-        /** Field holding the Steam ID when launched from [Intro] */
+        /** The Steam ID when launched from [Intro] */
         @JvmStatic val STEAM_ID    = "steam_id"
+
+
+        /* // Result Codes // */
+
+        /** Request code for starting the [Settings] activity */
+        @JvmStatic val SETTINGS_REQUEST = 0
+
+        /** Result code for going to [SignupFragment] */
+        @JvmStatic val RESULT_SIGNUP = 0
+
+        /** Result code for updating player info */
+        @JvmStatic val RESULT_UPDATE_PROFILE = 1
 
 
         /* Spinner option list for stat ranges */
@@ -90,10 +105,9 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
     private lateinit var db: Database
     private lateinit var fManager: FragmentManager
     private lateinit var handler: Handler
-    private lateinit var prefs: SharedPreferences
     private lateinit var player: Player
 
-
+    private lateinit var SignupFrag: SignupFragment
     private lateinit var LoginFrag: LoginFragment
     private lateinit var HomeFrag: HomeFragment
 
@@ -126,11 +140,11 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
         context = this
         fManager = fragmentManager
-        prefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
 
         db = Database(context, null)
         handler = Handler()
 
+        SignupFrag = SignupFragment()
         LoginFrag = LoginFragment()
         HomeFrag = HomeFragment()
 
@@ -159,7 +173,9 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 handler.removeCallbacks(hideVersionNumber)
                 showVersionNumber()
             }
-            override fun onSpinnerClosed() { hideVersionNumber() }
+            override fun onSpinnerClosed() {
+                hideVersionNumber()
+            }
         })
 
         val steamId = intent.getStringExtra(STEAM_ID) ?: ""
@@ -179,7 +195,14 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             when (item.itemId) {
                 R.id.nav_home -> switchFragment(LOC_HOME)
                 R.id.nav_stats -> { } // TODO
-                R.id.nav_settings -> { } // TODO
+                R.id.nav_settings -> {
+                    if (!closing) {
+                        val intent = Intent(this, Settings::class.java)
+                        intent.putExtra(STEAM_ID, player.steamId)
+                        startActivityForResult(intent, SETTINGS_REQUEST)
+                        // onActivityResult() will be called when Settings finishes
+                    }
+                }
             }
             item.itemId != R.id.nav_settings
         }
@@ -229,18 +252,16 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
      */
     override fun onBackPressed() {
         if (closing) {return}
-        if (shouldExit && prefs.getBoolean("quickExit", true)) {
+        if (shouldExit && Preferences.getBoolean(QUICK_EXIT, true)) {
             this.shouldExit = false
             handler.removeCallbacksAndMessages(null)
-            if (!prefs.getBoolean("quickExitNotice", false)) {
+            if (!Preferences.getBoolean(QUICK_EXIT_NOTICE, false)) {
                 DynamicAlert(this)
                         .setTitle("Notice!")
                         .setMessage("Double tapping BACK on the Home Screen will quick-exit CSGO Skill. We won't exit right now, since this is your first time. In the future, double tapping BACK will quick-exit CSGO Skill!")
                         .setDismissAction {
-                            prefs.edit()
-                                    .putBoolean("quickExit", true)
-                                    .putBoolean("quickExitNotice", true)
-                                    .apply()
+                            Preferences.setBoolean(QUICK_EXIT, true)
+                                    .setBoolean(QUICK_EXIT_NOTICE, true)
                         }
                         .show()
             } else {
@@ -276,6 +297,42 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        when (requestCode) {
+            SETTINGS_REQUEST -> {
+                when (resultCode) {
+                    RESULT_SIGNUP -> {
+                        // Settings wants us to send the user to the signup fragment
+                        switchFragment(LOC_SIGNUP)
+                    }
+                    RESULT_UPDATE_PROFILE -> {
+                        // User has changed account information, update the UI
+                        val player = db.getPlayer(player.steamId)
+                        if (player != null) {
+                            this.player = player
+                            /* TODO: Right now the only thing to update is the persona, but in the
+                             * future this may be expanded. For that reason, I've made this a TODO
+                             * so it get's double checked between releases.
+                             */
+                            topPersonaView.text = player.persona
+                        } else {
+                            DynamicAlert(this)
+                                    .setMessage("Your account has been updated, however we're suddenly having trouble.\n\n" + (db.lastError?.message ?: "AHH, BUGGER IT"))
+                                    .setTitle("Aw Crap!")
+                                    .show()
+                        }
+                    }
+                }
+            }
+            else -> {
+                // Do nothing
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun getPlayer(): Player {
         return player
     }
@@ -302,15 +359,16 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
             // Attempt to login, showing error if present, but continuing regardless
             if (!db.loginPlayer(player)) {
-                val m = when((db.lastError ?: Throwable("unexpected")).message) {
-                    "no-internet" -> {
+                val err = (db.lastError ?: Throwable("AHH, BUGGER IT")).message
+                val m = when(err) {
+                    NO_INTERNET -> {
                         "No internet connection. Player information may be outdated."
                     }
-                    "no-api" -> {
+                    NO_API -> {
                         "Failed to connect to the CSGO Skill servers. Player information may be outdated."
                     }
                     else -> {
-                        "Unexpected error while logging in. Player information may be outdated. Please report this."
+                        err
                     }
                 }
                 DynamicAlert(this, m).setTitle("Aw crap").show()
@@ -324,7 +382,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             return true
         } catch (e: Throwable) {
             if (DEV_MODE) Log.e("Main.loginPlayer", e)
-            var m = e.message ?: ""
+            var m = e.message ?: "unexpected"
             m = when (m) {
                 "unexpected" -> {
                     "Unexpected error while logging in. Please report this."
@@ -340,7 +398,6 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
 
     override fun switchFragment(nextFragment: Int) {
         if (closing) {return}
-        val fTransaction = fManager.beginTransaction()
         val previous = fManager.findFragmentById(R.id.mainFragmentContainer) as BaseFragment?
         if (previous != null) {
             previous.exitTransition = Fade().setDuration(300)
@@ -351,6 +408,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             LOC_HOME -> {
                 if (previous == null || previous.name != "home") {
                     HomeFrag.enterTransition = fadeIn
+                    val fTransaction = fManager.beginTransaction()
                     fTransaction.replace(R.id.mainFragmentContainer, HomeFrag)
                     fTransaction.commit()
                 }
@@ -365,7 +423,19 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             LOC_LOGIN -> {
                 if (previous == null || previous.name != "login") {
                     LoginFrag.enterTransition = fadeIn
+                    val fTransaction = fManager.beginTransaction()
                     fTransaction.replace(R.id.mainFragmentContainer, LoginFrag)
+                    fTransaction.commit()
+                }
+                bottomNavigation.visibility = View.GONE
+                topBar.visibility = View.GONE
+                topMenuSpinner.itemSelectedListener = null
+            }
+            LOC_SIGNUP -> {
+                if (previous == null || previous.name != "signup") {
+                    SignupFrag.enterTransition = fadeIn
+                    val fTransaction = fManager.beginTransaction()
+                    fTransaction.replace(R.id.mainFragmentContainer, SignupFrag)
                     fTransaction.commit()
                 }
                 bottomNavigation.visibility = View.GONE
@@ -374,30 +444,9 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
             }
             else -> {
                 if (DEV_MODE)
-                    Log.e("DEV", "Unknown fragment requested: $nextFragment")
+                    Log.e("Main.switchFragment", "Unknown fragment requested: $nextFragment")
             }
         }
-    }
-
-    override fun updatePlayer(): Boolean {
-        try {
-            toggleLoader(true)
-            if (!db.loginPlayer(player)) throw db.lastError ?: Throwable("unexpected")
-            this.player = db.getPlayer(player.steamId) ?: (throw db.lastError ?: Throwable("unexpected"))
-            return true
-        } catch (e: Throwable) {
-            if (DEV_MODE) Log.e("Main.updateStats", e)
-            var m = e.message ?: ""
-            m = when (m) {
-                "unexpected" -> {
-                    "Unexpected error while logging in. Please report this."
-                }
-                else -> m
-            }
-            DynamicAlert(this, m).setTitle("Aw crap").show()
-        }
-        return false
-
     }
 
     override fun updateStats() {
@@ -536,7 +585,7 @@ class Main : AppCompatActivity(), BaseFragment.FragmentListener {
                 null
             } catch (e: Throwable) {
                 if (DEV_MODE) Log.e("Main.UpdateStats", e)
-                var m = e.message ?: ""
+                var m = e.message ?: "unexpected"
                 m = when (m) {
                     "unexpected" -> {
                         "Unexpected error while logging in. Please report this."

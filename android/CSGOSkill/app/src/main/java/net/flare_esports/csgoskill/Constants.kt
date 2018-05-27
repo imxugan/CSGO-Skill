@@ -8,13 +8,13 @@ package net.flare_esports.csgoskill
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Typeface
 import android.support.annotation.ArrayRes
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.ContextCompat.getColor
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.github.mikephil.charting.charts.BarChart
@@ -67,6 +67,11 @@ internal object Constants {
     const val REQUEST_TIMEOUT = "request-timeout"
 
 
+    /* // OTHER CONSTANTS // */
+
+    /** Cache for the device density, which is very unlikely to change while the app is running */
+    val DENSITY: Float
+
     @SuppressLint("SimpleDateFormat")
     val ServerTimeFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
@@ -74,6 +79,8 @@ internal object Constants {
         if (DEV_MODE) Log.d("Constants", "initializing Constants.kt")
 
         ServerTimeFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+        DENSITY = Resources.getSystem().displayMetrics.density
     }
 
     /**
@@ -286,6 +293,38 @@ internal object Constants {
 
         return set
     }
+
+    /**
+     * Returns the height of the navigation bar.
+     *
+     * Many thanks to Mdlc from StackOverflow
+     */
+    fun getNavBarHeight(context: Context): Int {
+        val hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey()
+        val hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
+
+        if (!hasMenuKey && !hasBackKey) {
+            // The device has a navigation bar
+            val resources = context.resources
+
+            val orientation = resources.configuration.orientation
+
+            // Check if device is a tablet
+            val resourceId = if ((resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE) {
+                resources.getIdentifier(if (orientation == Configuration.ORIENTATION_PORTRAIT) "navigation_bar_height" else "navigation_bar_height_landscape", "dimen", "android")
+            } else {
+                resources.getIdentifier(if (orientation == Configuration.ORIENTATION_PORTRAIT) "navigation_bar_height" else "navigation_bar_width", "dimen", "android")
+            }
+
+            if (resourceId > 0) return resources.getDimensionPixelSize(resourceId)
+
+        }
+
+        return 0
+    }
+
+    @JvmStatic
+    fun dpToPx(dp: Number): Double = (dp.toDouble() * DENSITY)
 
     class DateValueFormatter(startTime: Long): IAxisValueFormatter {
 

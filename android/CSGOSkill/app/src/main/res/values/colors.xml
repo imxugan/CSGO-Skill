@@ -13,6 +13,7 @@
     <color name="black">#262621</color>
     <color name="jetBlack">#111111</color>
     <color name="lightGrey">#BDBDBD</color>
+    <color name="grey">#686868</color>
     <color name="steamBlue">#1B2838</color>
     <color name="red">#A82C2C</color>
     <color name="green">#2DA92D</color>
@@ -21,6 +22,8 @@
     <color name="bottomNav">#A0262621</color>
 
     <color name="transparent">#00000000</color>
+    <color name="dividerLight">#1F000000</color>
+    <color name="dividerDark">#30FFFFFF</color>
     <color name="shadowLight">#77000000</color>
     <color name="shadowDark">#CC000000</color>
     <color name="roundedBoxBackground">#B0FFFFFF</color>

@@ -7,10 +7,8 @@ package net.flare_esports.csgoskill
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,12 +31,10 @@ class LoginFragment : BaseFragment() {
     override val name: String = "login"
 
     private var stage: String = "login"
-    private lateinit var prefs: SharedPreferences
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         main = context as Main
-        prefs = PreferenceManager.getDefaultSharedPreferences(main.baseContext)
         listener = context
     }
 
@@ -214,6 +210,6 @@ class LoginFragment : BaseFragment() {
         stage = "web"
         loginButtonView.visibility = View.GONE
         loginWebView.visibility = View.VISIBLE
-        loginWebView.loadUrl("http://api.csgo-skill.com/login")
+        loginWebView.loadUrl("https://api.csgo-skill.com/login")
     }
 }

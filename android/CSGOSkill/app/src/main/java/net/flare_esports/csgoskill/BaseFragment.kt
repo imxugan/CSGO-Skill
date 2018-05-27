@@ -53,13 +53,6 @@ abstract class BaseFragment : Fragment() {
         fun switchFragment(nextFragment: Int)
 
         /**
-         * Request to update the user information
-         *
-         * @return <code>true</code> if successful, <code>false</code> otherwise
-         */
-        fun updatePlayer(): Boolean
-
-        /**
          * Request to update the user stats. Might fail, might not.
          */
         fun updateStats()

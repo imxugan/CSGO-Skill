@@ -7,6 +7,7 @@
 
 package net.flare_esports.csgoskill;
 
+import android.content.res.Resources;
 import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,7 +20,13 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
+import android.text.Html;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -60,7 +67,7 @@ public class DynamicAlert {
     }
 
     /** The default theme used for all dialogs */
-    private static final int THEME_DEFAULT = R.style.AlertDialog;
+    private static final int THEME_DEFAULT = R.style.Theme_Flare_AlertDialog;
 
     /**
      * The default setup for all DynamicAlerts. If you are copying this class, just change the
@@ -306,6 +313,62 @@ public class DynamicAlert {
         return this;
     }
 
+    /**
+     * Sets an HTML message for this DynamicAlert. Note: this calls {@link #setView(View)}!
+     *
+     * @param message raw HTML string
+     * @return this DynamicAlert
+     */
+    public DynamicAlert setHTML(String message) {
+        TextView text = new TextView(c);
+        text.setText(Html.fromHtml(message));
+
+        // Get the primary text color for the supplied theme
+        TypedValue a = new TypedValue();
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        Resources.Theme theme = self.getContext().getTheme();
+        theme.resolveAttribute(android.R.attr.textColorPrimary, a, true);
+        text.setTextColor(a.data);
+
+        // Get the text size for the supplied theme
+        theme.resolveAttribute(android.R.attr.textSize, a, true);
+
+        text.setTextSize(TypedValue.COMPLEX_UNIT_PX, a.getDimension(metrics));
+        /* The normal padding for the TextView used by default in alert_dialog.xml comes out to
+         * Top:     7dp
+         * Bottom: 17dp
+         * Start:  19dp
+         * End:    15dp
+         *
+         * This TextView is called "android.R.id.message". If you want to see it, just type that
+         * inside any class with Android Studio, right-click the "message" section, and select
+         * "Go To -> Declaration" and find the file called "alert_dialog.xml"
+         *
+         * The custom view, which is used if a view is set with Builder.setView(), has this padding
+         * Top:    5dp
+         * Bottom: 5dp
+         * Start:  0dp
+         * End:    0dp
+         *
+         * This FrameLayout is called "android.R.id.custom". Follow the above instructions to find it
+         *
+         * That is why this method creates all the extra views with padding and stuff.
+         * Remember that, by default, the TextView is actually inside of a ScrollView!
+         */
+
+        ScrollView scroll = new ScrollView(c);
+        scroll.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+
+        // After testing, I determined these values perfectly mimic the padding, despite it not matching mathematically
+        scroll.setPadding((int)Constants.dpToPx(19), (int)Constants.dpToPx(7), (int)Constants.dpToPx(15), 0);
+        int five = (int) Constants.dpToPx(5);
+        text.setPadding(five, five, five, five);
+        scroll.addView(text, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        self.setView(scroll);
+        return this;
+    }
+
     /* END MESSAGES */
 
 
@@ -351,7 +414,7 @@ public class DynamicAlert {
 
     /**
      * Sets a custom view for this DynamicAlert, for ultra-customized alerts. Be careful! This removes
-     * any custom title bars and buttons added, since the DynamicAlert will now use this view as the alert.
+     * any message text as it overwrites the content view of the alert.
      *
      * @param layout custom alert layout
      * @return this DynamicAlert, should be followed by {@link DynamicAlert#show()}
@@ -363,7 +426,7 @@ public class DynamicAlert {
 
     /**
      * Sets a custom view for this DynamicAlert, for ultra-customized alerts. Be careful! This removes
-     * any custom title bars and buttons added, since the DynamicAlert will now use this view as the alert.
+     * any message text as it overwrites the content view of the alert.
      *
      * @param view custom alert
      * @return this DynamicAlert, should be followed by {@link DynamicAlert#show()}

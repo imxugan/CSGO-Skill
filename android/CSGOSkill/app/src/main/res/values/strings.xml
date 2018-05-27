@@ -17,7 +17,7 @@
     <string name="got_it">GOT IT</string>
 
     <string name="safe_error_title">Something happened</string>
-    <string name="safe_error_content">Try doing that again. If this error persists, contact support at http://csgo-skill.com</string>
+    <string name="safe_error_content">Try doing that again. If this error persists, contact support at https://csgo-skill.com</string>
 
     <string name="persona">Persona</string>
     <string name="username">Username</string>
