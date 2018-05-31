@@ -132,7 +132,7 @@ class Database(
                 lastError = Throwable(NO_INTERNET)
                 return Updating.FAILED
             }
-            val response = HTTPRequest("http://api.csgo-skill.com/version")
+            val response = HTTPRequest("https://api.csgo-skill.com/version")
             if (response.isEmpty()) {
                 throw Throwable(NO_RESPONSE)
             } else if (response.startsWith("unable to resolve host", true)) {
@@ -157,8 +157,7 @@ class Database(
     }
 
     /**
-     * <p>Inserts the given user (Username, Steam ID, Email, Secret),
-     * [Main.updatePlayer] should be called immediately after.</p>
+     * Inserts the given user (Username, Steam ID, Email, Secret)
      *
      * @param player The [Player] to insert
      * @return <code>true</code> if successful, <code>false</code> otherwise
@@ -194,13 +193,13 @@ class Database(
                 return false
             }
             var request = JSONObject()
-                    .put("url", "http://api.csgo-skill.com/login")
+                    .put("url", "https://api.csgo-skill.com/login")
                     .put("post", JSONObject()
                             .put("steamid", player.steamId)
                             .put("token", player.token)
                     )
             request = HTTPJsonRequest(request)
-            if (request.optString("response", "not empty").isEmpty())
+            if (request.optString("reason", "not empty").isEmpty())
                 throw Throwable(NO_RESPONSE)
             if (!request.optBoolean("success")) {
                 throw Throwable(request.optString("reason", REQUEST_FAIL))
@@ -245,6 +244,9 @@ class Database(
                     REQUEST_FAIL -> {
                         "Request failed spectacularly."
                     }
+                    NO_RESPONSE -> {
+                        "We connected to the servers, but we didn't get a response."
+                    }
                     else -> {
                         "Unexpected error. Please report this."
                     }
@@ -270,9 +272,9 @@ class Database(
                 return false
             }
             var request = JSONObject()
-                    .put("url", "http://api.csgo-skill.com/stats/" + player.steamId)
+                    .put("url", "https://api.csgo-skill.com/stats/" + player.steamId)
             request = HardHTTPJsonRequest(request)
-            if (request.optString("response").isEmpty()) {
+            if (request.optString("reason", "not empty").isEmpty()) {
                 throw Throwable(NO_RESPONSE)
             }
             if (!request.optBoolean("success")) {

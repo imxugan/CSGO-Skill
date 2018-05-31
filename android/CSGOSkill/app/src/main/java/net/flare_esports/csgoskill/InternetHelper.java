@@ -40,7 +40,11 @@ import static net.flare_esports.csgoskill.Constants.REQUEST_TIMEOUT;
 class InternetHelper {
 
     /**
-     * Pings Google server for a response, assuming no internet connection if there is no response
+     * Pings Google, assuming no internet connection if there is no response.
+     *
+     * Many thanks to Levit from StackOverflow, as this only needs Internet, which is a default perm
+     * "Let's just say, your app would probably not be the talk of the day." - ha!
+     * Your answer does not have enough upvotes
      *
      * @return {@code true} if connection is available, {@code false} otherwise
      */
@@ -175,19 +179,10 @@ class InternetHelper {
                 URL url = new URL(jsonObject.getString("url"));
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 if (jsonObject.has("post")) {
+                    conn.setRequestProperty("content-type", "application/json");
                     conn.setDoOutput(true);
                     OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    builder = new StringBuilder();
-                    JSONArray keys = jsonObject.getJSONObject("post").names();
-                    int index = 0;
-                    while (index < keys.length()) {
-                        builder.append(keys.getString(index))
-                                .append("=")
-                                .append(URLEncoder.encode(jsonObject.getJSONObject("post").getString(keys.getString(index)), "UTF-8"))
-                                .append("&");
-                        index++;
-                    }
-                    wr.write(builder.substring(0, builder.length() - 1));
+                    wr.write(jsonObject.getJSONObject("post").toString());
                     wr.flush();
                 }
                 stream = new BufferedReader(new InputStreamReader(conn.getInputStream()));

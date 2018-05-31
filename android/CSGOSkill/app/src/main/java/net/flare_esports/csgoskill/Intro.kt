@@ -9,11 +9,9 @@ import android.app.ActivityOptions
 import android.app.FragmentManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.transition.Fade
@@ -27,6 +25,10 @@ import net.flare_esports.csgoskill.Database.Updating.*
 
 import kotlinx.android.synthetic.main.activity_intro.*
 import net.flare_esports.csgoskill.IntroFrags.*
+import net.flare_esports.csgoskill.Preferences.AUTO_LOGIN
+import net.flare_esports.csgoskill.Preferences.FIRST_RUN
+import java.util.*
+import java.util.prefs.PreferenceChangeEvent
 
 /**
  * Splash screen activity, responsible for also auto-logging in the player from the device. It only
@@ -38,7 +40,6 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private lateinit var handler: Handler
     private lateinit var fManager: FragmentManager
     private lateinit var context: Context
-    private lateinit var prefs: SharedPreferences
 
     private lateinit var slide1: Frag1
     private lateinit var slide2: Frag2
@@ -74,7 +75,6 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
         handler = Handler()
         fManager = fragmentManager
         context = this
-        prefs = PreferenceManager.getDefaultSharedPreferences(baseContext)
 
         hasAnimated = false
         connected = false
@@ -268,7 +268,7 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
                 }
                 "slide3" -> {
 
-                    prefs.edit().putBoolean("firstRun", false).apply()
+                    Preferences.setBoolean(FIRST_RUN, false)
                     slide3.exitTransition = fragExitFade
 
                     fragmentTransaction.remove(slide3)
@@ -282,10 +282,12 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
     private fun toMain() {
         val intent = Intent(this@Intro, Main::class.java)
 
-        val users = db.users
-        // Try to get the first Steam ID, and if the only entry, auto load it.
-        if (users.size == 1) {
-            intent.putExtra(Main.STEAM_ID, users[0].steamId)
+        if (Preferences.getBoolean(AUTO_LOGIN, true)) {
+            val users = db.users
+            // Try to get the first Steam ID, and if the only entry, auto load it.
+            if (users.size == 1) {
+                intent.putExtra(Main.STEAM_ID, users[0].steamId)
+            }
         }
         imageLogo.clearAnimation()
         if (!closing) {
@@ -307,7 +309,6 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
 
         connected = isOnline()
         if (DEV_MODE) Log.d("Intro.splashing", "Connection: $connected")
-        if (!connected) Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
 
         val check = db.checkVersion()
         if (DEV_MODE) Log.d("Intro.splashing", "Checked: $check")
@@ -323,18 +324,37 @@ class Intro : AppCompatActivity(), Slide.SlideListener {
             }
         }
 
-        firstRun = prefs.getBoolean("firstRun", true)// || DEV_MODE
+        firstRun = Preferences.getBoolean(FIRST_RUN, true)// || DEV_MODE
+        if (!connected) {
+            if (firstRun) {
+                handler.postDelayed({runOnUiThread {
+                    // More apparent request that first timers turn on the internet before using, although they don't HAVE to
+                    DynamicAlert(context, R.string.first_run_no_internet_warning)
+                            .setDismissAction { handler.postDelayed(startIntro, 200) }
+                            .setCancelable(true) // Allow back button cancel, just to be safe
+                            .show()
+                }}, if (!hasAnimated) 2200L else 200L)
+            } else {
+                Toast.makeText(context, R.string.no_internet_warning, Toast.LENGTH_SHORT).show()
+            }
+        }
 
-        if (firstRun && !connected) {
-            // Request that first timers turn on the internet before using, but they don't HAVE to
-            DynamicAlert(context,
-                    R.string.first_run_no_internet_warning)
-                    .setDismissAction{ handler.postDelayed(startIntro, 200) }.show()
-        } else if (firstRun) {
-            handler.postDelayed(startIntro,
-                    if (!hasAnimated) 2200L
-                    else 200L
-            )
+        if (firstRun) {
+            // Show special message for users who have their locale set to non-english, begging them to help translate the app
+            if (Locale.getDefault().language != "en") {
+                handler.postDelayed({runOnUiThread {
+                    DynamicAlert(context)
+                            .setHTML("Hey there! If you can read this, then CSGO Skill <b>needs you!</b><br><br>If you are bilingual, then please consider helping to translate this app! Once you finish the login process, just tap the gear icon when you see it and select the Contribute on GitHub option.<br><br>GL HF!")
+                            .setDismissAction { handler.postDelayed(startIntro, 200) }
+                            .setCancelable(true) // Allow back button cancel, just to be safe
+                            .show()
+                }}, if (!hasAnimated) 2200L else 200L)
+            } else {
+                handler.postDelayed(startIntro,
+                        if (!hasAnimated) 2200L
+                        else 200L
+                )
+            }
         } else {
             handler.postDelayed({runOnUiThread(toMain)},
                     if (!hasAnimated) 2200L

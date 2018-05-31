@@ -169,7 +169,7 @@ class SignupFragment: BaseFragment() {
         try {
             var player1 = player ?: throw Throwable(NOT_FOUND)
             var request = JSONObject()
-                    .put("url", "http://api.csgo-skill.com/signup")
+                    .put("url", "https://api.csgo-skill.com/signup")
                     .put("post", JSONObject()
                             .put("steamid", player1.steamId)
                             .put("persona", personaInput.toString())
@@ -178,7 +178,7 @@ class SignupFragment: BaseFragment() {
                     .put("token", player1.token)
 
             request = HTTPJsonRequest(request)
-            if (request.optString("response", "not empty").isEmpty())
+            if (request.optString("reason", "not empty").isEmpty())
                 throw Throwable(NO_RESPONSE)
             if (!request.optBoolean("success")) {
                 throw Throwable(request.optString("reason", REQUEST_FAIL))

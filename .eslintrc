@@ -1,0 +1,65 @@
+{
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "extends": "xo",
+    "rules": {
+        "semi": ["warn", "never", {
+            "beforeStatementContinuationChars": "always"
+        }],
+        "no-empty": "error",
+        "no-irregular-whitespace": ["error", {
+            "skipStrings": false
+        }],
+        "no-template-curly-in-string": "warn",
+        "valid-typeof": ["error", {
+            "requireStringLiterals": true
+        }],
+        "no-unused-vars": "warn",
+        "object-curly-spacing": "off",
+        "quote-props": ["warn", "consistent"],
+        "padded-blocks": "off",
+        "camelcase": ["warn", {
+            "properties": "never"
+        }],
+        "no-negated-condition": "off",
+        "one-var": "off",
+        "indent": ["off", 4],
+        "max-statements-per-line": ["warn", {
+            "max": 2
+        }],
+        "key-spacing": "off",
+        "comma-spacing": "off",
+        "keyword-spacing": "warn",
+        "eqeqeq": ["warn", "smart"],
+        "object-shorthand": ["warn", "consistent"],
+        "no-multi-spaces": "off",
+        "no-undef": "warn",
+        "curly": ["warn", "multi", "consistent"],
+        "no-prototype-builtins": "off",
+        "arrow-parens": ["warn", "as-needed"],
+        "no-warning-comments": "off",
+        "no-mixed-operators": "warn",
+        "new-cap": "warn",
+        "complexity": "off",
+        "space-before-function-paren": "warn",
+        "space-before-blocks": "warn",
+        "no-else-return": "warn",
+        "capitalized-comments": "off",
+        "quotes": ["warn", "single"],
+        "no-multiple-empty-lines": ["warn", {
+            "max": 2
+        }],
+        "spaced-comment": "off",
+        "comma-style": "off",
+        "brace-style": ["warn", "1tbs", {
+            "allowSingleLine": true
+        }],
+        "max-nested-callbacks": "off",
+        "no-trailing-spaces": "warn"
+    }
+}

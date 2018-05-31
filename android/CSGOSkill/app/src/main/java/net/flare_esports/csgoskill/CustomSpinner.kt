@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.support.v7.widget.AppCompatSpinner
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ListPopupWindow
 import android.widget.Spinner
 
 /**
@@ -15,7 +16,6 @@ class CustomSpinner : AppCompatSpinner {
     private val TAG = "CustomSpinner"
     private var mListener: OnSpinnerEventsListener? = null
     private var mOpenInitiated = false
-
 
     /** A public variable Unit to set a listener for when an item is selected */
     var itemSelectedListener: ((parent: AdapterView<*>?, view: View?, position: Int, id: Long) -> Unit)? = null
@@ -33,6 +33,7 @@ class CustomSpinner : AppCompatSpinner {
                 this@CustomSpinner.itemSelected(parent, view, position, id)
             }
         }
+        this.isFocusable = false
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, mode: Int) : super(context, attrs, defStyleAttr, mode)
@@ -74,24 +75,26 @@ class CustomSpinner : AppCompatSpinner {
         // indicator for the activity(which may lose focus for some other
         // reasons)
         mOpenInitiated = true
-        if (mListener != null) {
-            mListener!!.onSpinnerOpened()
-        }
+        mListener?.onSpinnerOpened()
 
-        try {
+        Log.d(TAG, "showing popup")
+
+        getPopup()?.listView?.isScrollbarFadingEnabled = false
+
+        return click
+    }
+
+    fun getPopup(): ListPopupWindow? {
+        return try {
             val popup = Spinner::class.java.getDeclaredField("mPopup")
             popup.isAccessible = true
 
             // Get private mPopup member variable and try cast to ListPopupWindow
-            val popupWindow = popup.get(this) as android.widget.ListPopupWindow
+            popup.get(this) as android.widget.ListPopupWindow?
 
-            // Always show scroll bar
-            popupWindow.listView.isScrollbarFadingEnabled = false
         } catch (e: Throwable) {
-            // Silently fail...
+            null
         }
-
-        return click
     }
 
     /**
@@ -105,10 +108,9 @@ class CustomSpinner : AppCompatSpinner {
      * Propagate the closed Spinner event to the listener from outside.
      */
     fun performClosedEvent() {
+        Log.d(TAG, "closing popup")
         mOpenInitiated = false
-        if (mListener != null) {
-            mListener!!.onSpinnerClosed()
-        }
+        mListener?.onSpinnerClosed()
     }
 
     /**
@@ -121,10 +123,9 @@ class CustomSpinner : AppCompatSpinner {
     }
 
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
-        Log.d(TAG, "onWindowFocusChanged")
+        Log.d(TAG, "onWindowFocusChanged: $hasWindowFocus")
         super.onWindowFocusChanged(hasWindowFocus)
         if (hasBeenOpened() && hasWindowFocus) {
-            Log.d(TAG, "closing popup")
             performClosedEvent()
         }
     }

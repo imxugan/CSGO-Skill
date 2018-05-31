@@ -25,9 +25,9 @@ import android.text.TextWatcher
 
 class Typer : TextWatcher {
 
-    private var before: (s: CharSequence?, start: Int, count: Int, after: Int) -> Unit = { _: CharSequence?, _: Int, _: Int, _: Int -> }
-    private var after: (s: Editable?) -> Unit = { _: Editable? -> }
-    private var on: (s: CharSequence?, start: Int, before: Int, count: Int) -> Unit = { _: CharSequence?, _: Int, _: Int, _: Int -> }
+    private var before: (s: CharSequence?, start: Int, count: Int, after: Int) -> Unit = { _, _, _, _ -> }
+    private var after: (s: Editable?) -> Unit = { _ -> }
+    private var on: (s: CharSequence?, start: Int, before: Int, count: Int) -> Unit = { _, _, _, _ -> }
 
     /**
      * For validating text after you type it. Be careful about changing text here, because it will
