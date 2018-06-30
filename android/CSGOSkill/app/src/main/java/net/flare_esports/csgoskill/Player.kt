@@ -16,16 +16,15 @@ import org.json.JSONObject
 @Suppress("MemberVisibilityCanBePrivate")
 class Player (profile: JSONObject) {
 
-    private var _profileUrl: String = profile.getString("profileurl")
-    private var _avatarUrl: String = profile.getString("avatarurl")
-    private var _token: Token = Token(profile.getJSONObject("token"))
+    private val _profileUrl: String = profile.getString("profileurl")
+    private val _avatarUrl: String = profile.getString("avatarurl")
+    private val _token: Token = Token(profile.getJSONObject("token"))
     private var dlAvatar: Boolean = false
 
     // Basic profile stuff
 
     /** The player's Steam ID */
-    var steamId: String = profile.getString("steam_id")
-        private set
+    val steamId: String = profile.getString("steam_id")
 
     /** The player's Persona name */
     var persona: String = profile.getString("persona")

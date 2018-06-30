@@ -33,6 +33,7 @@
             "max": 2
         }],
         "key-spacing": "off",
+        "comma-dangle": "off",
         "comma-spacing": "off",
         "keyword-spacing": "warn",
         "eqeqeq": ["warn", "smart"],
@@ -60,6 +61,8 @@
             "allowSingleLine": true
         }],
         "max-nested-callbacks": "off",
-        "no-trailing-spaces": "warn"
+        "max-depth": ["warn", 5],
+        "no-trailing-spaces": "warn",
+        "no-warning-comments": "warn"
     }
 }

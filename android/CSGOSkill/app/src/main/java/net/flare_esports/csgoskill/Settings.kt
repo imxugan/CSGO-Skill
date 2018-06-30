@@ -44,9 +44,10 @@ class Settings : AppCompatActivity() {
     private lateinit var BaseSettings: SettingsBaseFragment
     private lateinit var AccountSettings: SettingsAccountFragment
 
-    var persona = ""
-    var username = ""
-    var email = ""
+    lateinit var player: Player
+        private set
+
+    var newEmail = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,11 +69,9 @@ class Settings : AppCompatActivity() {
             } else {
                 LoadAvatar().execute(player.avatarUrl)
                 userPersona.text = player.persona
-                persona = player.persona
-                if (player.isUser) {
-                    userLevel.text = player.username
-                    username = player.username
-                    email = player.email
+                this.player = player
+                if (this.player.isUser) {
+                    userLevel.text = this.player.username
                 } else {
                     userLevel.setTextColor(ContextCompat.getColorStateList(this, R.color.primary))
                     userLevel.text = "Tap here to become a user"
@@ -85,7 +84,7 @@ class Settings : AppCompatActivity() {
         params.height = Constants.getNavBarHeight(this)
         settingsBottomPadding.layoutParams = params
 
-        if (username.isNotEmpty()) {
+        if (player.username.isNotEmpty()) {
             // User account is logged in, direct to change account settings
             currentUser.setOnClickListener {
                 switchFragment(LOC_ACCOUNT)
@@ -208,7 +207,6 @@ class Settings : AppCompatActivity() {
          * @return True if fragment handled the event, false if Settings should
          */
         abstract fun onBack(): Boolean
-
     }
 
 }

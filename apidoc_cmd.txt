@@ -1,0 +1,5 @@
+# For now
+apidoc --input=lib/ --output=apidoc/doc
+
+# For the future
+apidoc --input=lib/ --output=apidoc/doc --template=apidoc/template

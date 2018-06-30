@@ -4,33 +4,50 @@
   ~ Copyright (c) 2018. All rights reserved.
   -->
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingTop="7dp"
     android:paddingLeft="19dp"
     android:paddingRight="15dp">
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/emailInputLayout"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:padding="5dp">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/emailInput"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/emailInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:maxLength="50"
-            android:maxLines="1"
-            android:inputType="textEmailAddress"
-            android:hint="@string/email"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/white" />
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="5dp">
 
-    </android.support.design.widget.TextInputLayout>
+            <EditText
+                android:id="@+id/emailInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:inputType="textEmailAddress"
+                android:hint="@string/email"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/white" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/emailDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/emailInputLayout"
+            android:text="When changing your email, you'll receive an email at the new address with a verification link. An email will also be sent to the previous address notifying you about the change."
+            android:textColor="@color/lightGrey"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+
+    </android.support.constraint.ConstraintLayout>
 
 </ScrollView>

@@ -1,6 +1,6 @@
     /*********************************************************
      *    This file is licensed under the MIT 2.0 license    *
-     *              Last updated May 31st, 2018              *
+     *              Last updated June 29th, 2018             *
      *   *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *   *
      *    Please check out the full repository located at    *
      *   http://github.com/almic/CSGO-Skill for some other   *
@@ -105,7 +105,7 @@ app.get('/activate', (req, res) => {
                     message: basicerror
                 })
             }
-            col.find({'email-verify': token}).toArray((err, docs) => {
+            col.find({'email_verify': token}).toArray((err, docs) => {
                 if (assistant.e(502, err)) {
                     db.close()
                     return res.render('activate', {
@@ -122,9 +122,13 @@ app.get('/activate', (req, res) => {
                             'verified': true
                         },
                         $unset: {
-                            'email-verify': ''
+                            'email_verify': ''
                         }
                     }
+
+                    if (player.status.changing_email)
+                        ndoc.$set['status.changing_email'] = false
+
                     col.findOneAndUpdate({'steam_id': player.steam_id}, ndoc, (err, _) => {
                         db.close()
                         if (assistant.e(503, err))
@@ -189,7 +193,7 @@ app.get('/cancel', (req, res) => {
                     message: basicerror
                 })
             }
-            col.find({'email-cancel': token}).toArray((err, docs) => {
+            col.find({'email_cancel': token}).toArray((err, docs) => {
                 if (assistant.e(505, err)) {
                     db.close()
                     return res.render('activate', {
@@ -203,17 +207,17 @@ app.get('/cancel', (req, res) => {
                     var player = docs[0]
                     var update = {
                         $set: {
-                            'email': player.oldemail,
-                            'canceled-email': player.email
+                            'email': player.status.old_email,
+                            'status.canceled_email': player.email
                         },
                         $unset: {
-                            'email-verify': ''
+                            'email_verify': ''
                         }
                     }
 
-                    if (typeof player.oldemail !== 'string' || !assistant.isEmail(player.oldemail)) {
+                    if (typeof player.status.old_email !== 'string' || !assistant.isEmail(player.status.old_email)) {
                         db.close()
-                        assistant.e(508, new Error(`A user with a valid cancel link had either no 'oldemail' or a bad 'oldemail'! Steam ID: ${player.steam_id}`))
+                        assistant.e(508, new Error(`A user with a valid cancel link had either no 'old_email' or a bad 'old_email'! Steam ID: ${player.steam_id}`))
                         return res.render('activate', {
                             page: { title: 'Failed!' },
                             message: basicerror

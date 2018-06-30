@@ -69,6 +69,21 @@ public class DynamicAlert {
     /** The default theme used for all dialogs */
     private static final int THEME_DEFAULT = R.style.Theme_Flare_AlertDialog;
 
+    /** HTML flags used in {@link #setHTML(String)} */
+    public static final int FROM_HTML_MODE;
+
+    static {
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            FROM_HTML_MODE =
+                    Html.FROM_HTML_MODE_COMPACT
+                    | Html.FROM_HTML_OPTION_USE_CSS_COLORS;
+        } else {
+            // Use legacy
+            FROM_HTML_MODE = 0;
+        }
+    }
+
+
     /**
      * The default setup for all DynamicAlerts. If you are copying this class, just change the
      * stuff in here to whatever you want to propagate to all your dialogs. Can safely include
@@ -321,7 +336,11 @@ public class DynamicAlert {
      */
     public DynamicAlert setHTML(String message) {
         TextView text = new TextView(c);
-        text.setText(Html.fromHtml(message));
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            text.setText(Html.fromHtml(message, FROM_HTML_MODE));
+        } else {
+            text.setText(Html.fromHtml(message));
+        }
 
         // Get the primary text color for the supplied theme
         TypedValue a = new TypedValue();
